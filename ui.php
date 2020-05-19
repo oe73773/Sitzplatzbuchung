@@ -11,7 +11,10 @@ function writeMainHtmlBeforeContent($pageTitle = null)
     $title = $pageTitle . ' – ' . $title;
   echo html_node('title', $title);
 
-  echo html_node('link', null, ['rel' => 'icon', 'href' => 'public/favicon.png']);
+  $faviconPath = getConfigValue('faviconPath');
+  if ($faviconPath != null)
+    echo html_node('link', null, ['rel' => 'icon', 'href' => $faviconPath]);
+
   write_css_include_tag('public/stylesheet.css');
   write_script_include_tag('public/common.js');
 

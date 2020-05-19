@@ -16,6 +16,7 @@ $config['isProductionInstance'] = true;
 $config['instanceTitle'] = 'Sitzplatzbuchung';
 $config['instanceHeadline'] = 'Sitzplatzbuchung';
 $config['textAfterTitle'] = '...Logo...';
+# $config['faviconPath'] = 'public/favicon.png';
 
 # Static texts:
 
