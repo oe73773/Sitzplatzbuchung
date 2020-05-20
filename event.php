@@ -1,13 +1,5 @@
 <?php
 
-# function getEventById($eventId)
-# {
-  # $event = db()->query_row_by_id('event', $eventId);
-  # decodeEvent($event);
-  # return $event;
-# }
-
-
 function tryGetEventById($eventId)
 {
   if ($eventId == null)
@@ -18,7 +10,7 @@ function tryGetEventById($eventId)
 }
 
 
-function getCurrentEvents()
+function getCurrentEvents($withVisitorCount = false)
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 30); # 30 minutes overrun after start of event
@@ -26,6 +18,8 @@ function getCurrentEvents()
   foreach ($events as &$event)
   {
     decodeEvent($event);
+    if ($withVisitorCount)
+      $event['visitorCount'] = getEventVisitorCount($event['id']);
   }
   return $events;
 }

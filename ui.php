@@ -69,7 +69,7 @@ function renderPageErrorBox($msg)
 
 function renderMainPage()
 {
-  $events = getCurrentEvents();
+  $events = getCurrentEvents(true);
   $currentBookingByEvent = getCurrentBookingByEventForClient();
 
   writeMainHtmlBeforeContent();
@@ -110,7 +110,7 @@ function calculateAutoReloadHash($events)
   {
     $items[] = $event['id'];
     $items[] = $event['editTimestamp'];
-    $items[] = $visitorCount = getEventVisitorCount($event['id']);;
+    $items[] = $event['visitorCount'];
   }
   return substr(md5(implode('.', $items)), 0, 8);
 }
@@ -118,15 +118,7 @@ function calculateAutoReloadHash($events)
 
 function handleAutoReloadCheckAction()
 {
-  # echo 'alert(1)';
-
-  # debug(to_string(get_param_value('documentHasFocus')) . ', ' . to_string(get_param_value('isDocumentFocused')) . ', ' . to_string(get_param_value('isDocumentVisible')));
-
-  # debug('handleAutoReloadCheckAction');
-
-  debug(get_param_value('autoReloadHash'));
-
-  $events = getCurrentEvents();
+  $events = getCurrentEvents(true);
   if (get_param_value('autoReloadHash') != calculateAutoReloadHash($events))
     echo 'location.reload();';
 }
@@ -250,7 +242,7 @@ function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
 {
   echo html_open('div', ['class' => 'seatsInfo']);
 
-  $visitorCount = getEventVisitorCount($event['id']);
+  $visitorCount = $event['visitorCount'];
   $maxVisitorCount = $visitorCount + max($freeSeatCount, 0);
 
   if ($visitorCount > 0)
@@ -457,7 +449,7 @@ function renderAdminPage()
 
 function renderAdminActiveEvents()
 {
-  $events = getCurrentEvents();
+  $events = getCurrentEvents(true);
 
   $columns = [];
   $columns['id'] = 'Nummer';
