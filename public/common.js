@@ -109,7 +109,7 @@ function byClass(ClassName)
 	var Elements = document.getElementsByTagName('*');
 	var List = [];
 	for (var i = 0; i < Elements.length; i++) { // Don't use elements 'length' and 'item':
-		if (IsClass(Elements[i], ClassName))
+		if (Elements[i].classList.contains(ClassName))
 			List.push(Elements[i]);
   }
 	return List;
@@ -189,14 +189,14 @@ function postForm(event)
         eval(req.responseText);
       else
         showErrorMsg('Beim Ausführen der Aktion ist etwas schiefgegangen. \nHTTP-Status: ' + req.status);
-      window.setTimeout(function() {
+      setTimeout(function() {
         setFormEnabled(event.target, true);
       }, 500);
     }
 	};
   req.onerror = function() {
     showErrorMsg('Verbindung zum Server fehlgeschlagen.');
-    window.setTimeout(function() {
+    setTimeout(function() {
       setFormEnabled(event.target, true);
     }, 500);
   };
