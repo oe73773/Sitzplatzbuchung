@@ -69,7 +69,7 @@ function renderPageErrorBox($msg)
 
 function renderMainPage()
 {
-  $events = getCurrentEvents(true);
+  $events = getCurrentEvents(true, true);
   $currentBookingByEvent = getCurrentBookingByEventForClient();
 
   writeMainHtmlBeforeContent();
@@ -174,7 +174,7 @@ function renderMainPageEvent($event, $booking)
     $bookingCanceled = $booking['cancelTimestamp'] != null;
   }
   $hasActiveBooking = $persons != null && !$bookingCanceled;
-  $freeSeatCount = calculateFreeSeats($event);
+  $freeSeatCount = $event['freeSeatCount'];
 
   renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount);
 
@@ -449,7 +449,7 @@ function renderAdminPage()
 
 function renderAdminActiveEvents()
 {
-  $events = getCurrentEvents(true);
+  $events = getCurrentEvents(true, true);
 
   $columns = [];
   $columns['id'] = 'Nummer';
@@ -662,7 +662,7 @@ function renderDebugFreeSeatsCalculation()
   echo html_open('div', ['class' => 'content']);
   echo html_open('div', ['class' => 'textBlock']);
 
-  $freeSeats = calculateFreeSeats($event, null, true);
+  $freeSeats = calculateFreeSeatCount($event, null, true);
   echo '<br>freeSeats: ';
   echo $freeSeats;
 

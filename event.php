@@ -10,7 +10,7 @@ function tryGetEventById($eventId)
 }
 
 
-function getCurrentEvents($withVisitorCount = false)
+function getCurrentEvents($withVisitorCount = false, $withFreeSeatCount = false)
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 30); # 30 minutes overrun after start of event
@@ -20,6 +20,8 @@ function getCurrentEvents($withVisitorCount = false)
     decodeEvent($event);
     if ($withVisitorCount)
       $event['visitorCount'] = getEventVisitorCount($event['id']);
+    if ($withFreeSeatCount)
+      $event['freeSeatCount'] = calculateFreeSeatCount($event);
   }
   return $events;
 }
@@ -57,7 +59,7 @@ function getEventVisitorCount($eventId)
 }
 
 
-function calculateFreeSeats($event, $additionalPersonCount = null, $debug = false)
+function calculateFreeSeatCount($event, $additionalPersonCount = null, $debug = false)
 {
   $eventId = $event['id'];
 

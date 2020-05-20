@@ -106,10 +106,10 @@ function handleSaveBookingAction()
     return;
   }
 
-  $freeSeatCount = calculateFreeSeats($event, count($personen));
+  $freeSeatCount = calculateFreeSeatCount($event, count($personen));
   if ($freeSeatCount == -1)
   {
-    $freeSeatCountWithoutNew = calculateFreeSeats($event);
+    $freeSeatCountWithoutNew = calculateFreeSeatCount($event);
     if ($freeSeatCountWithoutNew > 0 && count($personen) > 1)
       echo 'showErrorMsg("Es sind nicht mehr genügend Plätze frei. Bitte weniger Personen eingeben.");';
     else
