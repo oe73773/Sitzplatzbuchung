@@ -590,6 +590,13 @@ function renderEventList()
 
   $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
   $items = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
+
+  foreach ($items as &$event)
+  {
+    $event['visitorCount'] = getEventVisitorCount($event['id']);
+    $event['freeSeatCount'] = calculateFreeSeatCount($event);
+  }
+
   $columns = [];
   $columns['id'] = 'Nummer';
   $columns['title'] = 'Titel';
@@ -597,6 +604,8 @@ function renderEventList()
   $columns['bookingOpeningTimestamp'] = 'Buchungs ab';
   $columns['bookingClosingTimestamp'] = 'Buchungs bis';
   $columns['startTimestamp'] = 'Beginn';
+  $columns['visitorCount'] = 'Teilnehmer';
+  $columns['freeSeatCount'] = 'Freie Sitzplätze';
   renderItemTable($items, $columns);
 
   echo html_close('div');
