@@ -242,7 +242,11 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
   $freeSeats = $fiveSeatsFree * 5 + $sixSeatsFree * 6 + $fiveSeatsWith1Person + $sixSeatsWith1Person * 2 + $sixSeatsWith2Persons;
 
   if ($visitorLimit > 0)
+  {
+    if ($visitorSum > $visitorLimit)
+      return -1;
     $freeSeats = min($freeSeats, $visitorLimit - $visitorSum);
+  }
 
   return $freeSeats;
 }
