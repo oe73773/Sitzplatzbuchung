@@ -155,7 +155,7 @@ function get_client_ip_address()
 
 function generate_token()
 {
-	return md5(microtime()) . dechex(mt_rand());
+	return sha1(microtime()) . dechex(mt_rand());
 }
 
 
