@@ -109,13 +109,12 @@ function handleSaveBookingAction()
   $freeSeatCount = calculateFreeSeats($event, count($personen));
   if ($freeSeatCount == -1)
   {
-    if (count($personen) == 1)
-    {
-      echo 'showErrorMsg("Es sind keine Plätze mehr frei.");';
-      echo 'location.reload();';
-    }
-    else
+    $freeSeatCountWithoutNew = calculateFreeSeats($event);
+    if ($freeSeatCountWithoutNew > 0 && count($personen) > 1)
       echo 'showErrorMsg("Es sind nicht mehr genügend Plätze frei. Bitte weniger Personen eingeben.");';
+    else
+      echo 'showErrorMsg("Es sind keine Plätze mehr frei.");';
+    echo 'location.reload();';
     return;
   }
 
