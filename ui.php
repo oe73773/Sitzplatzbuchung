@@ -493,11 +493,14 @@ function renderBookingSimulator()
   echo html_input('number', 'personCountNewBooking', 0);
   echo html_close('div');
 
+  echo html_open('div');
   echo html_form_submit_button('Berechnen', ['class' => 'saveButton']);
+  echo html_close('div');
+
   writeFormToken();
   echo html_close('form');
 
-  echo html_node('div', '', ['id' => 'simulatorResult']);
+  echo html_node('div', '', ['id' => 'simulatorResult', 'class' => 'textBlock', 'style' => 'font-size: 90%']);
 
   echo html_close('div');
 }
@@ -524,7 +527,7 @@ function handleBookingSimulatorAction()
 
   echo 'byId("simulatorResult").innerHTML = "';
   $freeSeats = calculateFreeSeatsInner($event, $rows, true);
-  echo '<br>freeSeats: ';
+  echo '<br>freie Sitzplätze: ';
   echo $freeSeats;
   echo '"';
 }
