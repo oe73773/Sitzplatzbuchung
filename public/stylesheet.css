@@ -314,6 +314,7 @@ tr:hover {
 .content {
   background: white;
   padding: 5px;
+  overflow: auto;
 }
 @media (min-width: 1000px) {
   .content {
