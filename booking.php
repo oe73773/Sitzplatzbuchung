@@ -48,7 +48,7 @@ function handleSaveBookingAction()
     return;
   }
 
-  $personen = [];
+  $persons = [];
   for ($i = 1; $i <= 6; $i++)
   {
     $surname = trim(get_param_value('surname' . $i));
@@ -85,10 +85,16 @@ function handleSaveBookingAction()
       echo 'showErrorMsg("Der Name darf kein Semikolon enthalten.");';
       return;
     }
-    $personen[] = $surname . ',' . $lastname;
+    $person = $surname . ',' . $lastname;
+    if (in_array($person, $persons))
+    {
+      echo 'showErrorMsg("Ein Name wurde doppelt eingegeben.");';
+      return;
+    }
+    $persons[] = $person;
   }
 
-  if (count($personen) == 0)
+  if (count($persons) == 0)
   {
     echo 'showErrorMsg("Bitte einen Namen eingeben.");';
     return;
@@ -106,11 +112,11 @@ function handleSaveBookingAction()
     return;
   }
 
-  $freeSeatCount = calculateFreeSeatCount($event, count($personen));
+  $freeSeatCount = calculateFreeSeatCount($event, count($persons));
   if ($freeSeatCount == -1)
   {
     $freeSeatCountWithoutNew = calculateFreeSeatCount($event);
-    if ($freeSeatCountWithoutNew > 0 && count($personen) > 1)
+    if ($freeSeatCountWithoutNew > 0 && count($persons) > 1)
       echo 'showErrorMsg("Es sind nicht mehr genügend Plätze frei. Bitte weniger Personen eingeben.");';
     else
       echo 'showErrorMsg("Es sind keine Plätze mehr frei.");';
@@ -118,13 +124,13 @@ function handleSaveBookingAction()
     return;
   }
 
-  $listOfPersons = implode(';', $personen);
+  $listOfPersons = implode(';', $persons);
 
   # insert booking row
   $booking = [];
   $booking['eventId'] = $event['id'];
   $booking['listOfPersons'] = $listOfPersons;
-  $booking['personCount'] = count($personen);
+  $booking['personCount'] = count($persons);
   $booking['phoneNumber'] = $phoneNumber;
   $booking['insertTimestamp'] = format_timestamp(time());
   $booking['insertClientId'] = getClientValue('id');
