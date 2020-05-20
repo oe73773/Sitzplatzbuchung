@@ -67,7 +67,11 @@ function initClientIdentification()
     $client = [];
     $client['token'] = $clientToken;
     if ($clientCount == 0)
-      $client['userGroup'] = 1; # make first client admin
+    {
+      # make first client admin
+      $client['userGroup'] = 1;
+      $client['persistent'] = 1;
+    }
     $client['insertTimestamp'] = format_timestamp(time());
     fillClientInfo($client);
     $clientId = db()->insert('client', $client);
