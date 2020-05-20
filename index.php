@@ -16,13 +16,21 @@ initClientIdentification();
 $action = get_param_value('a');
 if ($action != null)
 {
-  verifyFormTokenOrExit();
   if ($action == 'saveBooking')
+  {
+    verifyFormTokenOrExit();
     handleSaveBookingAction();
+  }
   else if ($action == 'cancelBooking')
+  {
+    verifyFormTokenOrExit();
     handleCancelBookingAction();
+  }
   else if ($action == 'makeClientPersistent')
+  {
+    verifyFormTokenOrExit();
     handleMakeClientPersistentAction();
+  }
   else if ($action == 'bookingSimulator')
     handleBookingSimulatorAction();
   else
