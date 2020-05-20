@@ -16,22 +16,27 @@ CREATE TABLE client (
   lastSeenTimestamp TIMESTAMP NULL,
   lastListOfPersons TEXT,
   lastPhoneNumber TEXT,
-  ip TEXT,
+  ip VARCHAR(255),
   userAgent TEXT,
+  hash VARCHAR(255),
   PRIMARY KEY (id),
-  INDEX Index_token(token),
-  INDEX Index_lastSeenTimestamp(lastSeenTimestamp)
+  INDEX Index_lastSeenTimestamp(lastSeenTimestamp),
+  INDEX Index_userGroup(userGroup),
+  INDEX Index_hash(hash)
 );
 
 CREATE TABLE adminlog (
   id INT NOT NULL AUTO_INCREMENT,
   insertTimestamp TIMESTAMP NULL,
   clientId INT,
-  itemType TEXT,
+  itemType VARCHAR(255),
   itemId INT,
-  action TEXT,
+  action VARCHAR(255),
   newData TEXT,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  INDEX Index_clientId(clientId),
+  INDEX Index_itemType(itemType),
+  INDEX Index_itemId(itemId)
 );
 
 CREATE TABLE event (
@@ -51,6 +56,7 @@ CREATE TABLE event (
   editClientId INT,
   editTimestamp TIMESTAMP NULL,
   PRIMARY KEY (id),
+  INDEX Index_releaseTimestamp(releaseTimestamp),
   INDEX Index_startTimestamp(startTimestamp)
 );
 
@@ -68,5 +74,6 @@ CREATE TABLE booking (
   PRIMARY KEY (id),
   INDEX Index_eventId(eventId),
   INDEX Index_insertClientId(insertClientId),
-  INDEX Index_cancelTimestamp(cancelTimestamp)
+  INDEX Index_cancelTimestamp(cancelTimestamp),
+  INDEX Index_personCount(personCount)
 );

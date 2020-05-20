@@ -569,9 +569,11 @@ function renderClientList()
   $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
   $columns = [];
   $columns['id'] = 'Nummer';
-  $columns['lastSeenTimestamp'] = 'Zuletzt gesehen';
+  $columns['hash'] = 'Kennung';
+  $columns['persistent'] = 'Persistent';
   $columns['userName'] = 'Benutzername';
   $columns['userGroup'] = 'Benutzergruppe';
+  $columns['lastSeenTimestamp'] = 'Zuletzt gesehen';
   renderItemTable($items, $columns);
 
   echo html_close('div');
@@ -586,13 +588,15 @@ function renderEventList()
 
   echo html_open('div', ['class' => 'content']);
 
-  $items = db()->query_rows('SELECT * FROM event ORDER BY startTimestamp DESC LIMIT 100');
+  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
+  $items = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
   $columns = [];
   $columns['id'] = 'Nummer';
   $columns['title'] = 'Titel';
+  $columns['releaseTimestamp'] = 'Veröffentlichung';
+  $columns['bookingOpeningTimestamp'] = 'Buchungs ab';
+  $columns['bookingClosingTimestamp'] = 'Buchungs bis';
   $columns['startTimestamp'] = 'Beginn';
-  $columns['bookingOpeningTimestamp'] = 'Buchungs-Beginn';
-  $columns['bookingClosingTimestamp'] = 'Buchungs-Ende';
   renderItemTable($items, $columns);
 
   echo html_close('div');
@@ -645,6 +649,7 @@ function renderItemTable($items, $columns)
   }
   echo '</table>';
 }
+
 
 function renderDebugFreeSeatsCalculation()
 {

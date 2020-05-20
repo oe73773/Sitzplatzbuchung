@@ -84,6 +84,11 @@ function fillClientInfo(&$client)
   $client['lastSeenTimestamp'] = format_timestamp(time());
   $client['ip'] = get_client_ip_address();
   $client['userAgent'] = array_value($_SERVER, 'HTTP_USER_AGENT');
+  $hashItems = [];
+  $hashItems[] = $client['ip'];
+  $hashItems[] = $client['userAgent'];
+  $hashItems[] = array_value($_SERVER, 'HTTP_ACCEPT_LANGUAGE');
+  $client['hash'] = substr(md5(implode('.', $hashItems)), 0, 8);
 }
 
 
