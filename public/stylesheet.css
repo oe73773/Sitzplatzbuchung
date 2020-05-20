@@ -359,6 +359,13 @@ tr:hover {
 .content.mainPage .event .titleAndDate {
   font-size: 135%;
 }
+@media (min-width: 1000px) {
+  .content.mainPage .event .titleAndDate {
+    font-size: 150%;
+    padding-bottom: 3px;
+  }
+}
+
 .content.mainPage .event > div.textBlock > div {
   line-height: 155%;
 }
