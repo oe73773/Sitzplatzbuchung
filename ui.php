@@ -642,7 +642,11 @@ function renderItemTable($items, $columns)
     foreach ($columns as $key => $title)
     {
       echo '<td>';
-      echo $item[$key];
+      $value = $item[$key];
+      if ($value === null)
+        echo '-';
+      else
+        echo html_encode($item[$key]);
       echo '</td>';
     }
     echo '</tr>';
