@@ -88,14 +88,13 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
 
   if ($debug)
   {
-    echo 'visitorLimit: ' . $visitorLimit . '<br>';
-    echo 'fiveSeatsFree: ' . $fiveSeatsFree . '<br>';
-    echo 'sixSeatsFree: ' . $sixSeatsFree . '<br>';
-    echo 'rows: ' . count($rows) . '<br>';
+    echo 'Teilnehmer-Limit: ' . $visitorLimit . '<br>';
+    echo '5er-Stuhlreihen: ' . $fiveSeatsFree . '<br>';
+    echo '6er-Stuhlreihen: ' . $sixSeatsFree . '<br>';
+    echo 'Buchungen: ' . count($rows) . '<br>';
     echo '<br>';
   }
 
-  $i = 0;
   foreach ($rows as $row)
   {
     $personCount = intval($row['personCount']);
@@ -104,12 +103,17 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
 
     if ($debug)
     {
-      echo $personCount;
+      echo '<b>';
       if ($personCount == 1)
-        echo ' person: ';
+        echo 'Anzahl Einzelpersonen: ';
       else
-        echo ' persons: ';
+      {
+        echo 'Anzahl ';
+        echo $personCount;
+        echo 'er-Gruppen: ';
+      }
       echo $count;
+      echo '</b>';
       echo '<br>';
     }
 
@@ -225,19 +229,22 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
 
     if ($debug)
     {
-      echo 'fiveSeatsFree: ' . $fiveSeatsFree . '<br>';
-      echo 'sixSeatsFree: ' . $sixSeatsFree . '<br>';
-      echo 'fiveSeatsWith1Person: ' . $fiveSeatsWith1Person . '<br>';
-      echo 'sixSeatsWith1Person: ' . $sixSeatsWith1Person . '<br>';
-      echo 'sixSeatsWith2Persons: ' . $sixSeatsWith2Persons . '<br>';
+      if ($fiveSeatsFree > 0)
+        echo 'freie 5er-Stuhlreihen: ' . $fiveSeatsFree . '<br>';
+      if ($sixSeatsFree > 0)
+        echo 'freie 6er-Stuhlreihen: ' . $sixSeatsFree . '<br>';
+      if ($fiveSeatsWith1Person > 0)
+        echo '5er-Stuhlreihen mit 1 Person: ' . $fiveSeatsWith1Person . '<br>';
+      if ($sixSeatsWith1Person > 0)
+        echo '6er-Stuhlreihen mit 1 Person: ' . $sixSeatsWith1Person . '<br>';
+      if ($sixSeatsWith2Persons > 0)
+        echo '6er-Stuhlreihen mit 2 Personen: ' . $sixSeatsWith2Persons . '<br>';
       echo '<br>';
     }
-
-    $i++;
   }
 
   if ($debug)
-    echo 'visitorSum: ' . $visitorSum . '<br>';
+    echo 'Anzahl Teilnehmer: ' . $visitorSum . '<br>';
 
   $freeSeats = $fiveSeatsFree * 5 + $sixSeatsFree * 6 + $fiveSeatsWith1Person + $sixSeatsWith1Person * 2 + $sixSeatsWith2Persons;
 
