@@ -4,6 +4,11 @@ Sitzplatzbuchung
 *Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können.
 Die angemeldeten Teilnehmergruppen werden auf die im Raum zur Verfügung stehenden Sitzreihen gerechnet um eine Überbuchung zu verhindern.
 
+Demo-Installation:
+
+https://missionsgemeinde.de/sitzplatzbuchung-preprod/
+
+
 Voraussetzungen
 ---------------
 
