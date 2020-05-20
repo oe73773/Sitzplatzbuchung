@@ -9,6 +9,7 @@ require_once('event.php');
 require_once('booking.php');
 require_once('ui.php');
 
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 
 connectToDb();
 initClientIdentification();
