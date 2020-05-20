@@ -8,6 +8,7 @@ require_once('client.php');
 require_once('event.php');
 require_once('booking.php');
 require_once('ui.php');
+require_once('manager.php');
 
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 
@@ -59,6 +60,8 @@ else
     renderDebugFreeSeatsCalculation();
   else if ($page == 'bookingSimulator')
     renderBookingSimulator();
+  else if ($page == 'visitorList')
+    renderVisitorList();
   else
     renderMainPage();
 

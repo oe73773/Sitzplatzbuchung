@@ -1,5 +1,15 @@
 <?php
 
+function decodeBooking(&$booking)
+# Convert all timestamp fields from strings to timestamps
+{
+  if ($booking != null)
+  {
+    $booking['insertTimestamp'] = date_time_to_timestamp($booking['insertTimestamp']);
+    $booking['cancelTimestamp'] = date_time_to_timestamp($booking['cancelTimestamp']);
+  }
+}
+
 function getCurrentBookingByEventForClient()
 {
   $bookings = db()->query_rows('SELECT * FROM booking WHERE insertClientId = ? AND insertedAsAdmin IS NULL ORDER BY id DESC LIMIT 100', [getClientValue('id')]);

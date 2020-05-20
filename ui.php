@@ -69,7 +69,7 @@ function renderPageErrorBox($msg)
 
 function renderMainPage()
 {
-  $events = getCurrentEvents(true, true);
+  $events = getMainPageEvents(true, true);
   $currentBookingByEvent = getCurrentBookingByEventForClient();
 
   writeMainHtmlBeforeContent();
@@ -118,7 +118,7 @@ function calculateAutoReloadHash($events)
 
 function handleAutoReloadCheckAction()
 {
-  $events = getCurrentEvents(true);
+  $events = getMainPageEvents(true);
   if (get_param_value('autoReloadHash') != calculateAutoReloadHash($events))
     echo 'location.reload();';
 }
@@ -208,7 +208,7 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
   echo html_open('div', ['class' => 'titleAndDate']);
   echo $event['title'];
   echo ' am ';
-  echo formatTimestampLocalDateTimeLongNoYear($event['startTimestamp']);
+  echo formatTimestampLocalLong($event['startTimestamp'], 'minute', false);
   echo html_close('div');
 
   # notice
@@ -220,9 +220,9 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
   if (time() < $event['bookingOpeningTimestamp'])
   {
     echo 'Buchung: ';
-    echo formatTimestampLocalDateTimeLongNoYear($event['bookingOpeningTimestamp']);
+    echo formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
     echo ' – ';
-    echo formatTimestampLocalDateTimeLongNoYear($event['bookingClosingTimestamp']);
+    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
   }
   else if (time() < $event['bookingClosingTimestamp'])
   {
@@ -230,7 +230,7 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
       echo 'Stornierung bis ';
     else
       echo 'Buchung bis ';
-    echo formatTimestampLocalDateTimeLongNoYear($event['bookingClosingTimestamp']);
+    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
   }
   echo html_close('div');
 
@@ -434,30 +434,15 @@ function renderAdminPage()
 
   echo html_open('div', ['class' => 'content adminPage']);
 
-  # renderAdminActiveEvents();
-
   echo html_open('ul');
-  echo html_node('li', html_a('?p=bookings', 'Buchungen'));
-  echo html_node('li', html_a('?p=events', 'Veranstaltungen'));
-  echo html_node('li', html_a('?p=clients', 'Geräte'));
+  echo html_node('li', html_a('?p=visitorList', 'Anwesenheitsliste'));
+  echo html_node('li', html_a('?p=events', 'Veranstaltungen verwalten'));
+  echo html_node('li', html_a('?p=bookings', 'Buchungen verwalten'));
+  echo html_node('li', html_a('?p=clients', 'Geräte verwalten'));
   echo html_node('li', html_a('?p=bookingSimulator', 'Buchungs-Simulator'));
   echo html_close('ul');
 
   echo html_close('div');
-}
-
-
-function renderAdminActiveEvents()
-{
-  $events = getCurrentEvents(true, true);
-
-  $columns = [];
-  $columns['id'] = 'Nummer';
-  $columns['title'] = 'Titel';
-  $columns['startTimestamp'] = 'Beginn';
-  $columns['bookingOpeningTimestamp'] = 'Buchungs-Beginn';
-  $columns['bookingClosingTimestamp'] = 'Buchungs-Ende';
-  renderItemTable($events, $columns);
 }
 
 
@@ -560,21 +545,28 @@ function handleBookingSimulatorAction()
 
 function renderClientList()
 {
-  writeMainHtmlBeforeContent('Geräte');
+  writeMainHtmlBeforeContent('Geräte verwalten');
   if (!ensureClientIsAdmin())
     return;
 
   echo html_open('div', ['class' => 'content']);
 
   $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
-  $columns = [];
-  $columns['id'] = 'Nummer';
-  $columns['hash'] = 'Kennung';
-  $columns['persistent'] = 'Persistent';
-  $columns['userName'] = 'Benutzername';
-  $columns['userGroup'] = 'Benutzergruppe';
-  $columns['lastSeenTimestamp'] = 'Zuletzt gesehen';
-  renderItemTable($items, $columns);
+
+  foreach ($items as &$client)
+  {
+    decodeClient($client);
+  }
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('hash', 'Kennung');
+  $fields[] = newTextField('persistent', 'Persistent');
+  $fields[] = newTextField('userName', 'Benutzername');
+  $fields[] = newTextField('userGroup', 'Benutzergruppe');
+  $fields[] = newTimestampField('lastSeenTimestamp', 'Zuletzt online', false);
+
+  renderItemTable($items, $fields);
 
   echo html_close('div');
 }
@@ -582,85 +574,166 @@ function renderClientList()
 
 function renderEventList()
 {
-  writeMainHtmlBeforeContent('Veranstaltungen');
+  writeMainHtmlBeforeContent('Veranstaltungen verwalten');
   if (!ensureClientIsAdmin())
     return;
 
   echo html_open('div', ['class' => 'content']);
 
-  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
-  $items = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('title', 'Titel');
+  $fields[] = newTimestampField('startTimestamp', 'Beginn');
+  $fields[] = newTimestampField('releaseTimestamp', 'Veröffentlichung');
+  $fields[] = newTimestampField('bookingOpeningTimestamp', 'Buchungs ab');
+  $fields[] = newTimestampField('bookingClosingTimestamp', 'Buchungs bis');
+  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
 
-  foreach ($items as &$event)
-  {
-    $event['visitorCount'] = getEventVisitorCount($event['id']);
-    $event['freeSeatCount'] = calculateFreeSeatCount($event);
-  }
-
-  $columns = [];
-  $columns['id'] = 'Nummer';
-  $columns['title'] = 'Titel';
-  $columns['releaseTimestamp'] = 'Veröffentlichung';
-  $columns['bookingOpeningTimestamp'] = 'Buchungs ab';
-  $columns['bookingClosingTimestamp'] = 'Buchungs bis';
-  $columns['startTimestamp'] = 'Beginn';
-  $columns['visitorCount'] = 'Teilnehmer';
-  $columns['freeSeatCount'] = 'Freie Sitzplätze';
-  renderItemTable($items, $columns);
+  renderItemTable(getAdminEvents(), $fields);
 
   echo html_close('div');
 }
 
 
+function renderVisitorList()
+{
+  writeMainHtmlBeforeContent('Anwesenheitsliste');
+  if (!ensureClientIsAdmin())
+    return;
+
+  echo html_open('div', ['class' => 'content']);
+
+  $eventId = get_param_value('eventId');
+  if ($eventId == null)
+    renderVisitorList_eventList();
+  else
+    renderVisitorList_forEvent($eventId);
+
+  echo html_close('div');
+}
+
+
+function renderVisitorList_eventList()
+{
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('title', 'Titel');
+  $fields[] = newTimestampField('startTimestamp', 'Beginn');
+  $fields[] = newTimestampField('bookingOpeningTimestamp', 'Buchungs ab');
+  $fields[] = newTimestampField('bookingClosingTimestamp', 'Buchungs bis');
+  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
+
+  $actions = [];
+  $actions[] = newLinkAction('visitorList', 'Anzeigen', 'eventId');
+
+  renderItemTable(getVisitorListEvents(), $fields, $actions);
+}
+
+
+function renderVisitorList_forEvent($eventId)
+{
+  $event = tryGetEventById($eventId);
+  if ($event == null)
+  {
+    renderPageErrorBox('eventId ist ungültig.');
+    return;
+  }
+
+  echo html_open('div');
+  echo $event['title'];
+  echo ' am ';
+  echo formatTimestampLocalLong($event['startTimestamp'], 'minute');
+  echo html_close('div');
+
+  echo html_open('div');
+    echo 'Buchung bis ';
+    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute');
+  echo html_close('div');
+
+  echo html_open('div');
+    echo 'Stand ';
+    echo formatTimestampLocalLong(time(), 'minute');
+  echo html_close('div');
+
+  $bookings = db()->query_rows('SELECT * FROM booking WHERE eventId = ? AND cancelTimestamp IS NULL', [$eventId]);
+
+  $rows = [];
+  $i = 1;
+  foreach($bookings as $booking)
+  {
+    $persons = explode(';', $booking['listOfPersons']);
+    foreach($persons as $personStr)
+    {
+      $person = explode(',', $personStr);
+      $surname = array_value($person, 0);
+      $lastname = array_value($person, 1);
+
+      $row = [];
+      $row['id'] = $i;
+      $row['bookingId'] = $booking['id'];
+      $row['phoneNumber'] = $booking['phoneNumber'];
+      $row['surname'] = $surname;
+      $row['lastname'] = $lastname;
+      $row['empty'] = '';
+      $rows[] = $row;
+      $i++;
+    }
+  }
+
+  $emptyRowCount = 15;
+  for($j = 0; $j < $emptyRowCount; $j++)
+  {
+    $row = [];
+    $row['id'] = $i;
+    $row['bookingId'] = '';
+    $row['phoneNumber'] = '';
+    $row['surname'] = '';
+    $row['lastname'] = '';
+    $row['empty'] = '';
+    $rows[] = $row;
+    $i++;
+  }
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('lastname', 'Nachname');
+  $fields[] = newTextField('surname', 'Vorname');
+  $fields[] = newTextField('phoneNumber', 'Telefon');
+  $fields[] = newTextField('bookingId', 'Buchungsnr.');
+  $fields[] = newTextField('empty', 'Anwesend');
+
+  renderItemTable($rows, $fields);
+}
+
+
 function renderBookingList()
 {
-  writeMainHtmlBeforeContent('Buchungen');
+  writeMainHtmlBeforeContent('Buchungen verwalten');
   if (!ensureClientIsAdmin())
     return;
 
   echo html_open('div', ['class' => 'content']);
 
   $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
-  $columns = [];
-  $columns['id'] = 'Nummer';
-  $columns['eventId'] = 'Veranstaltung';
-  $columns['listOfPersons'] = 'Personen';
-  $columns['insertTimestamp'] = 'Gebucht am';
-  $columns['cancelTimestamp'] = 'Storniert am';
 
-  renderItemTable($items, $columns);
+  foreach ($items as &$booking)
+  {
+    decodeBooking($booking);
+  }
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('eventId', 'Veranstaltung');
+  $fields[] = newTextField('insertClientId', 'Erstellt durch');
+  $fields[] = newTextField('listOfPersons', 'Personen');
+  $fields[] = newTimestampField('insertTimestamp', 'Gebucht am');
+  $fields[] = newTimestampField('cancelTimestamp', 'Storniert am');
+
+  renderItemTable($items, $fields);
 
   echo html_close('div');
-}
-
-
-function renderItemTable($items, $columns)
-{
-  echo '<table class="border">';
-  echo '<tr>';
-  foreach ($columns as $key => $title)
-  {
-    echo '<th>';
-    echo $title;
-    echo '</th>';
-  }
-  echo '</tr>';
-  foreach ($items as $item)
-  {
-    echo '<tr>';
-    foreach ($columns as $key => $title)
-    {
-      echo '<td>';
-      $value = $item[$key];
-      if ($value === null)
-        echo '-';
-      else
-        echo html_encode($item[$key]);
-      echo '</td>';
-    }
-    echo '</tr>';
-  }
-  echo '</table>';
 }
 
 

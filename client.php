@@ -96,6 +96,18 @@ function fillClientInfo(&$client)
 }
 
 
+function decodeClient(&$client)
+# Convert all timestamp fields from strings to timestamps
+{
+  if ($client != null)
+  {
+    $client['insertTimestamp'] = date_time_to_timestamp($client['insertTimestamp']);
+    $client['editTimestamp'] = date_time_to_timestamp($client['editTimestamp']);
+    $client['lastSeenTimestamp'] = date_time_to_timestamp($client['lastSeenTimestamp']);
+  }
+}
+
+
 function getFormToken()
 {
   return substr(getClientValue('token'), -6);

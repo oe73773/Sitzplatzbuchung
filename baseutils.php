@@ -206,11 +206,17 @@ function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
 
 # Date & Time
 
+function date_time_to_timestamp($str)
+{
+  if ($str == null)
+    return null;
+  return strtotime($str);
+}
+
+
 function format_timestamp($timestamp, $format = '%Y-%m-%d %H:%M:%S')
 {
-	$result = strftime($format, $timestamp);
-  $result  = ltrim($result, '0'); # strip leading '0' (there is no format option for single digit day)
-  return $result;
+  return strftime($format, $timestamp);
 }
 
 

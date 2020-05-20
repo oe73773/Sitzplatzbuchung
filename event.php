@@ -10,7 +10,7 @@ function tryGetEventById($eventId)
 }
 
 
-function getCurrentEvents($withVisitorCount = false, $withFreeSeatCount = false)
+function getMainPageEvents($withVisitorCount = false, $withFreeSeatCount = false)
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 30); # 30 minutes overrun after start of event
@@ -27,16 +27,46 @@ function getCurrentEvents($withVisitorCount = false, $withFreeSeatCount = false)
 }
 
 
+function getAdminEvents()
+{
+  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
+  $events = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
+  foreach ($events as &$event)
+  {
+    decodeEvent($event);
+    $event['visitorCount'] = getEventVisitorCount($event['id']);
+    $event['freeSeatCount'] = calculateFreeSeatCount($event);
+  }
+  return $events;
+}
+
+
+function getVisitorListEvents()
+{
+  $now = format_timestamp(time());
+  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 30);
+  $events = db()->query_rows('SELECT * FROM event WHERE releaseTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
+  foreach ($events as &$event)
+  {
+    decodeEvent($event);
+    $event['visitorCount'] = getEventVisitorCount($event['id']);
+    $event['freeSeatCount'] = calculateFreeSeatCount($event);
+  }
+  return $events;
+}
+
+
 function decodeEvent(&$event)
 # Convert all timestamp fields from strings to timestamps
 {
   if ($event != null)
   {
-    $event['startTimestamp'] = strtotime($event['startTimestamp']);
-    $event['bookingOpeningTimestamp'] = strtotime($event['bookingOpeningTimestamp']);
-    $event['bookingClosingTimestamp'] = strtotime($event['bookingClosingTimestamp']);
-    $event['insertTimestamp'] = strtotime($event['insertTimestamp']);
-    $event['editTimestamp'] = strtotime($event['editTimestamp']);
+    $event['releaseTimestamp'] = date_time_to_timestamp($event['releaseTimestamp']);
+    $event['startTimestamp'] = date_time_to_timestamp($event['startTimestamp']);
+    $event['bookingOpeningTimestamp'] = date_time_to_timestamp($event['bookingOpeningTimestamp']);
+    $event['bookingClosingTimestamp'] = date_time_to_timestamp($event['bookingClosingTimestamp']);
+    $event['insertTimestamp'] = date_time_to_timestamp($event['insertTimestamp']);
+    $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
   }
 }
 

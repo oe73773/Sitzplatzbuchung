@@ -21,27 +21,47 @@ function getConfigValue($key, $defaultValue = null)
   return array_value($config, $key, $defaultValue);
 }
 
-function formatTimestampLocalDateLong($timestamp)
+
+function formatTimestampLocalLong($timestamp, $precision = 'minute', $showYear = true)
 {
-  return format_timestamp($timestamp, '%d. %B %Y');
+  if ($showYear)
+  {
+    if ($precision == 'day')
+      $format = 'X%d. %B %Y';
+    else if ($precision == 'hour')
+      $format = 'X%d. %B %Y, %H:00 Uhr';
+    else if ($precision == 'minute')
+      $format = 'X%d. %B %Y, %H:%M Uhr';
+    else
+      $format = 'X%d. %B %Y, %H:%M:%S Uhr';
+  }
+  else
+  {
+    if ($precision == 'day')
+      $format = 'X%d. %B';
+    else if ($precision == 'hour')
+      $format = 'X%d. %B, %H:00 Uhr';
+    else if ($precision == 'minute')
+      $format = 'X%d. %B, %H:%M Uhr';
+    else
+      $format = 'X%d. %B, %H:%M:%S Uhr';
+  }
+  $str = format_timestamp($timestamp, $format);
+  $str = str_replace('X0', '', $str);
+  $str = str_replace('X', '', $str);
+  return $str;
 }
 
-function formatTimestampLocalDateLongNoYear($timestamp)
-{
-  return format_timestamp($timestamp, '%d. %B');
-}
 
-function formatTimestampLocalTime($timestamp)
+function formatTimestampLocalShort($timestamp, $precision = 'minute')
 {
-  return format_timestamp($timestamp, '%H:%M');
-}
-
-function formatTimestampLocalDateTime($timestamp)
-{
-  return format_timestamp($timestamp, '%d. %B %Y, %H:%M Uhr');
-}
-
-function formatTimestampLocalDateTimeLongNoYear($timestamp)
-{
-  return format_timestamp($timestamp, '%d. %B, %H:%M Uhr');
+  if ($precision == 'day')
+    $format = '%d.%m.%Y';
+  else if ($precision == 'hour')
+    $format = '%d.%m.%Y %H:00';
+  else if ($precision == 'minute')
+    $format = '%d.%m.%Y %H:%M';
+  else
+    $format = '%d.%m.%Y %H:%M:%S';
+  return format_timestamp($timestamp, $format);
 }
