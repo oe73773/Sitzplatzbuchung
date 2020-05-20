@@ -10,7 +10,7 @@ function isNotNull(Var)
 	return typeof(Var) != 'undefined' && Var !== null;
 }
 
-function Clone(obj)
+function clone(obj)
 {
   if (obj === null || typeof(obj) !== 'object')
     return obj;
@@ -30,10 +30,10 @@ function byId(ID, IgnoreError)
 // ID: string
 // IgnoreError: boolean, default false
 {
-	if(!isNotNull(IgnoreError))
+	if (!isNotNull(IgnoreError))
 		IgnoreError = false;
 	var El = document.getElementById(ID);
-	if(El == null && !IgnoreError)
+	if (El == null && !IgnoreError)
 		console.log('Element with ID "' + ID + '" does not exist');
 	return El;
 }
@@ -45,7 +45,7 @@ function byName(Name)
 	var Elements = document.getElementsByName(Name);
 	// Don't use elements 'length' and 'item':
 	var List = [];
-	for(var i = 0; i < Elements.length; i++)
+	for (var i = 0; i < Elements.length; i++)
 		List.push(Elements[i]);
 	return List;
 }
@@ -54,14 +54,15 @@ function byName(Name)
 function getSubElements(Element, NodeName)
 // Returns all direct sub-elements, optional filter by node name
 {
-	if(isNotNull(NodeName))
+	if (isNotNull(NodeName))
 		NodeName = NodeName.toUpperCase();
 	var Elements = Element.childNodes;
 	// Don't use elements 'length' and 'item':
 	var List = [];
-	for(var i = 0; i < Elements.length; i++)
-		if(!isNotNull(NodeName) || Elements[i].nodeName == NodeName)
+	for (var i = 0; i < Elements.length; i++) {
+		if (!isNotNull(NodeName) || Elements[i].nodeName == NodeName)
 			List.push(Elements[i]);
+  }
 	return List;
 }
 
@@ -70,13 +71,13 @@ function getSubElements(Element, NodeName)
 function getSubElementByNodeName(Element, NodeName, Index)
 // Returns one direct sub-element by node name
 {
-	if(!isNotNull(Index))
+	if (!isNotNull(Index))
 		Index = 0;
 	NodeName = NodeName.toUpperCase();
 	var Elements = getSubElements(Element);
-	for(var i in Elements)
-		if(Elements[i].nodeName == NodeName) {
-			if(Index == 0)
+	for (var i in Elements)
+		if (Elements[i].nodeName == NodeName) {
+			if (Index == 0)
 				return Elements[i];
 			Index = Index - 1;
 		}
@@ -86,15 +87,15 @@ function getSubElementByNodeName(Element, NodeName, Index)
 function getSubElementsRecursive(Element, NodeName)
 // Returns all (indirect) sub-element, optional filter by node name
 {
-	if(isNotNull(NodeName))
+	if (isNotNull(NodeName))
 		NodeName = NodeName.toUpperCase();
 	var result = [];
 	var Sub = getSubElements(Element);
-	for(var i in Sub) {
-		if(!isNotNull(NodeName) || Sub[i].nodeName == NodeName)
+	for (var i in Sub) {
+		if (!isNotNull(NodeName) || Sub[i].nodeName == NodeName)
 			result.push(Sub[i]);
 		var toMerge = getSubElementsRecursive(Sub[i], NodeName);
-		for(var j in toMerge)
+		for (var j in toMerge)
 			result.push(toMerge[j]);
 	}
 	return result;
@@ -107,9 +108,10 @@ function byClass(ClassName)
 {
 	var Elements = document.getElementsByTagName('*');
 	var List = [];
-	for(var i = 0; i < Elements.length; i++) // Don't use elements 'length' and 'item':
-		if(IsClass(Elements[i], ClassName))
+	for (var i = 0; i < Elements.length; i++) { // Don't use elements 'length' and 'item':
+		if (IsClass(Elements[i], ClassName))
 			List.push(Elements[i]);
+  }
 	return List;
 }
 
@@ -117,16 +119,17 @@ function byClass(ClassName)
 function getSubElementByNodeNameRecursive(Element, NodeName, Index)
 // Returns one (indirect) sub-element by node name
 {
-	if(!isNotNull(Index))
+	if (!isNotNull(Index))
 		Index = 0;
 	NodeName = NodeName.toUpperCase();
 	var Elements = getSubElementsRecursive(Element);
-	for(var i in Elements)
-		if(Elements[i].nodeName == NodeName) {
-			if(Index == 0)
+	for (var i in Elements) {
+		if (Elements[i].nodeName == NodeName) {
+			if (Index == 0)
 				return Elements[i];
 			Index = Index - 1;
 		}
+  }
 }
 
 
@@ -164,17 +167,17 @@ function postForm(event)
 
 	var a = getSubElementsRecursive(event.target, 'input');
 	a.forEach(function(entry) {
-		if(entry.name && !entry.disabled)
+		if (entry.name && !entry.disabled)
 			formData.append(entry.name, entry.value);
 	});
 	var a = getSubElementsRecursive(event.target, 'textarea');
 	a.forEach(function(entry) {
-		if(entry.name && !entry.disabled)
+		if (entry.name && !entry.disabled)
 			formData.append(entry.name, entry.value);
 	});
 	var a = getSubElementsRecursive(event.target, 'select');
 	a.forEach(function(entry) {
-		if(entry.name && !entry.disabled)
+		if (entry.name && !entry.disabled)
 			formData.append(entry.name, entry.value);
 	});
 
@@ -232,13 +235,13 @@ function setElementsEnabled(elements, enabled)
 
 var errors = 0;
 window.onerror = function(message, file, line, col, error) {
-	if(errors == 0)
+	if (errors == 0)
 		showErrorMsg('Es ist ein JavaScript-Fehler aufgetreten.');
 	errors++;
 	console.log(message);
-	if(file)
+	if (file)
 		console.log('Source:' + file + ':' + line + ':' + col);
-	if(error) {
+	if (error) {
 		console.log('Stack trace:');
 		console.log(error.stack);
 	}
@@ -258,7 +261,7 @@ function raiseError(msg) {
 function trim(Str)
 // Remove whitespace from beginning and end of a string
 {
-	if(typeof(Str) != 'string')
+	if (typeof(Str) != 'string')
 		return Str;
 	return Str.replace(/^\s+|\s+$/g, '');
 }
@@ -274,7 +277,7 @@ function isNumeric(str)
 function ParseInt(str)
 // Returns true if 'str' is a valid integer
 {
-	if(IsNumeric(str))
+	if (isNumeric(str))
 		return parseInt(str);
 	return null;
 }
@@ -283,7 +286,7 @@ function ParseInt(str)
 function encodeHtml(Str)
 // Convert plain text to HTML
 {
-	if(typeof(Str) != 'string')
+	if (typeof(Str) != 'string')
 		return Str;
 	Str = Str.replace(/&/g, '&amp;');
 	Str = Str.replace(/</g, '&lt;');
@@ -299,30 +302,30 @@ function encodeHtml(Str)
 
 function deleteAllCookies()
 {
-    var cookies = document.cookie.split(';');
-    for(var i in cookies) {
-    	var eqPos = cookies[i].indexOf('=');
-    	var name = eqPos > -1 ? cookies[i].substr(0, eqPos) : cookies[i];
-    	document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
-    }
+  var cookies = document.cookie.split(';');
+  for (var i in cookies) {
+    var eqPos = cookies[i].indexOf('=');
+    var name = eqPos > -1 ? cookies[i].substr(0, eqPos) : cookies[i];
+    document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  }
 }
 
 function getCookie(Name)
 {
 	var s = ' ' + document.cookie;
 	var i = s.indexOf(' ' + Name + '=');
-	if(i == -1)
+	if (i == -1)
 		return null;
 	i = s.indexOf('=', i) + 1;
 	var j = s.indexOf(';', i);
-	if(j == -1)
+	if (j == -1)
 		j = s.length;
 	return unescape(s.substring(i, j));
 }
 
 function setCookie(Name, Value, Days)
 {
-	if(!isNotNull(Days))
+	if (!isNotNull(Days))
 		Days = 365;
 	var date = new Date();
 	date.setTime(date.getTime() + (Days * 24 * 60 * 60 * 1000));
