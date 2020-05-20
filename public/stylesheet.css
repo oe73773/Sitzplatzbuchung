@@ -125,14 +125,14 @@ button:disabled {
 }
 
 
-table {
+table.border {
   border-collapse: collapse;
   margin: 2px;
   margin-left: auto;
   margin-right: auto;
 }
 
-th, td {
+table.border th, table.border td {
   border: 1px solid #A8A8A8;
   padding-left: 6px;
   padding-right: 6px;
@@ -140,7 +140,7 @@ th, td {
   padding-bottom: 2px;
 }
 
-th {
+table.border th {
   text-align: center;
   font-weight: bold;
   padding-top: 4px;
@@ -148,13 +148,22 @@ th {
   background: #E8E8E8;
 }
 
-td {
+table.border td {
   text-align: left;
 }
 
-tr:hover {
+table.border tr:hover {
   background: #FFF696;
 }
+
+table.border td.integer {
+  text-align: right;
+}
+
+ table.border td.timestamp {
+  text-align: center;
+}
+
 
 .redText, .seatsInfo .noFreeSeats {
   color: firebrick;
