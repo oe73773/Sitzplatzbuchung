@@ -27,6 +27,7 @@ function writeMainHtmlBeforeContent($pageTitle = null)
   $titleSpan = html_node('span', getConfigValue('instanceHeadline', 'instanceHeadline'), ['class' => $classes]);
   echo html_a('.', $titleSpan, ['title' => 'Zur Startseite']);
   echo getConfigValue('textAfterTitle');
+  echo html_node('span', 'Live', ['id' => 'autoReloadIndicator']);
   echo html_close('div');
   echo html_close('div');
 
@@ -95,6 +96,39 @@ function renderMainPage()
   }
 
   echo html_close('div');
+
+  # Auto reload
+  echo html_input('hidden', null, calculateAutoReloadHash($events), ['id' => 'autoReloadHash']);
+  echo html_node('script', 'enableAutoReload()');
+}
+
+
+function calculateAutoReloadHash($events)
+{
+  $items = [];
+  foreach ($events as $event)
+  {
+    $items[] = $event['id'];
+    $items[] = $event['editTimestamp'];
+    $items[] = $visitorCount = getEventVisitorCount($event['id']);;
+  }
+  return substr(md5(implode('.', $items)), 0, 8);
+}
+
+
+function handleAutoReloadCheckAction()
+{
+  # echo 'alert(1)';
+
+  # debug(to_string(get_param_value('documentHasFocus')) . ', ' . to_string(get_param_value('isDocumentFocused')) . ', ' . to_string(get_param_value('isDocumentVisible')));
+
+  # debug('handleAutoReloadCheckAction');
+
+  debug(get_param_value('autoReloadHash'));
+
+  $events = getCurrentEvents();
+  if (get_param_value('autoReloadHash') != calculateAutoReloadHash($events))
+    echo 'location.reload();';
 }
 
 
@@ -240,7 +274,6 @@ function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
     $class = '';
     if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
       $class = 'noFreeSeats';
-    # TODO
     echo html_node('span', 'ausgebucht', ['class' => $class]);
   }
 
@@ -288,7 +321,7 @@ function renderMainPageBookingStatus($persons, $bookingCanceled)
       echo html_close('ol');
     echo html_close('div');
 
-    $showFormScript = "event.target.parentNode.parentNode.parentNode.parentNode.classList.add('cancelBookingFormOpened');";
+    $showFormScript = "event.target.parentNode.parentNode.parentNode.parentNode.classList.add('cancelBookingFormOpened');disableAutoReload();";
     $button = html_form_button('Stornieren', ['class' => 'linkButton', 'onclick' => $showFormScript]);
     echo html_node('div', $button, ['class' => 'cancelBookingFormPlaceholder']);
   }
@@ -300,7 +333,7 @@ function renderMainPageBookingStatus($persons, $bookingCanceled)
 
 function renderMainPageCancelBookingForm($event)
 {
-  $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('cancelBookingFormOpened')";
+  $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('cancelBookingFormOpened');enableAutoReload();";
 
   echo html_open('div', ['class' => 'cancelBookingForm']);
   echo html_open('form', ['action' => '?a=cancelBooking', 'onsubmit' => 'postForm(event)']);
@@ -316,8 +349,8 @@ function renderMainPageCancelBookingForm($event)
 
 function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingCanceled)
 {
-  $showFormScript = "event.target.parentNode.parentNode.classList.add('saveBookingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode);";
-  $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('saveBookingFormOpened')";
+  $showFormScript = "event.target.parentNode.parentNode.classList.add('saveBookingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode);disableAutoReload();";
+  $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('saveBookingFormOpened');enableAutoReload();";
 
   if ($bookingCanceled)
     $buttonText = 'Erneut buchen';

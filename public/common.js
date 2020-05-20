@@ -351,3 +351,90 @@ function showErrorMsg(msg)
 {
   alert('Fehler: ' + msg);
 }
+
+
+//-------------------------------------------------------------------------------
+//                                  Auto Reload
+//-------------------------------------------------------------------------------
+
+var autoReloadTimer;
+var autoReloadEnabled;
+
+function enableAutoReload()
+{
+  const indicator = byId('autoReloadIndicator');
+  if (!indicator)
+    return;
+  indicator.style.display = 'inline';
+  updateAutoReloadIndicator(true);
+  startAutoReloadTimer();
+  autoReloadEnabled = true;
+}
+
+function disableAutoReload()
+{
+  autoReloadEnabled = false;
+  stopAutoReload();
+}
+
+function stopAutoReload()
+{
+  const indicator = byId('autoReloadIndicator');
+  if (indicator)
+    indicator.style.display = 'none';
+  if (autoReloadTimer)
+    clearTimeout(autoReloadTimer);
+}
+
+function updateAutoReloadIndicator(online)
+{
+  const indicator = byId('autoReloadIndicator');
+  if (online) {
+    indicator.title = 'Webseite wird automatisch aktualisiert';
+    indicator.classList.remove('offline');
+  } else {
+    indicator.title = 'Server ist nicht mehr erreichbar';
+    indicator.classList.add('offline');
+  }
+}
+
+function startAutoReloadTimer()
+{
+  autoReloadTimer = setTimeout(function() {
+    const indicator = byId('autoReloadIndicator');
+    indicator.classList.add('active');
+
+    autoReloadTimer = setTimeout(function() {
+      indicator.classList.remove('active');
+    }, 500);
+
+    var formData = new FormData();
+    formData.append('autoReloadHash', byId('autoReloadHash').value);
+    let req = new XMLHttpRequest();
+    req.open('POST', '?a=autoReloadCheck');
+    req.onload = function() {
+      if (req.readyState == 4) {
+        if (req.status === 200)
+        {
+          eval(req.responseText);
+          updateAutoReloadIndicator(true);
+        }
+        else
+          updateAutoReloadIndicator(false);
+      }
+    };
+    req.onerror = function() {
+      updateAutoReloadIndicator(false);
+    };
+    req.send(formData);
+
+    startAutoReloadTimer();
+  }, 10000);
+}
+
+window.addEventListener('visibilitychange', function() {
+  if (autoReloadEnabled && !document.hidden)
+    enableAutoReload();
+  else
+    stopAutoReload();
+});

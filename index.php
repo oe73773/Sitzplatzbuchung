@@ -33,6 +33,8 @@ if ($action != null)
   }
   else if ($action == 'bookingSimulator')
     handleBookingSimulatorAction();
+  else if ($action == 'autoReloadCheck')
+    handleAutoReloadCheckAction();
   else
   {
     echo 'alert("Diese Aktion ist nicht (mehr) gültig.");';
