@@ -20,15 +20,6 @@ function isClientAdmin()
 }
 
 
-function ensureClientIsAdmin()
-{
-  if (isClientAdmin())
-    return true;
-  renderPageErrorBox('Dieses Gerät ist für diese Seite nicht berechtigt.');
-  return false;
-}
-
-
 function initClientIdentification()
 {
   $cookieExpire = null;

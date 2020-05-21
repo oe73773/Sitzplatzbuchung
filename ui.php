@@ -49,6 +49,13 @@ function writeMainHtmlBeforeContent($pageTitle = null)
 }
 
 
+function renderForbiddenError()
+{
+  writeMainHtmlBeforeContent();
+  renderPageErrorBox('Dieses Gerät hat keine Berechtigung für die angeforderte Seite.');
+}
+
+
 function writeMainHtmlAfterContent()
 {
   $footerText = getConfigValue('footerText');
@@ -428,9 +435,12 @@ function renderHelpPage()
 
 function renderAdminPage()
 {
-  writeMainHtmlBeforeContent('Administration');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Administration');
 
   echo html_open('div', ['class' => 'content adminPage']);
 
@@ -545,9 +555,12 @@ function handleBookingSimulatorAction()
 
 function renderClientList()
 {
-  writeMainHtmlBeforeContent('Geräte verwalten');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Geräte verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
@@ -574,9 +587,12 @@ function renderClientList()
 
 function renderEventList()
 {
-  writeMainHtmlBeforeContent('Veranstaltungen verwalten');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Veranstaltungen verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
@@ -608,9 +624,12 @@ function renderVisitorList()
 
 function renderVisitorList_eventList()
 {
-  writeMainHtmlBeforeContent('Anwesenheitsliste');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Anwesenheitsliste');
 
   echo html_open('div', ['class' => 'content visitorList']);
 
@@ -641,9 +660,12 @@ function renderVisitorList_eventList()
 
 function renderVisitorList_forEvent($eventId)
 {
-  writeMainHtmlBeforeContent('Anwesenheitsliste');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Anwesenheitsliste');
 
   echo html_open('div', ['class' => 'content visitorList']);
 
@@ -764,9 +786,12 @@ function renderVisitorList_forEvent_addNumberingAndEmptyRows(&$rows)
 
 function renderBookingList()
 {
-  writeMainHtmlBeforeContent('Buchungen verwalten');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Buchungen verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
@@ -793,9 +818,13 @@ function renderBookingList()
 
 function renderDebugFreeSeatsCalculation()
 {
-  writeMainHtmlBeforeContent('Untersuchung der Freie-Sitze-Berechung');
-  if (!ensureClientIsAdmin())
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
     return;
+  }
+  writeMainHtmlBeforeContent('Untersuchung der Freie-Sitze-Berechung');
+
   $eventId = get_param_value('eventId');
   $event = tryGetEventById($eventId);
   if ($event == null)
