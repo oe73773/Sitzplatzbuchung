@@ -344,6 +344,7 @@ table.border td.integer {
   .content {
     padding: 20px;
     padding-top: 5px;
+    padding-bottom: 10px;
   }
 }
 
@@ -357,9 +358,16 @@ table.border td.integer {
   padding-bottom: 7px;
 }
 .content.mainPage > div:first-child {
-  padding-top: 0;
+  padding-top: 2px;
 }
-
+@media (min-width: 1000px) {
+  .content.mainPage > div:first-child {
+    padding-top: 5px;
+  }
+}
+.content.mainPage > div:last-child {
+  padding-bottom: 0;
+}
 
 .content.mainPage > div > div {
   width: 100%;
