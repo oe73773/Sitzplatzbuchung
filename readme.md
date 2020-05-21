@@ -3,10 +3,19 @@ Sitzplatzbuchung
 
 *Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können. Das System dient dazu, das Überschreiten der Kapazität zu verhindern und das Erstellen der Anwesenheitsliste zu vereinfachen. Ziel ist die Unterstützung von z. B. Kirchengemeinden bei der Planung von Präsenzveranstaltungen während der Coronazeit.
 
+
 Demo-Installation
 -----------------
 
 https://missionsgemeinde.de/sitzplatzbuchung-preprod/
+
+
+Projektstatus
+-------------
+
+Die Funktion zum Buchen/Stornieren ist fertiggestellt und befindet sich im produktiven Einsatz.<br>
+Die Admin-Funktionen befinden sich noch in Entwicklung.
+
 
 Features
 --------
@@ -52,6 +61,14 @@ Kopiere die Datei ``config.template.php`` nach ``config.php`` und passe den Inha
 **Schritt 3**<br>
 Rufe die Webanwendung im Webbrowser auf.<br>
 Das erste Gerät erhält automatisch Administrator-Berechtigung.
+
+
+Support
+-------
+
+Bei Fragen zur Software:
+- E-Mail an trustable@disroot.org
+- [GitHub-Issue anlegen](https://github.com/MissionsgemeindeWeinstadt/Sitzplatzbuchung/issues/new)
 
 
 Lizenz
