@@ -1,7 +1,7 @@
 Sitzplatzbuchung
 ================
 
-*Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können. Das System dient dazu, das Überschreiten der Kapazität zu verhindern und das Erstellen der Anwesenheitsliste zu vereinfachen. Ziel ist die Unterstützung von z. B. Kirchengemeinden bei der Planung von Präsenzveranstaltungen während der Coronazeit.
+*Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können. Das System dient dazu, das Überschreiten der Kapazität zu verhindern und das Erstellen der Anwesenheitsliste zu vereinfachen. Ziel ist die Unterstützung von z. B. Kirchengemeinden bei der Planung von Präsenzveranstaltungen während den Coronabeschränkungen.
 
 
 Demo-Installation
