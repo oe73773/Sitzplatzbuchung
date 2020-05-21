@@ -525,14 +525,17 @@ table.border td.integer {
     display: none;
   }
 }
-.content.visitorList .titleAndDate {
-  font-size: 150%;
-}
 .content.visitorList .subTitle {
-  padding-top: 3px;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
 }
-
+@media screen {
+  .content.visitorList .currentDate {
+    display: none;
+  }
+}
+.content.visitorList > table {
+  margin-top: 7px;
+}
 
 form.itemDetails > div {
   padding-top: 5px;

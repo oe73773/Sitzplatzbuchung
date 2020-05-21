@@ -666,16 +666,20 @@ function renderVisitorList_forEvent($eventId)
     renderForbiddenError();
     return;
   }
-  writeMainHtmlBeforeContent('Anwesenheitsliste');
-
-  echo html_open('div', ['class' => 'content visitorList']);
 
   $event = tryGetEventById($eventId);
   if ($event == null)
   {
+    writeMainHtmlBeforeContent();
     renderPageErrorBox('eventId ist ungültig.');
     return;
   }
+
+  $titleAndDate = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
+
+  writeMainHtmlBeforeContent('Anwesenheitsliste ' . $titleAndDate);
+
+  echo html_open('div', ['class' => 'content visitorList']);
 
   $rows = renderVisitorList_forEvent_getRealRows($eventId);
   $visitorCount = count($rows);
@@ -691,19 +695,10 @@ function renderVisitorList_forEvent($eventId)
 
   echo html_form_button('Drucken', ['onclick' => 'window.print();']);
 
-  echo html_open('div', ['class' => 'titleAndDate']);
-  echo $event['title'];
-  echo ' am ';
-  echo formatTimestampLocalLong($event['startTimestamp'], 'minute');
-  echo html_close('div');
-
   echo html_open('div', ['class' => 'subTitle']);
   echo $visitorCount;
-  echo ' Teilnehmer';
-  echo html_close('div');
-
-  echo html_open('div', ['class' => 'subTitle']);
-  echo 'Buchung ';
+  echo ' Teilnehmer gebucht';
+  echo ', Buchung ';
   if (time() > $event['bookingClosingTimestamp'])
     echo 'abgeschlossen';
   else
@@ -713,7 +708,7 @@ function renderVisitorList_forEvent($eventId)
   }
   echo html_close('div');
 
-  echo html_open('div', ['class' => 'subTitle']);
+  echo html_open('div', ['class' => 'subTitle currentDate']);
   echo 'Stand: ';
   echo formatTimestampLocalLong(time(), 'minute');
   echo html_close('div');
