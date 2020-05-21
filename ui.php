@@ -51,6 +51,7 @@ function writeMainHtmlBeforeContent($pageTitle = null)
 
 function renderForbiddenError()
 {
+  header('HTTP/1.1 403 Forbidden');
   writeMainHtmlBeforeContent();
   renderPageErrorBox('Dieses Gerät hat keine Berechtigung für die angeforderte Seite.');
 }
