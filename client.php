@@ -122,7 +122,7 @@ function verifyFormTokenOrExit()
 {
   if (get_param_value('formToken') != getFormToken())
   {
-    echo 'showErrorMsg("Sie Sitzung ist abgelaufen.");';
+    echo 'showErrorMsg("Die Sitzung ist abgelaufen.");';
     echo 'location.reload();';
     exit();
   }
