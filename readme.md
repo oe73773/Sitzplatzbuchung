@@ -23,6 +23,7 @@ Features
 - Hosting auf eigenem Server
 - Öffentliche Startseite zur Anmeldung zu Veranstaltungen
 - Eine Buchung umfasst die Namen der Personen eines Haushalts und eine Telefonnummer
+- Pro Gerät und Veranstaltung ist genau eine Buchung möglich
 - Stornierung vom selben Gerät
 - Definierbarer Buchungszeitraum pro Veranstaltung
 - Meherere Veranstaltungen können gleichzeit zur Buchung bereitstehen
@@ -32,7 +33,7 @@ Features
 - Erstellung einer Anwesenheitsliste
 - automatisches Neuladen der Webseite bei Änderungen
 - deutschsprachige Benutzeroberfläche
-- Titel, Logo und Hinweistexte sind anpassbar 
+- Titel, Logo, Fußzeile und Hinweistexte anpassbar 
 
 
 Technik
