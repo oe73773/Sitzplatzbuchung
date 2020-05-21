@@ -7,7 +7,7 @@ Sitzplatzbuchung
 Demo-Installation
 -----------------
 
-https://missionsgemeinde.de/sitzplatzbuchung-preprod/
+https://missionsgemeinde.de/demo_sitzplatzbuchung/
 
 
 Projektstatus
