@@ -1,29 +1,46 @@
 Sitzplatzbuchung
 ================
 
-*Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können.
-Die angemeldeten Teilnehmergruppen werden auf die im Raum zur Verfügung stehenden Sitzreihen gerechnet um eine Überbuchung zu verhindern.
+*Sitzplatzbuchung* ist eine einfache Webanwendung, mir der sich Teilnehmergruppen zu einer Veranstaltung vorab anmelden können. Das System dient dazu, das Überschreiten der Kapazität zu verhindern und das Erstellen der Anwesenheitsliste zu vereinfachen. Ziel ist die Unterstützung von z. B. Kirchengemeinden bei der Planung von Präsenzveranstaltungen während der Coronazeit.
 
-Demo-Installation:
+Demo-Installation
+-----------------
 
 https://missionsgemeinde.de/sitzplatzbuchung-preprod/
 
+Features
+--------
 
-Voraussetzungen
----------------
+- Hosting auf eigenem Server
+- Öffentliche Startseite zur Anmeldung zu Veranstaltungen
+- Eine Buchung umfasst die Namen der Personen eines Haushalts und eine Telefonnummer
+- Stornierung vom selben Gerät
+- Definierbarer Buchungszeitraum pro Veranstaltung
+- Meherere Veranstaltungen können gleichzeit zur Buchung bereitstehen
+- Anzeige der Teilnehmer, der freien Sitzplätze und der eigenen Buchung
+- Limitierung der Teilnehmer auf eine fixe Anzahl
+- Limitierung der Teilnehmer durch Anzahl die im Raum zur Verfügung stehenden Sitzreihen (3 Stühle Abstand zwischen Teilnehmergruppen)
+- Erstellung einer Anwesenheitsliste
+- automatisches Neuladen der Webseite bei Änderungen
+- deutschsprachige Benutzeroberfläche
+- Titel, Logo und Hinweistexte sind anpassbar 
+
+
+Technik
+-------
+
+### Voraussetzungen
 
 Webserver mit PHP und MariaDB/MySQL-Datenbank.<br>
-Getestete PHP-Version: 7.3.
+Getestete PHP-Version: 7.3 und 7.4.
 
 
-Verwendete Frameworks und Bibliotheken
---------------------------------------
+### Verwendete Frameworks und Bibliotheken
 
 keine
 
 
-Installation
-------------
+### Installation
 
 **Schritt 1**<br>
 Erstelle eine Datenbank mit Hilfe der Datei ``create-database.sql``.<br>
@@ -34,7 +51,7 @@ Kopiere die Datei ``config.template.php`` nach ``config.php`` und passe den Inha
 
 **Schritt 3**<br>
 Rufe die Webanwendung im Webbrowser auf.<br>
-Der erste Benutzer erhält automatisch Administrator-Berechtigung.
+Das erste Gerät erhält automatisch Administrator-Berechtigung.
 
 
 Lizenz
