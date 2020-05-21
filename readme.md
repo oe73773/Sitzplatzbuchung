@@ -13,7 +13,7 @@ https://missionsgemeinde.de/demo_sitzplatzbuchung/
 Projektstatus
 -------------
 
-Die Funktion zum Buchen/Stornieren ist fertiggestellt und befindet sich im produktiven Einsatz.<br>
+Die Funktion zum Buchen/Stornieren ist fertiggestellt und befindet sich im produktiven Betrieb.<br>
 Die Admin-Funktionen befinden sich noch in Entwicklung.
 
 
@@ -35,6 +35,7 @@ Features
 - deutschsprachige Benutzeroberfläche
 - Titel, Logo, Fußzeile und Hinweistexte anpassbar
 - für mobile Geräte geeignet
+- minimalistisches System ("Do One Thing and Do It Well")
 
 
 Technik
