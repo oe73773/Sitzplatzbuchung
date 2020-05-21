@@ -33,7 +33,8 @@ Features
 - Erstellung einer Anwesenheitsliste
 - automatisches Neuladen der Webseite bei Änderungen
 - deutschsprachige Benutzeroberfläche
-- Titel, Logo, Fußzeile und Hinweistexte anpassbar 
+- Titel, Logo, Fußzeile und Hinweistexte anpassbar
+- für mobile Geräte geeignet
 
 
 Technik
