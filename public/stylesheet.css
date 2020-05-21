@@ -497,6 +497,24 @@ table.border td.integer {
 }
 
 
+.content.visitorList button {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+@media print {
+  .content.visitorList button {
+    display: none;
+  }
+}
+.content.visitorList .titleAndDate {
+  font-size: 150%;
+}
+.content.visitorList .subTitle {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+
 form.itemDetails > div {
   padding-top: 5px;
   padding-bottom: 5px;

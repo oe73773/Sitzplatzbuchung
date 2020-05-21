@@ -45,7 +45,7 @@ function getVisitorListEvents()
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 30);
-  $events = db()->query_rows('SELECT * FROM event WHERE releaseTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
+  $events = db()->query_rows('SELECT * FROM event WHERE bookingOpeningTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
   foreach ($events as &$event)
   {
     decodeEvent($event);
