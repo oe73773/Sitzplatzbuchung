@@ -12,9 +12,13 @@ body {
   margin: 0;
   padding: 0;
   text-align: center;
-  background: #ccc;
   color: black;
   min-width: 350px;
+}
+@media screen {
+  body {
+    background: #ccc;
+  }
 }
 @media (min-width: 1000px) {
   body {
@@ -30,6 +34,11 @@ footer {
   padding-top: 7px;
   padding-bottom: 7px;
   color: #3D3D3D;
+}
+@media print {
+  footer {
+    display: none;
+  }
 }
 
 
@@ -188,6 +197,11 @@ table.border td.integer {
 .headerOuter {
   background: #336699;
 }
+@media print {
+  .headerOuter {
+    display: none;
+  }
+}
 .header {
   position: relative;
   height: 5.7em;
@@ -239,6 +253,11 @@ table.border td.integer {
   background: white;
   padding-top: 5px;
 }
+@media print {
+  .navBar {
+    display: none;
+  }
+}
 
 .navBar > a {
   padding: 5px;
@@ -253,14 +272,14 @@ table.border td.integer {
 }
 @media (min-width: 1000px) {
   .pageTitleOuter {
-    padding-bottom: 20px;
+    padding-bottom: 15px;
   }
 }
 
 .pageTitle {
   padding: 3px;
   padding-top: 7px;
-  font-size: 140%;
+  font-size: 150%;
   border-bottom-style: solid;
   border-width: 1px;
   border-color: lightgrey;
@@ -491,7 +510,7 @@ table.border td.integer {
   list-style: none;
   min-width: 180px;
 }
-.content.adminPage > ul > li > a{
+.content.adminPage > ul > li > a {
   padding: 5px;
   display: inline-block;
 }
