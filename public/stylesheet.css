@@ -552,6 +552,11 @@ table.border td.null {
 .content.visitorList > table {
   margin-top: 7px;
 }
+@media screen {
+  table.border tr.empty {
+    display: none;
+  }
+}
 @media print {
   table.border th, table.border td {
     font-size: 115%;

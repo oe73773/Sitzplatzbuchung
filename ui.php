@@ -771,6 +771,7 @@ function renderVisitorList_forEvent_addNumberingAndEmptyRows(&$rows)
     $row['phoneNumber'] = '';
     $row['name'] = '';
     $row['empty'] = '';
+    $row['class'] = 'empty';
     $rows[] = $row;
     $i++;
   }
