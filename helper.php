@@ -46,10 +46,7 @@ function formatTimestampLocalLong($timestamp, $precision = 'minute', $showYear =
     else
       $format = 'X%d. %B, %H:%M:%S Uhr';
   }
-  $str = format_timestamp($timestamp, $format);
-  $str = str_replace('X0', '', $str);
-  $str = str_replace('X', '', $str);
-  return $str;
+  return format_timestamp($timestamp, $format);
 }
 
 

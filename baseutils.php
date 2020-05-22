@@ -215,8 +215,13 @@ function date_time_to_timestamp($str)
 
 
 function format_timestamp($timestamp, $format = '%Y-%m-%d %H:%M:%S')
+# Converts a unix timestamp to a formated string.
+# Use a 'X' in front of a number to remove a leading zero.
 {
-  return strftime($format, $timestamp);
+  $str = strftime($format, $timestamp);
+  $str = str_replace('X0', '', $str);
+  $str = str_replace('X', '', $str);
+  return $str;
 }
 
 
