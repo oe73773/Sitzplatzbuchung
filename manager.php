@@ -86,7 +86,7 @@ function renderItemTable($items, $fields, $actions = [])
   echo html_close('tr');
   foreach ($items as $item)
   {
-    echo html_open('tr');
+    echo html_open('tr', ['class' => array_value($item, 'class')]);
     foreach ($fields as $field)
     {
       $value = $item[$field['name']];
