@@ -579,6 +579,10 @@ table.border td.null {
 }
 
 
+span.noItems {
+  display: inline-block;
+  padding: 30px;
+}
 
 form.itemDetails > div {
   padding-top: 5px;

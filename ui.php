@@ -699,7 +699,8 @@ function renderVisitorList_forEvent($eventId)
 
   $rows = renderVisitorList_forEvent_getRealRows($eventId);
   $visitorCount = count($rows);
-  renderVisitorList_forEvent_addNumberingAndEmptyRows($rows);
+  if ($visitorCount > 0)
+    renderVisitorList_forEvent_addNumberingAndEmptyRows($rows);
 
   $fields = [];
   $fields[] = newIdField();

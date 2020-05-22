@@ -75,6 +75,12 @@ function newLinkAction($page, $title, $idParamName, $visibleInList = true)
 
 function renderItemTable($items, $fields, $actions = [])
 {
+  if (count($items) == 0)
+  {
+    echo html_node('span', 'Keine Einträge vorhanden', ['class' => 'noItems']);
+    return;
+  }
+
   echo html_open('table', ['class' => 'border']);
   echo html_open('tr');
   foreach ($fields as $field)
