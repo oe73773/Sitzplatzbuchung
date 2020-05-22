@@ -244,7 +244,7 @@ table.border td.null {
 }
 
 
-.pageTitleOuter > .title {
+.header .title {
   font-size: 160%;
   font-weight: bold;
   color: white;
@@ -253,7 +253,7 @@ table.border td.null {
   padding: 0.3em;
 }
 
-.pageTitleOuter > .title.nonProdInstance {
+.header .title.nonProdInstance {
   color: #FF3232;
 }
 
