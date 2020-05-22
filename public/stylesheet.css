@@ -552,6 +552,23 @@ table.border td.null {
 .content.visitorList > table {
   margin-top: 7px;
 }
+@media print {
+  table.border th, table.border td {
+    font-size: 115%;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
+  .content.visitorList td.name {
+    min-width: 400px;
+  }
+  .content.visitorList td.phoneNumber {
+    min-width: 250px;
+  }
+}
+
+
 
 form.itemDetails > div {
   padding-top: 5px;

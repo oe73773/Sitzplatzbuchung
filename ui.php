@@ -687,10 +687,9 @@ function renderVisitorList_forEvent($eventId)
 
   $fields = [];
   $fields[] = newIdField();
-  $fields[] = newTextField('lastname', 'Nachname');
-  $fields[] = newTextField('surname', 'Vorname');
-  $fields[] = newTextField('bookingInfo', 'Buchung');
+  $fields[] = newTextField('name', 'Name');
   $fields[] = newTextField('phoneNumber', 'Telefon');
+  $fields[] = newTextField('bookingInfo', 'Buchung');
   $fields[] = newTextField('empty', 'Anwesend');
 
   echo html_form_button('Drucken', ['onclick' => 'window.print();']);
@@ -740,8 +739,7 @@ function renderVisitorList_forEvent_getRealRows($eventId)
       $row = [];
       $row['bookingInfo'] =  $bookingInfo;
       $row['phoneNumber'] = $booking['phoneNumber'];
-      $row['surname'] = $surname;
-      $row['lastname'] = $lastname;
+      $row['name'] = $lastname . ', ' . $surname;
       $row['empty'] = '';
       $key = implode(' ', [$lastname, $surname, $booking['id']]);
       $rows[$key] = $row;
@@ -769,10 +767,9 @@ function renderVisitorList_forEvent_addNumberingAndEmptyRows(&$rows)
   {
     $row = [];
     $row['id'] = $i;
-    $row['bookingInfo'] = '';
+    $row['bookingInfo'] = null;
     $row['phoneNumber'] = '';
-    $row['surname'] = '';
-    $row['lastname'] = '';
+    $row['name'] = '';
     $row['empty'] = '';
     $rows[] = $row;
     $i++;
