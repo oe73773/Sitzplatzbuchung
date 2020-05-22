@@ -89,20 +89,26 @@ function renderItemTable($items, $fields, $actions = [])
     echo html_open('tr');
     foreach ($fields as $field)
     {
-      $type = $field['type'];
       $value = $item[$field['name']];
-      echo html_open('td', ['class' => $type]);
       if ($value === null)
-        echo '-';
-      else if ($type == 'text')
-        echo html_encode($value);
-      else if ($type == 'textArea')
-        echo html_encode($value);
-      else if ($type == 'integer')
-        echo html_encode($value);
-      else if ($type == 'timestamp')
-        echo formatTimestampLocalShort($value, $field['precision']);
-      echo html_close('td');
+        echo html_node('td', '–', ['class' => 'null']);
+      else
+      {
+        $type = $field['type'];
+        $classes = [];
+        $classes[] = $type;
+        $classes[] = $field['name'];
+        echo html_open('td', ['class' => implode(' ', $classes)]);
+        if ($type == 'text')
+          echo html_encode($value);
+        else if ($type == 'textArea')
+          echo html_encode($value);
+        else if ($type == 'integer')
+          echo html_encode($value);
+        else if ($type == 'timestamp')
+          echo formatTimestampLocalShort($value, $field['precision']);
+        echo html_close('td');
+      }
     }
     if (count($actions) > 0)
     {
