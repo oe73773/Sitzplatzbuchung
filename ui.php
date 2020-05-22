@@ -119,6 +119,14 @@ function calculateAutoReloadHash($events)
     $items[] = $event['id'];
     $items[] = $event['editTimestamp'];
     $items[] = $event['visitorCount'];
+    if (time() > $event['startTimestamp'])
+      $items[] = 1;
+    else if (time() > $event['bookingClosingTimestamp'])
+      $items[] = 2;
+    else if (time() > $event['bookingOpeningTimestamp'])
+      $items[] = 3;
+    else
+      $items[] = 4;
   }
   return substr(md5(implode('.', $items)), 0, 8);
 }
