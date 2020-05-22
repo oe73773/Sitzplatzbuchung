@@ -360,14 +360,14 @@ function showErrorMsg(msg)
 var autoReloadTimer;
 var autoReloadEnabled;
 
-function enableAutoReload()
+function enableAutoReload(checkImmediately = false)
 {
   const indicator = byId('autoReloadIndicator');
   if (!indicator)
     return;
   indicator.style.display = 'inline';
   updateAutoReloadIndicator(true);
-  startAutoReloadTimer();
+  startAutoReloadTimer(checkImmediately);
   autoReloadEnabled = true;
 }
 
@@ -398,8 +398,12 @@ function updateAutoReloadIndicator(online)
   }
 }
 
-function startAutoReloadTimer()
+function startAutoReloadTimer(checkImmediately = false)
 {
+  var timerIntervalMilliSec = 10000;
+  if (checkImmediately)
+    timerIntervalMilliSec = 10;
+
   autoReloadTimer = setTimeout(function() {
     const indicator = byId('autoReloadIndicator');
     indicator.classList.add('active');
@@ -429,12 +433,12 @@ function startAutoReloadTimer()
     req.send(formData);
 
     startAutoReloadTimer();
-  }, 10000);
+  }, timerIntervalMilliSec);
 }
 
 window.addEventListener('visibilitychange', function() {
   if (autoReloadEnabled && !document.hidden)
-    enableAutoReload();
+    enableAutoReload(true);
   else
     stopAutoReload();
 });
