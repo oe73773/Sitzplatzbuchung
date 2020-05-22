@@ -122,6 +122,16 @@ function handleSaveBookingAction()
     return;
   }
 
+  $listOfPersons = implode(';', $persons);
+
+  # update client row
+  $clientValues = [];
+  $clientValues['lastListOfPersons'] = $listOfPersons;
+  $clientValues['lastPhoneNumber'] = $phoneNumber;
+  $clientValues['persistent'] = 1;
+  db()->try_update_by_id('client', getClientValue('id'), $clientValues);
+
+  # check free seat count
   $freeSeatCount = calculateFreeSeatCount($event, count($persons));
   if ($freeSeatCount == -1)
   {
@@ -134,8 +144,6 @@ function handleSaveBookingAction()
     return;
   }
 
-  $listOfPersons = implode(';', $persons);
-
   # insert booking row
   $booking = [];
   $booking['eventId'] = $event['id'];
@@ -145,13 +153,6 @@ function handleSaveBookingAction()
   $booking['insertTimestamp'] = format_timestamp(time());
   $booking['insertClientId'] = getClientValue('id');
   $bookingId = db()->insert('booking', $booking);
-
-  # update client row
-  $clientValues = [];
-  $clientValues['lastListOfPersons'] = $listOfPersons;
-  $clientValues['lastPhoneNumber'] = $phoneNumber;
-  $clientValues['persistent'] = 1;
-  db()->try_update_by_id('client', getClientValue('id'), $clientValues);
 
   echo 'location.reload();';
 }
