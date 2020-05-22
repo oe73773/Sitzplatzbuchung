@@ -288,7 +288,8 @@ function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
   # bar
   $barWidth = 100;
   $usedWidth = round($visitorCount / $maxVisitorCount * $barWidth);
-  echo html_open('div',  ['class' => 'capacityBar']);
+  $tooltip = round($visitorCount / $maxVisitorCount * 100) . ' % belegt';
+  echo html_open('div',  ['class' => 'capacityBar', 'title' => $tooltip]);
   echo html_open('div',  ['style' => 'width: ' . $barWidth . 'px']);
   echo html_node('div', '', ['style' => 'width: ' . $usedWidth . 'px']);
   echo html_close('div');

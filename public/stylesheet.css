@@ -424,7 +424,7 @@ table.border td.null {
 .content.mainPage .seatsInfo .capacityBar {
   position: absolute;
   right: -5px;
-  top: 7px;
+  top: 5px;
 }
 .content.mainPage .seatsInfo .capacityBar > div {
   outline: 1px solid black;
