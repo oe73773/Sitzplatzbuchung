@@ -9,15 +9,20 @@ html {
 body {
   font-family: Noto Sans, Segoe UI, Helvetica, sans-serif;
   font-size: 88%;
-  margin: 0;
-  padding: 0;
   text-align: center;
   color: black;
   min-width: 350px;
 }
 @media screen {
   body {
+    margin: 0;
+    padding: 0;
     background: #ccc;
+  }
+}
+@media print {
+  body {
+    font-size: 108%;
   }
 }
 @media (min-width: 1000px) {
@@ -559,7 +564,7 @@ table.border td.null {
 }
 @media print {
   table.border th, table.border td {
-    font-size: 115%;
+    font-size: 108%;
     padding-left: 8px;
     padding-right: 8px;
     padding-top: 9px;
