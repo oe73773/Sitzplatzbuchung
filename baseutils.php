@@ -309,11 +309,14 @@ function html_node($tagName, $content = '', $attributes = [])
   $s .= $tagName;
   foreach ($attributes as $key => $value)
   {
-    $s .= ' ';
-    $s .= $key;
-    $s .= '="';
-    $s .= $value;
-    $s .= '"';
+    if ($value !== null)
+    {
+      $s .= ' ';
+      $s .= $key;
+      $s .= '="';
+      $s .= $value;
+      $s .= '"';
+    }
   }
   if ($content !== null)
   {
@@ -336,11 +339,14 @@ function html_open($tagName, $attributes = [])
   $s .= $tagName;
   foreach ($attributes as $key => $value)
   {
-    $s .= ' ';
-    $s .= $key;
-    $s .= '="';
-    $s .= $value;
-    $s .= '"';
+    if ($value !== null)
+    {
+      $s .= ' ';
+      $s .= $key;
+      $s .= '="';
+      $s .= $value;
+      $s .= '"';
+    }
   }
   $s .= '>';
   return $s;
