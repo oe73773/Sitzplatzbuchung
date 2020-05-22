@@ -8,7 +8,7 @@ html {
 
 body {
   font-family: Noto Sans, Segoe UI, Helvetica, sans-serif;
-  font-size: 92%;
+  font-size: 88%;
   margin: 0;
   padding: 0;
   text-align: center;
@@ -335,7 +335,7 @@ table.border td.null {
 .framedBoxTitle {
   position: absolute;
   left: 10px;
-  top: -11px;
+  top: -0.75em;
   background: white;
   padding-left: 3px;
   padding-right: 3px;
