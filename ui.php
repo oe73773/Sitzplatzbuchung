@@ -57,6 +57,14 @@ function renderForbiddenError()
 }
 
 
+function renderNotFoundError()
+{
+  header('HTTP/1.1 404 Not Found');
+  writeMainHtmlBeforeContent();
+  renderPageErrorBox('Die angeforderte Seite existiert nicht.');
+}
+
+
 function writeMainHtmlAfterContent()
 {
   $footerText = getConfigValue('footerText');
@@ -679,8 +687,7 @@ function renderVisitorList_forEvent($eventId)
   $event = tryGetEventById($eventId);
   if ($event == null)
   {
-    writeMainHtmlBeforeContent();
-    renderPageErrorBox('eventId ist ungültig.');
+    renderNotFoundError();
     return;
   }
 
@@ -826,15 +833,16 @@ function renderDebugFreeSeatsCalculation()
     renderForbiddenError();
     return;
   }
-  writeMainHtmlBeforeContent('Untersuchung der Freie-Sitze-Berechung');
 
   $eventId = get_param_value('eventId');
   $event = tryGetEventById($eventId);
   if ($event == null)
   {
-    renderPageErrorBox('eventId ist ungültig.');
+    renderNotFoundError();
     return;
   }
+
+  writeMainHtmlBeforeContent('Untersuchung der Freie-Sitze-Berechung');
 
   echo html_open('div', ['class' => 'content']);
   echo html_open('div', ['class' => 'textBlock']);

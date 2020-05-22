@@ -45,7 +45,7 @@ if ($action != null)
 }
 else
 {
-  $page = get_param_value('p');
+  $page = get_param_value('p', 'main');
   if ($page == 'help')
     renderHelpPage();
   else if ($page == 'admin')
@@ -62,8 +62,10 @@ else
     renderBookingSimulator();
   else if ($page == 'visitorList')
     renderVisitorList();
-  else
+  else if ($page == 'main')
     renderMainPage();
+  else
+    renderNotFoundError();
 
   writeMainHtmlAfterContent();
 }
