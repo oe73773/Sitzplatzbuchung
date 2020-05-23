@@ -356,7 +356,11 @@ table.border td.null {
 .content {
   background: white;
   padding: 5px;
-  overflow: auto;
+}
+@media screen {
+  .content {
+    overflow: auto;
+  }
 }
 @media (min-width: 1000px) {
   .content {
@@ -568,18 +572,23 @@ table.border td.null {
   }
 }
 @media print {
-  table.border th, table.border td {
-    font-size: 108%;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 9px;
-    padding-bottom: 9px;
+  .content.visitorList table {
+    font-size: 90%;
+  }
+  .content.visitorList table.border th, .content.visitorList table.border td {
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
   }
   .content.visitorList td.name {
-    min-width: 400px;
+    min-width: 25em;
   }
   .content.visitorList td.phoneNumber {
-    min-width: 250px;
+    min-width: 15em;
+  }
+  .content.visitorList td.bookingInfo {
+    min-width: 10em;
   }
 }
 
