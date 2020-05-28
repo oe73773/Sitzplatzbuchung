@@ -297,16 +297,7 @@ function html_encode($text)
 		return 'true';
 	if ($text === false)
 		return 'false';
-
-	# if(!mb_check_encoding($text, 'UTF-8'))
-		# $Text = utf8_encode($text);
-
-	$text = htmlentities($text, ENT_COMPAT, 'UTF-8');
-
-	# $text = str_replace(unichr(8201), '&thinsp;', $Text);
-	# $text = str_replace(unichr(8230), '&hellip;', $Text);
-
-	return $text;
+	return htmlentities($text, ENT_COMPAT, 'UTF-8');
 }
 
 function html_node($tagName, $content = '', $attributes = [])
