@@ -47,7 +47,7 @@ footer {
 }
 
 
-input, select {
+input, textarea, select {
   font-size: inherit;
   font-family: inherit;
 }
@@ -57,7 +57,7 @@ input[type="text"], input[type="number"], input[type="tel"], input[type="passwor
   padding: 0.2em;
 }
 
-input:read-only {
+input:read-only, textarea:read-only, .readOnly {
   color: #515151;
 }
 
@@ -139,8 +139,11 @@ button:disabled {
 }
 
 
-table.border {
+table {
   border-collapse: collapse;
+}
+
+table.border {
   margin: 2px;
   margin-left: auto;
   margin-right: auto;
