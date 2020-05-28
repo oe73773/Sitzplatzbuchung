@@ -312,7 +312,7 @@ function html_node($tagName, $content = '', $attributes = [])
       $s .= ' ';
       $s .= $key;
       $s .= '="';
-      $s .= $value;
+      $s .= html_encode($value);
       $s .= '"';
     }
   }
@@ -342,7 +342,7 @@ function html_open($tagName, $attributes = [])
       $s .= ' ';
       $s .= $key;
       $s .= '="';
-      $s .= $value;
+      $s .= html_encode($value);
       $s .= '"';
     }
   }
