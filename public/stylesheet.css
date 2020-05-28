@@ -99,6 +99,8 @@ button {
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
+  margin-left: 6px;
+  margin-right: 6px;
   margin-top: 10px;
   margin-bottom: 3px;
   min-width: 160px;
