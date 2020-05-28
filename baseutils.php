@@ -300,6 +300,7 @@ function html_encode($text)
 	return htmlentities($text, ENT_COMPAT, 'UTF-8');
 }
 
+
 function html_node($tagName, $content = '', $attributes = [])
 # Returns an HTML node (opening tag, content and closing tag)
 {
@@ -380,6 +381,7 @@ function html_input($type, $name = null, $value = null, $attributes = [])
   return html_node('input', null, $attributes);
 }
 
+
 function html_textarea($name = null, $value = '', $attributes = [])
 {
   if ($name != null)
@@ -389,16 +391,23 @@ function html_textarea($name = null, $value = '', $attributes = [])
   return html_node('textarea', $value, $attributes);
 }
 
+
 function html_button($content, $attributes = [])
 {
   $attributes['type'] = 'button'; # avoid to act as submit button
   return html_node('button', $content, $attributes);
 }
 
-
 function html_form_submit_button($content, $attributes = [])
 {
   return html_node('button', $content, $attributes);
+}
+
+function html_redirect_button($url, $content, $attributes = [])
+{
+  $attributes['onclick'] = 'location.href = "' . $url . '";';
+  $attributes['onmousedown'] = 'openUrlInNewTabOnMiddleClick(event, "' . $url . '");';
+  return html_button($content, $attributes);
 }
 
 

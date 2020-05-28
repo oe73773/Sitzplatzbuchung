@@ -229,6 +229,14 @@ function setElementsEnabled(elements, enabled)
 }
 
 
+function openUrlInNewTabOnMiddleClick(event, url)
+{
+  if (event.which == 2)
+    window.open(url);
+}
+
+
+
 //-------------------------------------------------------------------------------
 //                                  Error Reporting
 //-------------------------------------------------------------------------------
