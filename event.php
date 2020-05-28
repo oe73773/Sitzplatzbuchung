@@ -1,11 +1,31 @@
 <?php
 
-function tryGetEventById($eventId)
+function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = false)
+# Convert all timestamp fields from strings to timestamps
+{
+  if ($event != null)
+  {
+    $event['releaseTimestamp'] = date_time_to_timestamp($event['releaseTimestamp']);
+    $event['startTimestamp'] = date_time_to_timestamp($event['startTimestamp']);
+    $event['bookingOpeningTimestamp'] = date_time_to_timestamp($event['bookingOpeningTimestamp']);
+    $event['bookingClosingTimestamp'] = date_time_to_timestamp($event['bookingClosingTimestamp']);
+    $event['insertTimestamp'] = date_time_to_timestamp($event['insertTimestamp']);
+    $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
+
+    if ($withVisitorCount)
+      $event['visitorCount'] = getEventVisitorCount($event['id']);
+    if ($withFreeSeatCount)
+      $event['freeSeatCount'] = calculateFreeSeatCount($event);
+  }
+}
+
+
+function tryGetEventById($eventId, $withVisitorCount = false, $withFreeSeatCount = false)
 {
   if ($eventId == null)
     return;
   $event = db()->try_query_row_by_id('event', $eventId);
-  decodeEvent($event);
+  decodeEvent($event, $withVisitorCount, $withFreeSeatCount);
   return $event;
 }
 
@@ -17,11 +37,7 @@ function getMainPageEvents($withVisitorCount = false, $withFreeSeatCount = false
   $events = db()->query_rows('SELECT * FROM event WHERE releaseTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 50', [$now, $nowWithOffset]);
   foreach ($events as &$event)
   {
-    decodeEvent($event);
-    if ($withVisitorCount)
-      $event['visitorCount'] = getEventVisitorCount($event['id']);
-    if ($withFreeSeatCount)
-      $event['freeSeatCount'] = calculateFreeSeatCount($event);
+    decodeEvent($event, $withVisitorCount, $withFreeSeatCount);
   }
   return $events;
 }
@@ -33,9 +49,7 @@ function getAdminEvents()
   $events = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
   foreach ($events as &$event)
   {
-    decodeEvent($event);
-    $event['visitorCount'] = getEventVisitorCount($event['id']);
-    $event['freeSeatCount'] = calculateFreeSeatCount($event);
+    decodeEvent($event, true, true);
   }
   return $events;
 }
@@ -48,26 +62,9 @@ function getVisitorListEvents()
   $events = db()->query_rows('SELECT * FROM event WHERE bookingOpeningTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
   foreach ($events as &$event)
   {
-    decodeEvent($event);
-    $event['visitorCount'] = getEventVisitorCount($event['id']);
-    $event['freeSeatCount'] = calculateFreeSeatCount($event);
+    decodeEvent($event, true, true);
   }
   return $events;
-}
-
-
-function decodeEvent(&$event)
-# Convert all timestamp fields from strings to timestamps
-{
-  if ($event != null)
-  {
-    $event['releaseTimestamp'] = date_time_to_timestamp($event['releaseTimestamp']);
-    $event['startTimestamp'] = date_time_to_timestamp($event['startTimestamp']);
-    $event['bookingOpeningTimestamp'] = date_time_to_timestamp($event['bookingOpeningTimestamp']);
-    $event['bookingClosingTimestamp'] = date_time_to_timestamp($event['bookingClosingTimestamp']);
-    $event['insertTimestamp'] = date_time_to_timestamp($event['insertTimestamp']);
-    $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
-  }
 }
 
 
