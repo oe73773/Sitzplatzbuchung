@@ -479,7 +479,7 @@ function renderBookingSimulator()
   writeMainHtmlBeforeContent('Buchungs-Simulator');
   echo html_open('div', ['class' => 'content']);
 
-  echo html_open('form', ['action' => '?a=bookingSimulator', 'onsubmit' => 'postForm(event)', 'class' => 'itemDetails']);
+  echo html_open('form', ['action' => '?a=bookingSimulator', 'onsubmit' => 'postForm(event)']);
 
   echo html_open('div');
   echo html_node('span', 'Anzahl 5er-Stuhlreihen');
