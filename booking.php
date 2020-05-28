@@ -39,7 +39,7 @@ function handleSaveBookingAction()
   $event = tryGetEventById($eventId);
   if ($event == null)
   {
-    echo 'showErrorMsg("Parameter eventId ist ungültig.");';
+    echo 'showErrorMsg("Datensatz existiert nicht.");';
     echo 'location.reload();';
     return;
   }
@@ -67,12 +67,12 @@ function handleSaveBookingAction()
       continue;
     if (strlen($surname) == '')
     {
-      echo 'showErrorMsg("Bitte Vorname aller Personen angeben.");';
+      echo 'showErrorMsg("Bitte den Vornamen aller Personen angeben.");';
       return;
     }
     if (strlen($lastname) == '')
     {
-      echo 'showErrorMsg("Bitte Nachname aller Personen angeben.");';
+      echo 'showErrorMsg("Bitte den Nachnamen aller Personen angeben.");';
       return;
     }
     if (strlen($surname) < 3)
@@ -166,7 +166,7 @@ function handleCancelBookingAction()
   $event = tryGetEventById($eventId);
   if ($event == null)
   {
-    echo 'showErrorMsg("Parameter eventId ist ungültig.");';
+    echo 'showErrorMsg("Datensatz existiert nicht.");';
     echo 'location.reload();';
     return;
   }
