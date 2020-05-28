@@ -275,7 +275,7 @@ function renderVisitorsSheetDetails($eventId)
   $fields[] = newTextField('bookingInfo', 'Buchung');
   $fields[] = newTextField('empty', 'Anwesend');
 
-  echo html_form_button('Drucken', ['onclick' => 'window.print();']);
+  echo html_button('Drucken', ['onclick' => 'window.print();']);
 
   echo html_open('div', ['class' => 'subTitle']);
   echo $visitorCount;

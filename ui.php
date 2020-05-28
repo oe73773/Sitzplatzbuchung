@@ -339,7 +339,7 @@ function renderMainPageBookingStatus($persons, $bookingCanceled)
     echo html_close('div');
 
     $showFormScript = "event.target.parentNode.parentNode.parentNode.parentNode.classList.add('cancelBookingFormOpened');disableAutoReload();";
-    $button = html_form_button('Stornieren', ['class' => 'linkButton', 'onclick' => $showFormScript]);
+    $button = html_button('Stornieren', ['class' => 'linkButton', 'onclick' => $showFormScript]);
     echo html_node('div', $button, ['class' => 'cancelBookingFormPlaceholder']);
   }
 
@@ -356,7 +356,7 @@ function renderMainPageCancelBookingForm($event)
   echo html_open('form', ['action' => '?a=cancelBooking', 'onsubmit' => 'postForm(event)']);
   echo html_input('hidden', 'eventId', $event['id']);
   echo html_form_submit_button('Stornierung bestätigen', ['class' => 'deleteButton']);
-  echo html_form_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+  echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
   writeFormToken();
   echo html_close('form');
 
@@ -373,7 +373,7 @@ function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingC
     $buttonText = 'Erneut buchen';
   else
     $buttonText = 'Teilnehmen';
-  $button = html_form_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
+  $button = html_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
   echo html_node('div', $button, ['class' => 'saveBookingFormPlaceholder']);
 
   echo html_open('div', ['class' => 'saveBookingForm']);
@@ -408,7 +408,7 @@ function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingC
     echo html_node('div', 'Hinweis: Es wird ein Browser-Cookie gespeichert. <br>Eine Stornierung ist vom selben Gerät möglich.', ['class' => 'cookieInfo']);
 
   echo html_form_submit_button('Buchung speichern', ['class' => 'saveButton']);
-  echo html_form_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+  echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
 
   echo html_input('hidden', 'eventId', $event['id']);
   writeFormToken();

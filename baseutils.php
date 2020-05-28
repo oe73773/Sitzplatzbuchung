@@ -207,6 +207,8 @@ function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
 # Date & Time
 
 function date_time_to_timestamp($str)
+# Converts a date time string to a unix timestamp.
+# In case of a failure it returns false.
 {
   if ($str == null)
     return null;
@@ -387,9 +389,18 @@ function html_input($type, $name = null, $value = null, $attributes = [])
   return html_node('input', null, $attributes);
 }
 
-function html_form_button($content, $attributes = [])
+function html_textarea($name = null, $value = '', $attributes = [])
 {
-  $attributes['type'] = 'button';
+  if ($name != null)
+    $attributes['name'] = $name;
+  if ($value === null)
+    $value = '';
+  return html_node('textarea', $value, $attributes);
+}
+
+function html_button($content, $attributes = [])
+{
+  $attributes['type'] = 'button'; # avoid to act as submit button
   return html_node('button', $content, $attributes);
 }
 
