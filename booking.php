@@ -194,3 +194,200 @@ function handleCancelBookingAction()
 
   echo 'location.reload();';
 }
+
+
+function renderVisitorsSheet()
+{
+  $eventId = get_param_value('eventId');
+  if ($eventId == null)
+    renderVisitorsSheetList();
+  else
+    renderVisitorsSheetDetails($eventId);
+}
+
+
+function renderVisitorsSheetList()
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+  writeMainHtmlBeforeContent('Anwesenheitsliste');
+
+  echo html_open('div', ['class' => 'content visitorList']);
+
+  $events = getVisitorListEvents();
+  foreach ($events as &$event)
+  {
+    $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
+    if (time() > $event['bookingClosingTimestamp'])
+      $event['bookingState'] = 'abgeschlossen';
+    else
+      $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+  }
+
+  $fields = [];
+  $fields[] = newTextField('titleAndDate', 'Veranstaltung');
+  $fields[] = newTextField('bookingState', 'Buchung');
+  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
+
+  $actions = [];
+  $actions[] = newLinkAction('visitorList', 'Anzeigen', 'eventId');
+
+  renderItemTable($events, $fields, $actions);
+
+  echo html_close('div');
+}
+
+
+function renderVisitorsSheetDetails($eventId)
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+
+  $event = tryGetEventById($eventId);
+  if ($event == null)
+  {
+    renderNotFoundError();
+    return;
+  }
+
+  $titleAndDate = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
+
+  writeMainHtmlBeforeContent('Anwesenheitsliste ' . $titleAndDate);
+
+  echo html_open('div', ['class' => 'content visitorList']);
+
+  $rows = renderVisitorsSheetDetails_getRealRows($eventId);
+  $visitorCount = count($rows);
+  if ($visitorCount > 0)
+    renderVisitorsSheetDetails_addNumberingAndEmptyRows($rows);
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('name', 'Name');
+  $fields[] = newTextField('phoneNumber', 'Telefon');
+  $fields[] = newTextField('bookingInfo', 'Buchung');
+  $fields[] = newTextField('empty', 'Anwesend');
+
+  echo html_form_button('Drucken', ['onclick' => 'window.print();']);
+
+  echo html_open('div', ['class' => 'subTitle']);
+  echo $visitorCount;
+  echo ' Teilnehmer gebucht';
+  echo ', Buchung ';
+  if (time() > $event['bookingClosingTimestamp'])
+    echo 'abgeschlossen';
+  else
+  {
+    echo 'noch offen bis ';
+    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+  }
+  echo html_close('div');
+
+  echo html_open('div', ['class' => 'subTitle currentDate']);
+  echo 'Stand: ';
+  echo formatTimestampLocalLong(time(), 'minute');
+  echo html_close('div');
+
+  renderItemTable($rows, $fields);
+
+  echo html_close('div');
+}
+
+
+function renderVisitorsSheetDetails_getRealRows($eventId)
+{
+  $bookings = db()->query_rows('SELECT * FROM booking WHERE eventId = ? AND cancelTimestamp IS NULL', [$eventId]);
+
+  $rows = [];
+  foreach($bookings as $booking)
+  {
+    $persons = explode(';', $booking['listOfPersons']);
+    if (count($persons) == 1)
+      $bookingInfo = count($persons) . ' Person';
+    else
+      $bookingInfo = count($persons) . ' Personen, #' . $booking['id'];
+    foreach($persons as $personStr)
+    {
+      $person = explode(',', $personStr);
+      $surname = array_value($person, 0);
+      $lastname = array_value($person, 1);
+
+      $row = [];
+      $row['bookingInfo'] =  $bookingInfo;
+      $row['phoneNumber'] = $booking['phoneNumber'];
+      $row['name'] = $lastname . ', ' . $surname;
+      $row['empty'] = '';
+      $key = implode(' ', [$lastname, $surname, $booking['id']]);
+      $rows[$key] = $row;
+    }
+  }
+
+  ksort($rows);
+
+  return $rows;
+}
+
+
+function renderVisitorsSheetDetails_addNumberingAndEmptyRows(&$rows)
+{
+  $i = 1;
+  foreach($rows as &$row)
+  {
+    $row['id'] = $i;
+    $i++;
+  }
+  unset($row);
+
+  $emptyRowCount = 15;
+  for($j = 0; $j < $emptyRowCount; $j++)
+  {
+    $row = [];
+    $row['id'] = $i;
+    $row['bookingInfo'] = null;
+    $row['phoneNumber'] = '';
+    $row['name'] = '';
+    $row['empty'] = '';
+    $row['class'] = 'empty';
+    $rows[] = $row;
+    $i++;
+  }
+}
+
+
+function renderBookingList()
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+  writeMainHtmlBeforeContent('Buchungen verwalten');
+
+  echo html_open('div', ['class' => 'content']);
+
+  $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
+
+  foreach ($items as &$booking)
+  {
+    decodeBooking($booking);
+  }
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('eventId', 'Veranstaltung');
+  $fields[] = newTextField('insertClientId', 'Erstellt durch');
+  $fields[] = newTextField('listOfPersons', 'Personen');
+  $fields[] = newTimestampField('insertTimestamp', 'Gebucht am');
+  $fields[] = newTimestampField('cancelTimestamp', 'Storniert am');
+
+  renderItemTable($items, $fields);
+
+  echo html_close('div');
+}

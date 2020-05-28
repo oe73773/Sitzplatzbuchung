@@ -283,3 +283,41 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
 
   return $freeSeats;
 }
+
+
+function renderEvents()
+{
+  $eventId = get_param_value('eventId');
+  if ($eventId == null)
+    renderEventList();
+  else
+    renderEventDetails($eventId);
+}
+
+
+function renderEventList()
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+  writeMainHtmlBeforeContent('Veranstaltungen verwalten');
+
+  echo html_open('div', ['class' => 'content']);
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('title', 'Titel');
+  $fields[] = newTimestampField('startTimestamp', 'Beginn');
+  $fields[] = newTimestampField('releaseTimestamp', 'Veröffentlichung');
+  $fields[] = newTimestampField('bookingOpeningTimestamp', 'Buchungs ab');
+  $fields[] = newTimestampField('bookingClosingTimestamp', 'Buchungs bis');
+  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
+
+  renderItemTable(getAdminEvents(), $fields, $actions);
+
+  echo html_close('div');
+}
+

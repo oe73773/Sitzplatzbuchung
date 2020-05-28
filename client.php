@@ -125,3 +125,35 @@ function handleMakeClientPersistentAction()
   db()->try_update_by_id('client', getClientValue('id'), ['persistent' => 1]);
   echo 'location.reload();';
 }
+
+
+function renderClientList()
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+  writeMainHtmlBeforeContent('Geräte verwalten');
+
+  echo html_open('div', ['class' => 'content']);
+
+  $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
+
+  foreach ($items as &$client)
+  {
+    decodeClient($client);
+  }
+
+  $fields = [];
+  $fields[] = newIdField();
+  $fields[] = newTextField('hash', 'Kennung');
+  $fields[] = newTextField('persistent', 'Persistent');
+  $fields[] = newTextField('userName', 'Benutzername');
+  $fields[] = newTextField('userGroup', 'Benutzergruppe');
+  $fields[] = newTimestampField('lastSeenTimestamp', 'Zuletzt online', false);
+
+  renderItemTable($items, $fields);
+
+  echo html_close('div');
+}

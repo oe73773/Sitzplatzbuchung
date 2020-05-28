@@ -46,14 +46,16 @@ if ($action != null)
 else
 {
   $page = get_param_value('p', 'main');
-  if ($page == 'help')
+  if ($page == 'main')
+    renderMainPage();
+  else if ($page == 'help')
     renderHelpPage();
   else if ($page == 'admin')
     renderAdminPage();
   else if ($page == 'clients')
     renderClientList();
   else if ($page == 'events')
-    renderEventList();
+    renderEvents();
   else if ($page == 'bookings')
     renderBookingList();
   else if ($page == 'debugFreeSeatsCalculation')
@@ -61,9 +63,7 @@ else
   else if ($page == 'bookingSimulator')
     renderBookingSimulator();
   else if ($page == 'visitorList')
-    renderVisitorList();
-  else if ($page == 'main')
-    renderMainPage();
+    renderVisitorsSheet();
   else
     renderNotFoundError();
 
