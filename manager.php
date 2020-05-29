@@ -10,6 +10,7 @@ function newField($type, $name)
   $field['visibleInList'] = true;
   $field['mandatory'] = false;
   $field['allowHtml'] = false;
+  $field['isTitle'] = false;
   return $field;
 }
 
@@ -96,7 +97,7 @@ function newLinkPerItemAction($url, $title, $idParamName)
 }
 
 
-function renderItemTable($items, $fields, $actions = [])
+function renderItemTable($items, $fields, $actions = [], $detailsLinkIdParamName = null)
 {
   echo html_open('div', ['class' => 'itemList']);
 
@@ -144,7 +145,7 @@ function renderItemTable($items, $fields, $actions = [])
     foreach ($fields as $field)
     {
       if ($field['visibleInList'])
-        renderField($field, $item, false);
+        renderField($field, $item, false, false, $detailsLinkIdParamName);
     }
     if (count($itemActions) > 0)
     {
@@ -255,7 +256,7 @@ function renderFieldsTable($fields, $item, $itemDetails, $editForm = false, $cre
 }
 
 
-function renderField($field, $item, $itemDetails, $editForm = false)
+function renderField($field, $item, $itemDetails, $editForm = false, $detailsLinkIdParamName = null)
 {
   $fieldName = $field['name'];
   $value = $item[$fieldName];
@@ -275,6 +276,9 @@ function renderField($field, $item, $itemDetails, $editForm = false)
     $classes[] = $field['precision'];
   $classes[] = $fieldName;
   echo html_open('td', ['class' => implode(' ', $classes)]);
+
+  if ($field['isTitle'] && $detailsLinkIdParamName != null)
+    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&' . $detailsLinkIdParamName . '=' . $item['id']]);
 
   if ($itemDetails)
     echo html_open('div', ['class' => 'textBlock']);
@@ -331,6 +335,9 @@ function renderField($field, $item, $itemDetails, $editForm = false)
 
   if ($itemDetails)
     echo html_close('div');
+
+  if ($field['isTitle'] && $detailsLinkIdParamName != null)
+    echo html_close('a');
 
   echo html_close('td');
 }

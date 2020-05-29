@@ -304,7 +304,7 @@ function renderEventList()
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemTable(getAdminEvents(), getEventFields(), getEventActions());
+  renderItemTable(getAdminEvents(), getEventFields(), getEventActions(), 'eventId');
 
   echo html_close('div');
 }
@@ -424,6 +424,7 @@ function getEventFields()
 
   $field = newTextField('title', 'Titel');
   $field['mandatory'] = true;
+  $field['isTitle'] = true;
   $fields[] = $field;
 
   $field = newTimestampField('startTimestamp', 'Beginn');

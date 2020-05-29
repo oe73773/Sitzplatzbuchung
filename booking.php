@@ -228,15 +228,24 @@ function renderVisitorsSheetList()
   }
 
   $fields = [];
-  $fields[] = newTextField('titleAndDate', 'Veranstaltung');
-  $fields[] = newTextField('bookingState', 'Buchung');
-  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
-  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
+
+  $field = newTextField('titleAndDate', 'Veranstaltung');
+  $field['isTitle'] = true;
+  $fields[] = $field;
+
+  $field = newTextField('bookingState', 'Buchung');
+  $fields[] = $field;
+
+  $field = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = $field;
+
+  $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
+  $fields[] = $field;
 
   $actions = [];
   $actions[] = newLinkPerItemAction('?p=visitorList', 'Anzeigen', 'eventId');
 
-  renderItemTable($events, $fields, $actions);
+  renderItemTable($events, $fields, $actions, 'eventId');
 
   echo html_close('div');
 }
