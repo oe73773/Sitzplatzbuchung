@@ -205,10 +205,11 @@ function postForm(event)
 
 
 function setFormEnabled(form, enabled)
-// Disable buttons to prevent resubmit
+// Enable/disable interaction of all form elements
 {
 	setElementsReadOnly(getSubElementsRecursive(form, 'input'), !enabled);
 	setElementsReadOnly(getSubElementsRecursive(form, 'textarea'), !enabled);
+	setElementsEnabled(getSubElementsRecursive(form, 'select'), enabled);
 	setElementsEnabled(getSubElementsRecursive(form, 'button'), enabled);
 }
 

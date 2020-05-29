@@ -52,7 +52,7 @@ input, textarea, select {
   font-family: inherit;
 }
 
-input[type="text"], input[type="number"], input[type="tel"], input[type="password"], textarea {
+input[type="text"], input[type="number"], input[type="tel"], input[type="password"], textarea, select {
   font-size: 115%;
   padding: 0.2em;
 }
