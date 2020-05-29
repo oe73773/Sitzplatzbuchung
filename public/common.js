@@ -211,25 +211,15 @@ function postForm(event)
 function setFormEnabled(form, enabled)
 // Enable/disable interaction of all form elements
 {
-  setElementsReadOnly(getSubElementsRecursive(form, 'input'), !enabled);
-  setElementsReadOnly(getSubElementsRecursive(form, 'textarea'), !enabled);
-  setElementsEnabled(getSubElementsRecursive(form, 'select'), enabled);
-  setElementsEnabled(getSubElementsRecursive(form, 'button'), enabled);
-}
-
-
-function setElementsReadOnly(elements, readOnly)
-{
+  var elements = getSubElementsRecursive(form, 'INPUT');
+  elements = elements.concat(getSubElementsRecursive(form, 'TEXTAREA'));
+  elements = elements.concat(getSubElementsRecursive(form, 'SELECT'));
+  elements = elements.concat(getSubElementsRecursive(form, 'BUTTON'));
   elements.forEach(function(entry) {
-    entry.readOnly = readOnly;
-  });
-}
-
-
-function setElementsEnabled(elements, enabled)
-{
-  elements.forEach(function(entry) {
-    entry.disabled = !enabled;
+    if (entry.nodeName == 'BUTTON' || entry.nodeName == 'SELECT' || entry.type == 'checkbox')
+      entry.disabled = !enabled;
+    else
+      entry.readOnly = !enabled;
   });
 }
 
