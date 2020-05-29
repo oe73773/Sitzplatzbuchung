@@ -623,6 +623,13 @@ div.itemList button {
   margin-bottom: 10px;
 }
 
+div.itemList td {
+  max-width: 25em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 div.itemDetails {
   display: inline-block;
 }
