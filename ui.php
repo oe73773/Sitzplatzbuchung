@@ -241,23 +241,26 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
     echo html_node('div', $event['notice'], ['class' => 'notice preWrapped']);
 
   # booking period
-  echo html_open('div', ['class' => 'bookingPeriod']);
-  if (time() < $event['bookingOpeningTimestamp'])
+  if ($event['canceled'] != 1)
   {
-    echo 'Buchung: ';
-    echo formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
-    echo ' – ';
-    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    echo html_open('div', ['class' => 'bookingPeriod']);
+    if (time() < $event['bookingOpeningTimestamp'])
+    {
+      echo 'Buchung: ';
+      echo formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
+      echo ' – ';
+      echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    }
+    else if (time() < $event['bookingClosingTimestamp'])
+    {
+      if ($hasActiveBooking)
+        echo 'Stornierung bis ';
+      else
+        echo 'Buchung bis ';
+      echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    }
+    echo html_close('div');
   }
-  else if (time() < $event['bookingClosingTimestamp'])
-  {
-    if ($hasActiveBooking)
-      echo 'Stornierung bis ';
-    else
-      echo 'Buchung bis ';
-    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
-  }
-  echo html_close('div');
 
   echo html_close('div');
 }
