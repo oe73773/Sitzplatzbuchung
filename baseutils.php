@@ -348,9 +348,12 @@ function html_node($tagName, $content = '', $attributes = [])
     {
       $s .= ' ';
       $s .= $key;
-      $s .= '="';
-      $s .= html_encode($value);
-      $s .= '"';
+      if ($value !== true)
+      {
+        $s .= '="';
+        $s .= html_encode($value);
+        $s .= '"';
+      }
     }
   }
   if ($content !== null)
@@ -378,9 +381,12 @@ function html_open($tagName, $attributes = [])
     {
       $s .= ' ';
       $s .= $key;
-      $s .= '="';
-      $s .= html_encode($value);
-      $s .= '"';
+      if ($value !== true)
+      {
+        $s .= '="';
+        $s .= html_encode($value);
+        $s .= '"';
+      }
     }
   }
   $s .= '>';
