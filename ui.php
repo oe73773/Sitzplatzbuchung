@@ -122,6 +122,7 @@ function renderMainPage()
 function calculateAutoReloadHash($events)
 {
   $items = [];
+  $items[] = getAppVersion();
   foreach ($events as $event)
   {
     $items[] = $event['id'];
