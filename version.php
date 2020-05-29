@@ -2,5 +2,5 @@
 
 function getAppVersion()
 {
-  return 'v0.2.7';
+  return 'v0.3.0';
 }
