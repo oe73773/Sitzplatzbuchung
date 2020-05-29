@@ -407,7 +407,6 @@ function getEventFields()
   $fields[] = $field;
 
   $field = newTimestampField('releaseTimestamp', 'Veröffentlichung');
-  $field['mandatory'] = true;
   $fields[] = $field;
 
   $field = newTimestampField('bookingOpeningTimestamp', 'Buchung ab');
