@@ -167,8 +167,12 @@ function postForm(event)
 
   var a = getSubElementsRecursive(event.target, 'input');
   a.forEach(function(entry) {
-    if (entry.name && !entry.disabled)
-      formData.append(entry.name, entry.value);
+    if (entry.name && !entry.disabled) {
+      if (entry.type == 'checkbox')
+        formData.append(entry.name, entry.checked);
+      else
+        formData.append(entry.name, entry.value);
+    }
   });
   var a = getSubElementsRecursive(event.target, 'textarea');
   a.forEach(function(entry) {
