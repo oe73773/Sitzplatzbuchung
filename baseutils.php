@@ -212,6 +212,27 @@ function set_cookie($key, $value, $expire)
 }
 
 
+function get_os_from_user_agent($userAgent)
+# Parses the operating system from a user agent string
+{
+  if (!starts_with($userAgent, 'Mozilla/5.0 ('))
+    return;
+  $str = substr($userAgent, 13);
+  if (starts_with($str, 'Windows NT'))
+    return 'Windows';
+  if (starts_with($str, 'Windows Phone'))
+    return 'Windows Phone';
+  if (starts_with($str, 'Macintosh'))
+    return 'macOS';
+  if (starts_with($str, 'X11'))
+    return 'Linux';
+  if (starts_with($str, 'iPhone') || starts_with($str, 'iPad'))
+    return 'iOS';
+  if (contains($str, 'Android'))
+    return 'Android';
+}
+
+
 
 #-------------------------------------------------------------------------------
 #                                   Date & Time

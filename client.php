@@ -95,6 +95,7 @@ function decodeClient(&$client)
     $client['insertTimestamp'] = date_time_to_timestamp($client['insertTimestamp']);
     $client['editTimestamp'] = date_time_to_timestamp($client['editTimestamp']);
     $client['lastSeenTimestamp'] = date_time_to_timestamp($client['lastSeenTimestamp']);
+    $client['userAgent_os'] = get_os_from_user_agent($client['userAgent']);
   }
 }
 
@@ -160,6 +161,9 @@ function renderClientList()
   $fields[] = $field;
 
   $field = newTextField('userGroup', 'Benutzergruppe');
+  $fields[] = $field;
+
+  $field = newTextField('userAgent_os', 'Betriebssystem');
   $fields[] = $field;
 
   $field = newTimestampField('lastSeenTimestamp', 'Zuletzt online');
