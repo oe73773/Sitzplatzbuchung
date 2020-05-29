@@ -277,15 +277,6 @@ function isNumeric(str)
 }
 
 
-function ParseInt(str)
-// Returns true if 'str' is a valid integer
-{
-  if (isNumeric(str))
-    return parseInt(str);
-  return null;
-}
-
-
 function encodeHtml(str)
 // Convert plain text to HTML
 {
