@@ -167,7 +167,9 @@ function renderClientList()
   $fields[] = $field;
 
   $field = newTimestampField('lastSeenTimestamp', 'Zuletzt online');
-  $field['editable'] = false;
+  $fields[] = $field;
+
+  $field = newTextField('lastListOfPersons', 'Zuletzt gebucht');
   $fields[] = $field;
 
   renderItemTable($items, $fields);
