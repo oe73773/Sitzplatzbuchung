@@ -173,19 +173,19 @@ function renderAction($action, $inItemList = false, $item = null)
 }
 
 
-function renderItemDetails($item, $fields, $actions, $idParamName, $saveActionName)
+function renderItemDetails($creatingItem, $item, $fields, $actions, $idParamName, $saveActionName)
 {
   $showFormScript = "event.target.parentNode.parentNode.parentNode.classList.add('editingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode.parentNode);";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('editingFormOpened');";
 
   $classes = [];
   $classes[] = 'itemDetails';
-  if ($item == null)
+  if ($creatingItem)
     $classes[] = 'editingFormOpened';
   echo html_open('div', ['class' => implode(' ', $classes)]);
 
   # view
-  if ($item != null)
+  if (!$creatingItem)
   {
     echo html_open('div', ['class' => 'view']);
 
@@ -205,16 +205,16 @@ function renderItemDetails($item, $fields, $actions, $idParamName, $saveActionNa
 
   # edit
   echo html_open('form', ['action' => '?a=' . $saveActionName, 'onsubmit' => 'postForm(event)']);
-  renderFieldsTable($fields, $item, true, true);
+  renderFieldsTable($fields, $item, true, true, $creatingItem);
 
   echo html_open('div');
   echo html_form_submit_button('Speichern', ['class' => 'saveButton']);
-  if ($item != null)
+  if (!$creatingItem)
     echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
   echo html_close('div');
 
   writeFormToken();
-  if ($item == null)
+  if ($creatingItem)
     echo html_node('script', 'focusFirstChildInputNode(document.body);');
   else
     echo html_input('hidden', $idParamName, $item['id']);
@@ -224,12 +224,12 @@ function renderItemDetails($item, $fields, $actions, $idParamName, $saveActionNa
 }
 
 
-function renderFieldsTable($fields, $item, $itemDetails, $editForm = false)
+function renderFieldsTable($fields, $item, $itemDetails, $editForm = false, $creatingItem = false)
 {
   echo html_open('table');
   foreach ($fields as $field)
   {
-    if ($item === null && !$field['editable'])
+    if ($creatingItem && !$field['editable'])
       continue;
     $classes = [];
     if ($editForm && !$field['editable'])
@@ -237,7 +237,7 @@ function renderFieldsTable($fields, $item, $itemDetails, $editForm = false)
     echo html_open('tr', ['class' => implode(' ', $classes)]);
     echo html_open('td');
     echo html_encode($field['title']);
-    if ($field['mandatory'] && $item === null)
+    if ($field['mandatory'] && $creatingItem)
       echo html_node('span', '*', ['class' => 'mandatory', 'title' => 'erforderlich']);
     echo html_close('td');
     renderField($field, $item, $itemDetails, $editForm);

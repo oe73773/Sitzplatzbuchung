@@ -314,9 +314,21 @@ function renderEventDetails($eventId)
 {
   $event = null;
   $title = null;
-  if ($eventId == 'new')
+  $creatingItem = $eventId == 'new';
+  if ($creatingItem)
   {
     $title = 'Neue Veranstaltung';
+    $originalEventId = get_param_value('originalEventId');
+    if ($originalEventId != null)
+    {
+      $event = tryGetEventById($originalEventId);
+      if ($event == null)
+      {
+        renderNotFoundError();
+        return;
+      }
+      modifyEventOnClone($event);
+    }
   }
   else
   {
@@ -333,9 +345,21 @@ function renderEventDetails($eventId)
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemDetails($event, getEventFields(), getEventActions(), 'eventId', 'saveEvent');
+  renderItemDetails($creatingItem, $event, getEventFields(), getEventActions(), 'eventId', 'saveEvent');
 
   echo html_close('div');
+}
+
+
+function modifyEventOnClone(&$event)
+# Fills in the suggested values
+{
+  $oneWeek = 60 * 60 * 24 * 7;
+  $event['releaseTimestamp'] = $event['releaseTimestamp'] + $oneWeek;
+  $event['startTimestamp'] = $event['startTimestamp'] + $oneWeek;
+  $event['bookingOpeningTimestamp'] = $event['bookingOpeningTimestamp'] + $oneWeek;
+  $event['bookingClosingTimestamp'] = $event['bookingClosingTimestamp'] + $oneWeek;
+  $event['canceled'] = null;
 }
 
 
@@ -476,6 +500,12 @@ function getEventActions()
 
   $action = newLinkAction('?p=events&eventId=new', 'Neue Veranstaltung');
   $action['cssClass'] = 'saveButton';
+  $action['visibleInDetails'] = false;
+  $actions[] = $action;
+
+  $action = newLinkPerItemAction('?p=events&eventId=new', 'Neue Folge-Veranstaltung', 'originalEventId');
+  $action['cssClass'] = 'saveButton';
+  $action['visibleInList'] = false;
   $actions[] = $action;
 
   return $actions;
