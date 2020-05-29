@@ -234,7 +234,7 @@ function renderVisitorsSheetList()
   $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
 
   $actions = [];
-  $actions[] = newLinkAction('visitorList', 'Anzeigen', 'eventId');
+  $actions[] = newLinkPerItemAction('visitorList', 'Anzeigen', 'eventId');
 
   renderItemTable($events, $fields, $actions);
 
@@ -380,12 +380,24 @@ function renderBookingList()
   }
 
   $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('eventId', 'Veranstaltung');
-  $fields[] = newTextField('insertClientId', 'Erstellt durch');
-  $fields[] = newTextField('listOfPersons', 'Personen');
-  $fields[] = newTimestampField('insertTimestamp', 'Gebucht am');
-  $fields[] = newTimestampField('cancelTimestamp', 'Storniert am');
+
+  $field = newIdField();
+  $fields[] = $field;
+
+  $field = newTextField('eventId', 'Veranstaltung');
+  $fields[] = $field;
+
+  $field = newTextField('insertClientId', 'Erstellt durch');
+  $fields[] = $field;
+
+  $field = newTextField('listOfPersons', 'Personen');
+  $fields[] = $field;
+
+  $field = newTimestampField('insertTimestamp', 'Gebucht am');
+  $fields[] = $field;
+
+  $field = newTimestampField('cancelTimestamp', 'Storniert am');
+  $fields[] = $field;
 
   renderItemTable($items, $fields);
 

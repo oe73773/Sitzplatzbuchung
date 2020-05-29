@@ -467,6 +467,7 @@ function renderAdminPage()
   echo html_node('li', html_a('?p=events', 'Veranstaltungen verwalten'));
   echo html_node('li', html_a('?p=bookings', 'Buchungen verwalten'));
   echo html_node('li', html_a('?p=clients', 'Geräte verwalten'));
+  echo html_node('li', html_a('?p=adminlog', 'Admin-Protokoll'));
   echo html_node('li', html_a('?p=bookingSimulator', 'Buchungs-Simulator'));
   echo html_close('ul');
 

@@ -284,6 +284,12 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
 
 function renderEvents()
 {
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+
   $eventId = get_param_value('eventId');
   if ($eventId == null)
     renderEventList();
@@ -294,27 +300,184 @@ function renderEvents()
 
 function renderEventList()
 {
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
   writeMainHtmlBeforeContent('Veranstaltungen verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
-  $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('title', 'Titel');
-  $fields[] = newTimestampField('startTimestamp', 'Beginn');
-  $fields[] = newTimestampField('releaseTimestamp', 'Veröffentlichung');
-  $fields[] = newTimestampField('bookingOpeningTimestamp', 'Buchungs ab');
-  $fields[] = newTimestampField('bookingClosingTimestamp', 'Buchungs bis');
-  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
-  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
-
-  renderItemTable(getAdminEvents(), $fields, $actions);
+  renderItemTable(getAdminEvents(), getEventFields(), getEventActions());
 
   echo html_close('div');
 }
 
+
+function renderEventDetails($eventId)
+{
+  $event = null;
+  $title = null;
+  if ($eventId == 'new')
+  {
+    $title = 'Neue Veranstaltung';
+  }
+  else
+  {
+    $event = tryGetEventById($eventId, true, true);
+    if ($event == null)
+    {
+      renderNotFoundError();
+      return;
+    }
+    $title = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
+  }
+
+  writeMainHtmlBeforeContent($title);
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemDetails($event, getEventFields(), getEventActions(), 'eventId', 'saveEvent');
+
+  echo html_close('div');
+}
+
+
+function handleSaveEventAction()
+{
+  if (!isClientAdmin())
+  {
+    echo 'showErrorMsg("Dieses Gerät hat keine Berechtigung für die angeforderte Aktion.");';
+    echo 'location.reload();';
+    return;
+  }
+
+  $itemId = get_param_value('eventId');
+  if ($itemId != null)
+  {
+    $item = tryGetEventById($itemId);
+    if ($item == null)
+    {
+      echo 'showErrorMsg("Datensatz existiert nicht.");';
+      echo 'location.reload();';
+      return;
+    }
+  }
+  $values = getEventSaveValues($itemId == null);
+  if ($values == null)
+    return;
+  if ($itemId == null)
+  {
+    $itemId = db()->insert('event', $values);
+    addAdminlogEntry('event', $itemId, 'create', $values);
+  }
+  else
+  {
+    db()->update_by_id('event', $itemId, $values);
+    addAdminlogEntry('event', $itemId, 'edit', $values);
+  }
+  echo 'location.href = "?p=events&eventId=';
+  echo $itemId;
+  echo '";';
+}
+
+
+function getEventSaveValues($creatingNewItem)
+{
+  $values = getSaveValues(getEventFields());
+  if ($values == null)
+    return;
+  $values['editTimestamp'] = format_timestamp(time());
+  $values['editClientId'] = getClientValue('id');
+  if ($creatingNewItem)
+    $values['insertTimestamp'] = format_timestamp(time());
+  return $values;
+}
+
+
+function getEventFields()
+{
+  $fields = [];
+
+  $field = newIdField();
+  $fields[] = $field;
+
+  $field = newTextField('title', 'Titel');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newTimestampField('startTimestamp', 'Beginn');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newTimestampField('releaseTimestamp', 'Veröffentlichung');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newTimestampField('bookingOpeningTimestamp', 'Buchung ab');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newTimestampField('bookingClosingTimestamp', 'Buchung bis');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newIntegerField('visitorLimit', 'Teilnehmerlimit');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newIntegerField('capacity5Seats', 'Anzahl 5er-Stuhlreihen');
+  $field['visibleInList'] = false;
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newIntegerField('capacity6Seats', 'Anzahl 6er-Stuhlreihen');
+  $field['visibleInList'] = false;
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newIntegerField('canceled', 'Abgesagt');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newTextAreaField('notice', 'Hinweise');
+  $field['visibleInList'] = false;
+  $field['allowHtml'] = true;
+  $fields[] = $field;
+
+  $field = newTextAreaField('remark', 'Bemerkung');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newIntegerField('visitorCount', 'Teilnehmer');
+  $field['editable'] = false;
+  $fields[] = $field;
+
+  $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze');
+  $field['editable'] = false;
+  $fields[] = $field;
+
+  $field = newTimestampField('insertTimestamp', 'Erstellt am');
+  $field['editable'] = false;
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newTimestampField('editTimestamp', 'Bearbeitet am');
+  $field['editable'] = false;
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  return $fields;
+}
+
+
+function getEventActions()
+{
+  $actions = [];
+
+  $action = newLinkPerItemAction('events', 'Anzeigen', 'eventId');
+  $action['visibleInDetails'] = false;
+  $actions[] = $action;
+
+  $action = newLinkAction('?p=events&eventId=new', 'Neue Veranstaltung');
+  $action['cssClass'] = 'saveButton';
+  $actions[] = $action;
+
+  return $actions;
+}

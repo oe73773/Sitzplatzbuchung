@@ -7,6 +7,7 @@ require_once('helper.php');
 require_once('client.php');
 require_once('event.php');
 require_once('booking.php');
+require_once('adminlog.php');
 require_once('ui.php');
 require_once('manager.php');
 
@@ -37,6 +38,8 @@ if ($action != null)
     handleBookingSimulatorAction();
   else if ($action == 'autoReloadCheck')
     handleAutoReloadCheckAction();
+  else if ($action == 'saveEvent')
+    handleSaveEventAction();
   else
   {
     echo 'alert("Diese Aktion ist nicht (mehr) gültig.");';
@@ -58,12 +61,14 @@ else
     renderEvents();
   else if ($page == 'bookings')
     renderBookingList();
+  else if ($page == 'adminlog')
+    renderAdminlogList();
   else if ($page == 'debugFreeSeatsCalculation')
     renderDebugFreeSeatsCalculation();
   else if ($page == 'bookingSimulator')
     renderBookingSimulator();
   else if ($page == 'visitorList')
-    renderVisitorsSheet();
+    renderBookingSimulator();
   else
     renderNotFoundError();
 

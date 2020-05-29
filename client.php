@@ -146,12 +146,25 @@ function renderClientList()
   }
 
   $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('hash', 'Kennung');
-  $fields[] = newTextField('persistent', 'Persistent');
-  $fields[] = newTextField('userName', 'Benutzername');
-  $fields[] = newTextField('userGroup', 'Benutzergruppe');
-  $fields[] = newTimestampField('lastSeenTimestamp', 'Zuletzt online', false);
+
+  $field = newIdField();
+  $fields[] = $field;
+
+  $field = newTextField('hash', 'Kennung');
+  $fields[] = $field;
+
+  $field = newTextField('persistent', 'Persistent');
+  $fields[] = $field;
+
+  $field = newTextField('userName', 'Benutzername');
+  $fields[] = $field;
+
+  $field = newTextField('userGroup', 'Benutzergruppe');
+  $fields[] = $field;
+
+  $field = newTimestampField('lastSeenTimestamp', 'Zuletzt online');
+  $field['editable'] = false;
+  $fields[] = $field;
 
   renderItemTable($items, $fields);
 
