@@ -602,6 +602,23 @@ table.border td.null {
 }
 
 
+.content.bookingSimulator > form > div {
+  padding-top: 5px;
+  padding-bottomo: 5px;
+}
+
+.content.bookingSimulator > form > div > span {
+  display: inline-block;
+  min-width: 16em;
+  text-align: left;
+}
+
+.content.bookingSimulator > form > div > input {
+  width: 6em;
+}
+
+
+
 div.itemList button {
   margin-bottom: 10px;
 }

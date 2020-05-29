@@ -479,7 +479,7 @@ function renderAdminPage()
 function renderBookingSimulator()
 {
   writeMainHtmlBeforeContent('Buchungs-Simulator');
-  echo html_open('div', ['class' => 'content']);
+  echo html_open('div', ['class' => 'content bookingSimulator']);
 
   echo html_open('form', ['action' => '?a=bookingSimulator', 'onsubmit' => 'postForm(event)']);
 
