@@ -16,7 +16,7 @@ function clone(obj)
     return obj;
   var temp = obj.constructor(); // give temp the original obj's constructor
   for (var key in obj)
-    temp[key] = Clone(obj[key]);
+    temp[key] = clone(obj[key]);
   return temp;
 }
 
@@ -42,11 +42,11 @@ function byId(id, ignoreError)
 // Returns all elements by name
 function byName(Name)
 {
-  var Elements = document.getElementsByName(Name);
+  var elements = document.getElementsByName(Name);
   // Don't use elements 'length' and 'item':
   var list = [];
-  for (var i = 0; i < Elements.length; i++)
-    list.push(Elements[i]);
+  for (var i = 0; i < elements.length; i++)
+    list.push(elements[i]);
   return list;
 }
 
@@ -56,12 +56,12 @@ function getSubElements(element, nodeName)
 {
   if (isNotNull(nodeName))
     nodeName = nodeName.toUpperCase();
-  var Elements = element.childNodes;
+  var elements = element.childNodes;
   // Don't use elements 'length' and 'item':
   var list = [];
-  for (var i = 0; i < Elements.length; i++) {
-    if (!isNotNull(nodeName) || Elements[i].nodeName == nodeName)
-      list.push(Elements[i]);
+  for (var i = 0; i < elements.length; i++) {
+    if (!isNotNull(nodeName) || elements[i].nodeName == nodeName)
+      list.push(elements[i]);
   }
   return list;
 }
@@ -74,11 +74,11 @@ function getSubElementByNodeName(element, nodeName, index)
   if (!isNotNull(index))
     index = 0;
   nodeName = nodeName.toUpperCase();
-  var Elements = getSubElements(element);
-  for (var i in Elements)
-    if (Elements[i].nodeName == nodeName) {
+  var elements = getSubElements(element);
+  for (var i in elements)
+    if (elements[i].nodeName == nodeName) {
       if (index == 0)
-        return Elements[i];
+        return elements[i];
       index = index - 1;
     }
 }
@@ -106,11 +106,11 @@ function getSubElementsRecursive(element, nodeName)
 function byClass(ClassName)
 // Returns all elements by class
 {
-  var Elements = document.getElementsByTagName('*');
+  var elements = document.getElementsByTagName('*');
   var list = [];
-  for (var i = 0; i < Elements.length; i++) { // Don't use elements 'length' and 'item':
-    if (Elements[i].classList.contains(ClassName))
-      list.push(Elements[i]);
+  for (var i = 0; i < elements.length; i++) { // Don't use elements 'length' and 'item':
+    if (elements[i].classList.contains(ClassName))
+      list.push(elements[i]);
   }
   return list;
 }
@@ -122,11 +122,11 @@ function getSubElementByNodeNameRecursive(element, nodeName, index)
   if (!isNotNull(index))
     index = 0;
   nodeName = nodeName.toUpperCase();
-  var Elements = getSubElementsRecursive(element);
-  for (var i in Elements) {
-    if (Elements[i].nodeName == nodeName) {
+  var elements = getSubElementsRecursive(element);
+  for (var i in elements) {
+    if (elements[i].nodeName == nodeName) {
       if (index == 0)
-        return Elements[i];
+        return elements[i];
       index = index - 1;
     }
   }
