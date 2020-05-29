@@ -233,6 +233,14 @@ function get_os_from_user_agent($userAgent)
 }
 
 
+function user_agent_is_not_supported()
+# Parses the operating system from a user agent string
+{
+  $userAgent = array_value($_SERVER, 'HTTP_USER_AGENT');
+  return contains($userAgent, 'Trident/');
+}
+
+
 
 #-------------------------------------------------------------------------------
 #                                   Date & Time

@@ -31,6 +31,8 @@ function writeMainHtmlBeforeContent($pageTitle = null)
   echo html_close('div');
   echo html_close('div');
 
+  renderUnsupportedBrowserWarning();
+
   # navBar
   echo html_open('div', ['class' => 'navBar']);
   if (isClientAdmin() || $pageTitle != null)
@@ -44,6 +46,19 @@ function writeMainHtmlBeforeContent($pageTitle = null)
   {
     echo html_open('div', ['class' => 'pageTitleOuter']);
     echo html_node('div', $pageTitle, ['class' => 'pageTitle']);
+    echo html_close('div');
+  }
+}
+
+
+function renderUnsupportedBrowserWarning()
+{
+  if (user_agent_is_not_supported())
+  {
+    echo html_open('div', ['class' => 'content']);
+    echo html_open('div');
+    echo html_node('div', 'Achtung: Der verwendete Webbrowser ist veraltet und wird nicht mehr unterstützt.<br>Zu weiteren Informationen siehe <a href="https://www.browser-update.org/de/update.html" target="_blank">www.browser-update.org</a>.', ['class' => 'textBlock errorBox']);
+    echo html_close('div');
     echo html_close('div');
   }
 }
