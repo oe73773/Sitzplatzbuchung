@@ -25,16 +25,14 @@ function clone(obj)
 //                                   DOM Reading
 //-------------------------------------------------------------------------------
 
-function byId(id, ignoreError)
+function byId(id, ignoreError = false)
 // Returns one element by ID or null
 // id: string
 // ignoreError: boolean, default false
 {
-  if (!isNotNull(ignoreError))
-    ignoreError = false;
   var element = document.getElementById(id);
   if (element == null && !ignoreError)
-    console.log('element with ID "' + id + '" does not exist');
+    console.log('Element with ID "' + id + '" does not exist.');
   return element;
 }
 
@@ -51,7 +49,7 @@ function byName(Name)
 }
 
 
-function getSubElements(element, nodeName)
+function getSubElements(element, nodeName = null)
 // Returns all direct sub-elements, optional filter by node name
 {
   if (isNotNull(nodeName))
@@ -68,11 +66,9 @@ function getSubElements(element, nodeName)
 
 
 
-function getSubElementByNodeName(element, nodeName, index)
+function getSubElementByNodeName(element, nodeName, index = 0)
 // Returns one direct sub-element by node name
 {
-  if (!isNotNull(index))
-    index = 0;
   nodeName = nodeName.toUpperCase();
   var elements = getSubElements(element);
   for (var i in elements)
@@ -84,7 +80,7 @@ function getSubElementByNodeName(element, nodeName, index)
 }
 
 
-function getSubElementsRecursive(element, nodeName)
+function getSubElementsRecursive(element, nodeName = null)
 // Returns all (indirect) sub-element, optional filter by node name
 {
   if (isNotNull(nodeName))
@@ -116,11 +112,9 @@ function byClass(ClassName)
 }
 
 
-function getSubElementByNodeNameRecursive(element, nodeName, index)
+function getSubElementByNodeNameRecursive(element, nodeName, index = 0)
 // Returns one (indirect) sub-element by node name
 {
-  if (!isNotNull(index))
-    index = 0;
   nodeName = nodeName.toUpperCase();
   var elements = getSubElementsRecursive(element);
   for (var i in elements) {
@@ -304,6 +298,7 @@ function deleteAllCookies()
   }
 }
 
+
 function getCookie(Name)
 {
   var s = ' ' + document.cookie;
@@ -317,10 +312,9 @@ function getCookie(Name)
   return unescape(s.substring(i, j));
 }
 
-function setCookie(Name, Value, Days)
+
+function setCookie(Name, Value, Days = 365)
 {
-  if (!isNotNull(Days))
-    Days = 365;
   var date = new Date();
   date.setTime(date.getTime() + (Days * 24 * 60 * 60 * 1000));
     document.cookie = Name + '=' + Value + '; expires=' + date.toGMTString() + '; path=/';
