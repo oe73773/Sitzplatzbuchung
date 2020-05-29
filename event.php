@@ -470,7 +470,7 @@ function getEventActions()
 {
   $actions = [];
 
-  $action = newLinkPerItemAction('events', 'Anzeigen', 'eventId');
+  $action = newLinkPerItemAction('?p=events', 'Anzeigen', 'eventId');
   $action['visibleInDetails'] = false;
   $actions[] = $action;
 

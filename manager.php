@@ -77,11 +77,11 @@ function newLinkAction($url, $title)
 }
 
 
-function newLinkPerItemAction($page, $title, $idParamName)
+function newLinkPerItemAction($url, $title, $idParamName)
 {
   $action = newAction('link');
   $action['perItem'] = true;
-  $action['page'] = $page;
+  $action['url'] = $url;
   $action['title'] = $title;
   $action['idParamName'] = $idParamName;
   return $action;
@@ -160,8 +160,8 @@ function renderAction($action, $inItemList = false, $item = null)
   if ($action['type'] == 'link')
   {
     $url = array_value($action, 'url');
-    if ($url == null)
-      $url = '?p=' . $action['page'] . '&' . $action['idParamName'] . '=' . $item['id'];
+    if ($action['perItem'] && $action['idParamName'] != null && $item != null)
+      $url .= '&' . $action['idParamName'] . '=' . $item['id'];
     $attributes = [];
     $attributes['class'] = $action['cssClass'];
     $content = html_encode($action['title']);

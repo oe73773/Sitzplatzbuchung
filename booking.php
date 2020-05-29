@@ -234,7 +234,7 @@ function renderVisitorsSheetList()
   $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
 
   $actions = [];
-  $actions[] = newLinkPerItemAction('visitorList', 'Anzeigen', 'eventId');
+  $actions[] = newLinkPerItemAction('?p=visitorList', 'Anzeigen', 'eventId');
 
   renderItemTable($events, $fields, $actions);
 
