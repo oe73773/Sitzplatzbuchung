@@ -91,6 +91,9 @@ a:hover, button:hover.linkButton, button:hover.inlineLinkButton {
   text-decoration: underline;
 }
 
+button:hover:disabled.linkButton, button:hover:disabled.inlineLinkButton {
+  text-decoration: none;
+}
 
 form {
   display: inline;
