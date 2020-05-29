@@ -136,7 +136,7 @@ function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
 
 
 #-------------------------------------------------------------------------------
-#                            Connection/Client related
+#                               Request related
 #-------------------------------------------------------------------------------
 
 function get_client_ip_address()
