@@ -39,6 +39,14 @@ function newTextAreaField($name, $title)
 }
 
 
+function newBooleanField($name, $title)
+{
+  $field = newField('boolean', $name);
+  $field['title'] = $title;
+  return $field;
+}
+
+
 function newIntegerField($name, $title)
 {
   $field = newField('integer', $name);
@@ -295,6 +303,16 @@ function renderField($field, $item, $itemDetails, $editForm = false)
         echo html_encode($value);
     }
   }
+  else if ($type == 'boolean')
+  {
+    if ($editing)
+      echo html_checkbox($fieldName, $value == 1);
+    else
+    {
+      if ($value == 1)
+        echo 'ja';
+    }
+  }
   else if ($type == 'integer')
   {
     if ($editing)
@@ -342,7 +360,14 @@ function getSaveValues($fields)
 
     if ($value != null)
     {
-      if ($type == 'integer')
+      if ($type == 'boolean')
+      {
+        if ($value == 'true')
+          $value = 1;
+        else
+          $value = null;
+      }
+      else if ($type == 'integer')
       {
         if (!is_numeric($value) || intval($value) != $value)
         {

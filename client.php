@@ -154,13 +154,13 @@ function renderClientList()
   $field = newTextField('hash', 'Kennung');
   $fields[] = $field;
 
-  $field = newTextField('persistent', 'Persistent');
+  $field = newBooleanField('persistent', 'Persistent');
   $fields[] = $field;
 
   $field = newTextField('userName', 'Benutzername');
   $fields[] = $field;
 
-  $field = newTextField('userGroup', 'Benutzergruppe');
+  $field = newBooleanField('userGroup', 'Administratorrechte');
   $fields[] = $field;
 
   $field = newTextField('userAgent_os', 'Betriebssystem');

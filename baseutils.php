@@ -424,6 +424,17 @@ function html_input($type, $name = null, $value = null, $attributes = [])
 }
 
 
+function html_checkbox($name = null, $checked = false, $attributes = [])
+{
+  $attributes['type'] = 'checkbox';
+  if ($name != null)
+    $attributes['name'] = $name;
+  if ($checked)
+    $attributes['checked'] = true;
+  return html_node('input', null, $attributes);
+}
+
+
 function html_textarea($name = null, $value = '', $attributes = [])
 {
   if ($name != null)

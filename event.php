@@ -455,8 +455,7 @@ function getEventFields()
   $field['mandatory'] = true;
   $fields[] = $field;
 
-  $field = newIntegerField('canceled', 'Abgesagt');
-  $field['visibleInList'] = false;
+  $field = newBooleanField('canceled', 'Abgesagt');
   $fields[] = $field;
 
   $field = newTextAreaField('notice', 'Hinweise');
