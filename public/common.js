@@ -10,6 +10,7 @@ function isNotNull(Var)
   return typeof(Var) != 'undefined' && Var !== null;
 }
 
+
 function clone(obj)
 {
   if (obj === null || typeof(obj) !== 'object')
@@ -38,9 +39,9 @@ function byId(id, ignoreError = false)
 
 
 // Returns all elements by name
-function byName(Name)
+function byName(name)
 {
-  var elements = document.getElementsByName(Name);
+  var elements = document.getElementsByName(name);
   // Don't use elements 'length' and 'item':
   var list = [];
   for (var i = 0; i < elements.length; i++)
@@ -63,7 +64,6 @@ function getSubElements(element, nodeName = null)
   }
   return list;
 }
-
 
 
 function getSubElementByNodeName(element, nodeName, index = 0)
@@ -96,7 +96,6 @@ function getSubElementsRecursive(element, nodeName = null)
   }
   return result;
 }
-
 
 
 function byClass(ClassName)
@@ -299,10 +298,10 @@ function deleteAllCookies()
 }
 
 
-function getCookie(Name)
+function getCookie(name)
 {
   var s = ' ' + document.cookie;
-  var i = s.indexOf(' ' + Name + '=');
+  var i = s.indexOf(' ' + name + '=');
   if (i == -1)
     return null;
   i = s.indexOf('=', i) + 1;
@@ -313,11 +312,11 @@ function getCookie(Name)
 }
 
 
-function setCookie(Name, Value, Days = 365)
+function setCookie(name, value, days = 365)
 {
   var date = new Date();
-  date.setTime(date.getTime() + (Days * 24 * 60 * 60 * 1000));
-    document.cookie = Name + '=' + Value + '; expires=' + date.toGMTString() + '; path=/';
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+    document.cookie = name + '=' + value + '; expires=' + date.toGMTString() + '; path=/';
 }
 
 
