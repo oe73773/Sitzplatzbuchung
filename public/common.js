@@ -25,17 +25,17 @@ function clone(obj)
 //                                   DOM Reading
 //-------------------------------------------------------------------------------
 
-function byId(ID, IgnoreError)
+function byId(id, ignoreError)
 // Returns one element by ID or null
-// ID: string
-// IgnoreError: boolean, default false
+// id: string
+// ignoreError: boolean, default false
 {
-  if (!isNotNull(IgnoreError))
-    IgnoreError = false;
-  var El = document.getElementById(ID);
-  if (El == null && !IgnoreError)
-    console.log('Element with ID "' + ID + '" does not exist');
-  return El;
+  if (!isNotNull(ignoreError))
+    ignoreError = false;
+  var element = document.getElementById(id);
+  if (element == null && !ignoreError)
+    console.log('element with ID "' + id + '" does not exist');
+  return element;
 }
 
 
@@ -44,57 +44,57 @@ function byName(Name)
 {
   var Elements = document.getElementsByName(Name);
   // Don't use elements 'length' and 'item':
-  var List = [];
+  var list = [];
   for (var i = 0; i < Elements.length; i++)
-    List.push(Elements[i]);
-  return List;
+    list.push(Elements[i]);
+  return list;
 }
 
 
-function getSubElements(Element, NodeName)
+function getSubElements(element, nodeName)
 // Returns all direct sub-elements, optional filter by node name
 {
-  if (isNotNull(NodeName))
-    NodeName = NodeName.toUpperCase();
-  var Elements = Element.childNodes;
+  if (isNotNull(nodeName))
+    nodeName = nodeName.toUpperCase();
+  var Elements = element.childNodes;
   // Don't use elements 'length' and 'item':
-  var List = [];
+  var list = [];
   for (var i = 0; i < Elements.length; i++) {
-    if (!isNotNull(NodeName) || Elements[i].nodeName == NodeName)
-      List.push(Elements[i]);
+    if (!isNotNull(nodeName) || Elements[i].nodeName == nodeName)
+      list.push(Elements[i]);
   }
-  return List;
+  return list;
 }
 
 
 
-function getSubElementByNodeName(Element, NodeName, Index)
+function getSubElementByNodeName(element, nodeName, index)
 // Returns one direct sub-element by node name
 {
-  if (!isNotNull(Index))
-    Index = 0;
-  NodeName = NodeName.toUpperCase();
-  var Elements = getSubElements(Element);
+  if (!isNotNull(index))
+    index = 0;
+  nodeName = nodeName.toUpperCase();
+  var Elements = getSubElements(element);
   for (var i in Elements)
-    if (Elements[i].nodeName == NodeName) {
-      if (Index == 0)
+    if (Elements[i].nodeName == nodeName) {
+      if (index == 0)
         return Elements[i];
-      Index = Index - 1;
+      index = index - 1;
     }
 }
 
 
-function getSubElementsRecursive(Element, NodeName)
+function getSubElementsRecursive(element, nodeName)
 // Returns all (indirect) sub-element, optional filter by node name
 {
-  if (isNotNull(NodeName))
-    NodeName = NodeName.toUpperCase();
+  if (isNotNull(nodeName))
+    nodeName = nodeName.toUpperCase();
   var result = [];
-  var Sub = getSubElements(Element);
+  var Sub = getSubElements(element);
   for (var i in Sub) {
-    if (!isNotNull(NodeName) || Sub[i].nodeName == NodeName)
+    if (!isNotNull(nodeName) || Sub[i].nodeName == nodeName)
       result.push(Sub[i]);
-    var toMerge = getSubElementsRecursive(Sub[i], NodeName);
+    var toMerge = getSubElementsRecursive(Sub[i], nodeName);
     for (var j in toMerge)
       result.push(toMerge[j]);
   }
@@ -107,27 +107,27 @@ function byClass(ClassName)
 // Returns all elements by class
 {
   var Elements = document.getElementsByTagName('*');
-  var List = [];
+  var list = [];
   for (var i = 0; i < Elements.length; i++) { // Don't use elements 'length' and 'item':
     if (Elements[i].classList.contains(ClassName))
-      List.push(Elements[i]);
+      list.push(Elements[i]);
   }
-  return List;
+  return list;
 }
 
 
-function getSubElementByNodeNameRecursive(Element, NodeName, Index)
+function getSubElementByNodeNameRecursive(element, nodeName, index)
 // Returns one (indirect) sub-element by node name
 {
-  if (!isNotNull(Index))
-    Index = 0;
-  NodeName = NodeName.toUpperCase();
-  var Elements = getSubElementsRecursive(Element);
+  if (!isNotNull(index))
+    index = 0;
+  nodeName = nodeName.toUpperCase();
+  var Elements = getSubElementsRecursive(element);
   for (var i in Elements) {
-    if (Elements[i].nodeName == NodeName) {
-      if (Index == 0)
+    if (Elements[i].nodeName == nodeName) {
+      if (index == 0)
         return Elements[i];
-      Index = Index - 1;
+      index = index - 1;
     }
   }
 }
@@ -137,10 +137,10 @@ function getSubElementByNodeNameRecursive(Element, NodeName, Index)
 //                                   DOM Modification
 //-------------------------------------------------------------------------------
 
-function deleteElement(El)
+function deleteElement(element)
 // Remove a DOM element
 {
-  return El.parentNode.removeChild(El);
+  return element.parentNode.removeChild(element);
 }
 
 
@@ -261,12 +261,12 @@ function raiseError(msg) {
 //                                  String Functions
 //-------------------------------------------------------------------------------
 
-function trim(Str)
+function trim(str)
 // Remove whitespace from beginning and end of a string
 {
-  if (typeof(Str) != 'string')
-    return Str;
-  return Str.replace(/^\s+|\s+$/g, '');
+  if (typeof(str) != 'string')
+    return str;
+  return str.replace(/^\s+|\s+$/g, '');
 }
 
 
@@ -286,15 +286,15 @@ function ParseInt(str)
 }
 
 
-function encodeHtml(Str)
+function encodeHtml(str)
 // Convert plain text to HTML
 {
-  if (typeof(Str) != 'string')
-    return Str;
-  Str = Str.replace(/&/g, '&amp;');
-  Str = Str.replace(/</g, '&lt;');
-  Str = Str.replace(/>/g, '&gt;');
-  return Str;
+  if (typeof(str) != 'string')
+    return str;
+  str = str.replace(/&/g, '&amp;');
+  str = str.replace(/</g, '&lt;');
+  str = str.replace(/>/g, '&gt;');
+  return str;
 }
 
 
