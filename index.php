@@ -68,7 +68,7 @@ else
   else if ($page == 'bookingSimulator')
     renderBookingSimulator();
   else if ($page == 'visitorList')
-    renderBookingSimulator();
+    renderVisitorsSheet();
   else
     renderNotFoundError();
 
