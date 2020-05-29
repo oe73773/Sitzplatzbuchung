@@ -355,10 +355,12 @@ function modifyEventOnClone(&$event)
 # Fills in the suggested values
 {
   $oneWeek = 60 * 60 * 24 * 7;
-  $event['releaseTimestamp'] = $event['releaseTimestamp'] + $oneWeek;
+  if ($event['releaseTimestamp'] != null)
+    $event['releaseTimestamp'] = $event['releaseTimestamp'] + $oneWeek;
   $event['startTimestamp'] = $event['startTimestamp'] + $oneWeek;
   $event['bookingOpeningTimestamp'] = $event['bookingOpeningTimestamp'] + $oneWeek;
-  $event['bookingClosingTimestamp'] = $event['bookingClosingTimestamp'] + $oneWeek;
+  if ($event['bookingClosingTimestamp'] != null)
+    $event['bookingClosingTimestamp'] = $event['bookingClosingTimestamp'] + $oneWeek;
   $event['canceled'] = null;
 }
 
