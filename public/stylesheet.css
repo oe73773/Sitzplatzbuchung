@@ -50,11 +50,12 @@ footer {
 input, textarea, select {
   font-size: inherit;
   font-family: inherit;
-}
-
-input[type="text"], input[type="number"], input[type="tel"], input[type="password"], textarea, select {
   font-size: 115%;
   padding: 0.2em;
+}
+
+input[type="checkbox"] {
+  width: auto ! important;
 }
 
 input:read-only, textarea:read-only, .readOnly {
@@ -645,7 +646,11 @@ div.itemDetails td {
   text-align: left;
   padding-top: 7px;
   padding-bottom: 7px;
-  min-width: 170px;
+}
+@media (min-width: 700px) {
+  div.itemDetails td {
+    min-width: 8em;
+  }
 }
 
 div.itemDetails td:first-child {
@@ -657,11 +662,15 @@ div.itemDetails td:first-child > span.mandatory {
   color: red;
 }
 
-div.itemDetails input {
-  width: 30em;
+div.itemDetails input, div.itemDetails textarea, div.itemDetails select {
+  width: 15em;
+}
+@media (min-width: 700px) {
+  div.itemDetails input, div.itemDetails textarea, div.itemDetails select {
+    width: 30em;
+  }
 }
 div.itemDetails textarea {
-  width: 30em;
   height: 8em;
 }
 div.itemDetails td.timestamp.minute input, div.itemDetails td.integer input {
