@@ -220,10 +220,22 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
       }
       if ($count > 0)
       {
+        $dec = min(floor($count / 2), $fiveSeatsFree);
+        $fiveSeatsFree -= $dec;
+        $count -= $dec * 2;
+      }
+      if ($count > 0)
+      {
         $dec = min($count, $fiveSeatsFree);
         $fiveSeatsFree -= $dec;
         $fiveSeatsWith1Person += $dec;
         $count -= $dec;
+      }
+      if ($count > 0)
+      {
+        $dec = min(floor($count / 2), $sixSeatsFree);
+        $sixSeatsFree -= $dec;
+        $count -= $dec * 2;
       }
       if ($count > 0)
       {
