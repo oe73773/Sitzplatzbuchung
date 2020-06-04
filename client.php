@@ -154,7 +154,7 @@ function renderClientList()
   $field = newTextField('hash', 'Kennung');
   $fields[] = $field;
 
-  $field = newBooleanField('persistent', 'Persistent');
+  $field = newBooleanField('persistent', 'Dauerhaft');
   $fields[] = $field;
 
   $field = newTextField('userName', 'Benutzername');

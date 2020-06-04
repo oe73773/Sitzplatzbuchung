@@ -450,11 +450,11 @@ function renderHelpPage()
   echo getClientValue('id');
   echo ' (';
   if (getClientValue('persistent') == 1)
-    echo 'beständig';
+    echo 'dauerhaft';
   else
   {
     echo html_open('form', ['action' => '?a=makeClientPersistent', 'onsubmit' => 'postForm(event)']);
-    echo html_form_submit_button('Auf diesem Gerät merken', ['class' => 'inlineLinkButton']);
+    echo html_form_submit_button('Cookie dauerhaft speichern', ['class' => 'inlineLinkButton']);
     writeFormToken();
     echo html_close('form');
   }
