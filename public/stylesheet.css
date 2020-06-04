@@ -534,7 +534,7 @@ table.border td.null {
   }
 }
 
-.content.mainPage .saveBookingForm button {
+.content.mainPage .saveBookingForm button, .content.mainPage .saveBookingFormPlaceholder button, .content.mainPage .cancelBookingForm button {
   margin-top: 10px;
 }
 
