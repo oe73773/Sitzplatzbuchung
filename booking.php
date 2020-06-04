@@ -299,11 +299,22 @@ function renderVisitorsSheetDetails($eventId)
     renderVisitorsSheetDetails_addNumberingAndEmptyRows($rows);
 
   $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('name', 'Name');
-  $fields[] = newTextField('phoneNumber', 'Telefon');
-  $fields[] = newTextField('bookingInfo', 'Buchung');
-  $fields[] = newTextField('empty', 'Anwesend');
+
+  $field = newIdField();
+  $field['isTitle'] = false;
+  $fields[] = $field;
+
+  $field = newTextField('name', 'Name');
+  $fields[] = $field;
+
+  $field = newTextField('phoneNumber', 'Telefon');
+  $fields[] = $field;
+
+  $field = newTextField('bookingInfo', 'Buchung');
+  $fields[] = $field;
+
+  $field = newTextField('empty', 'Anwesend');
+  $fields[] = $field;
 
   echo html_button('Drucken', ['onclick' => 'window.print();']);
 
