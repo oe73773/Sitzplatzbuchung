@@ -302,11 +302,11 @@ function renderEvents()
     return;
   }
 
-  $eventId = get_param_value('eventId');
-  if ($eventId == null)
+  $itemId = get_param_value('itemId');
+  if ($itemId == null)
     renderEventList();
   else
-    renderEventDetails($eventId);
+    renderEventDetails($itemId);
 }
 
 
@@ -316,17 +316,17 @@ function renderEventList()
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemTable(getAdminEvents(), getEventFields(), getEventActions(), 'eventId');
+  renderItemTable(getAdminEvents(), getEventFields(), getEventActions());
 
   echo html_close('div');
 }
 
 
-function renderEventDetails($eventId)
+function renderEventDetails($itemId)
 {
   $event = null;
   $title = null;
-  $creatingItem = $eventId == 'new';
+  $creatingItem = $itemId == 'new';
   if ($creatingItem)
   {
     $title = 'Neue Veranstaltung';
@@ -344,7 +344,7 @@ function renderEventDetails($eventId)
   }
   else
   {
-    $event = tryGetEventById($eventId, true, true);
+    $event = tryGetEventById($itemId, true, true);
     if ($event == null)
     {
       renderNotFoundError();
@@ -357,7 +357,7 @@ function renderEventDetails($eventId)
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemDetails($creatingItem, $event, getEventFields(), getEventActions(), 'eventId', 'saveEvent');
+  renderItemDetails($creatingItem, $event, getEventFields(), getEventActions(), 'saveEvent');
 
   echo html_close('div');
 }
@@ -386,7 +386,7 @@ function handleSaveEventAction()
     return;
   }
 
-  $itemId = get_param_value('eventId');
+  $itemId = get_param_value('itemId');
   if ($itemId != null)
   {
     $item = tryGetEventById($itemId);
@@ -410,7 +410,7 @@ function handleSaveEventAction()
     db()->update_by_id('event', $itemId, $values);
     addAdminlogEntry('event', $itemId, 'edit', $values);
   }
-  echo 'location.href = "?p=events&eventId=';
+  echo 'location.href = "?p=events&itemId=';
   echo $itemId;
   echo '";';
 }
@@ -508,16 +508,12 @@ function getEventActions()
 {
   $actions = [];
 
-  $action = newLinkPerItemAction('?p=events', 'Anzeigen', 'eventId');
-  $action['visibleInDetails'] = false;
-  $actions[] = $action;
-
-  $action = newLinkAction('?p=events&eventId=new', 'Neue Veranstaltung');
+  $action = newLinkAction('?p=events&itemId=new', 'Neue Veranstaltung');
   $action['cssClass'] = 'saveButton';
   $action['visibleInDetails'] = false;
   $actions[] = $action;
 
-  $action = newLinkPerItemAction('?p=events&eventId=new', 'Neue Folge-Veranstaltung', 'originalEventId');
+  $action = newLinkPerItemAction('?p=events&itemId=new', 'Neue Folge-Veranstaltung', 'originalEventId');
   $action['cssClass'] = 'saveButton';
   $action['visibleInList'] = false;
   $actions[] = $action;

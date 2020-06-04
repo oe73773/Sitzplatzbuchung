@@ -97,7 +97,7 @@ function newLinkPerItemAction($url, $title, $idParamName)
 }
 
 
-function renderItemTable($items, $fields, $actions = [], $detailsLinkIdParamName = null)
+function renderItemTable($items, $fields, $actions = [])
 {
   echo html_open('div', ['class' => 'itemList']);
 
@@ -129,6 +129,18 @@ function renderItemTable($items, $fields, $actions = [], $detailsLinkIdParamName
     return;
   }
 
+  # Aktion 'Anzeigen'
+  foreach ($fields as $field)
+  {
+    if ($field['isTitle'])
+    {
+      $action = newLinkPerItemAction('?p=' . get_param_value('p'), 'Anzeigen', 'itemId');
+      $action['visibleInDetails'] = false;
+      $itemActions[] = $action;
+      break;
+    }
+  }
+
   echo html_open('table', ['class' => 'border']);
   echo html_open('tr');
   foreach ($fields as $field)
@@ -145,7 +157,7 @@ function renderItemTable($items, $fields, $actions = [], $detailsLinkIdParamName
     foreach ($fields as $field)
     {
       if ($field['visibleInList'])
-        renderField($field, $item, false, false, $detailsLinkIdParamName);
+        renderField($field, $item, false, false);
     }
     if (count($itemActions) > 0)
     {
@@ -182,7 +194,7 @@ function renderAction($action, $inItemList = false, $item = null)
 }
 
 
-function renderItemDetails($creatingItem, $item, $fields, $actions, $idParamName, $saveActionName)
+function renderItemDetails($creatingItem, $item, $fields, $actions, $saveActionName)
 {
   $showFormScript = "event.target.parentNode.parentNode.parentNode.classList.add('editingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode.parentNode);";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('editingFormOpened');";
@@ -226,7 +238,7 @@ function renderItemDetails($creatingItem, $item, $fields, $actions, $idParamName
   if ($creatingItem)
     echo html_node('script', 'focusFirstChildInputNode(document.body);');
   else
-    echo html_input('hidden', $idParamName, $item['id']);
+    echo html_input('hidden', 'itemId', $item['id']);
   echo html_close('form');
 
   echo html_close('div');
@@ -256,7 +268,7 @@ function renderFieldsTable($fields, $item, $itemDetails, $editForm = false, $cre
 }
 
 
-function renderField($field, $item, $itemDetails, $editForm = false, $detailsLinkIdParamName = null)
+function renderField($field, $item, $itemDetails, $editForm = false)
 {
   $fieldName = $field['name'];
   $value = $item[$fieldName];
@@ -277,8 +289,9 @@ function renderField($field, $item, $itemDetails, $editForm = false, $detailsLin
   $classes[] = $fieldName;
   echo html_open('td', ['class' => implode(' ', $classes)]);
 
-  if ($field['isTitle'] && $detailsLinkIdParamName != null)
-    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&' . $detailsLinkIdParamName . '=' . $item['id']]);
+  $showAsTitle = $field['isTitle'] && !$itemDetails;
+  if ($showAsTitle)
+    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&itemId=' . $item['id']]);
 
   if ($itemDetails)
     echo html_open('div', ['class' => 'textBlock']);
@@ -336,7 +349,7 @@ function renderField($field, $item, $itemDetails, $editForm = false, $detailsLin
   if ($itemDetails)
     echo html_close('div');
 
-  if ($field['isTitle'] && $detailsLinkIdParamName != null)
+  if ($showAsTitle)
     echo html_close('a');
 
   echo html_close('td');

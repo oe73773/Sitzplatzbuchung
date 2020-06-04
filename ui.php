@@ -599,7 +599,7 @@ function renderDebugFreeSeatsCalculation()
     return;
   }
 
-  $eventId = get_param_value('eventId');
+  $eventId = get_param_value('itemId');
   $event = tryGetEventById($eventId);
   if ($event == null)
   {

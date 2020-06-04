@@ -198,11 +198,11 @@ function handleCancelBookingAction()
 
 function renderVisitorsSheet()
 {
-  $eventId = get_param_value('eventId');
-  if ($eventId == null)
+  $itemId = get_param_value('itemId');
+  if ($itemId == null)
     renderVisitorsSheetList();
   else
-    renderVisitorsSheetDetails($eventId);
+    renderVisitorsSheetDetails($itemId);
 }
 
 
@@ -242,10 +242,7 @@ function renderVisitorsSheetList()
   $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
   $fields[] = $field;
 
-  $actions = [];
-  $actions[] = newLinkPerItemAction('?p=visitorList', 'Anzeigen', 'eventId');
-
-  renderItemTable($events, $fields, $actions, 'eventId');
+  renderItemTable($events, $fields, $actions);
 
   echo html_close('div');
 }
