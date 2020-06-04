@@ -20,6 +20,7 @@ function newIdField()
   $field = newField('integer', 'id');
   $field['title'] = 'Nr.';
   $field['editable'] = false;
+  $field['isTitle'] = true;
   return $field;
 }
 
@@ -194,7 +195,7 @@ function renderAction($action, $inItemList = false, $item = null)
 }
 
 
-function renderItemDetails($creatingItem, $item, $fields, $actions, $saveActionName)
+function renderItemDetails($creatingItem, $item, $fields, $actions = [], $saveActionName = null)
 {
   $showFormScript = "event.target.parentNode.parentNode.parentNode.classList.add('editingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode.parentNode);";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('editingFormOpened');";
@@ -211,7 +212,8 @@ function renderItemDetails($creatingItem, $item, $fields, $actions, $saveActionN
     echo html_open('div', ['class' => 'view']);
 
     echo html_open('div');
-    echo html_button('Bearbeiten', ['onclick' => $showFormScript]);
+    if ($saveActionName != null)
+      echo html_button('Bearbeiten', ['onclick' => $showFormScript]);
     foreach ($actions as $action)
     {
       if (!$action['visibleInDetails'])
@@ -225,21 +227,26 @@ function renderItemDetails($creatingItem, $item, $fields, $actions, $saveActionN
   }
 
   # edit
-  echo html_open('form', ['action' => '?a=' . $saveActionName, 'onsubmit' => 'postForm(event)']);
-  renderFieldsTable($fields, $item, true, true, $creatingItem);
+  if ($saveActionName != null)
+  {
+    echo html_open('form', ['action' => '?a=' . $saveActionName, 'onsubmit' => 'postForm(event)']);
+    renderFieldsTable($fields, $item, true, true, $creatingItem);
 
-  echo html_open('div');
-  echo html_form_submit_button('Speichern', ['class' => 'saveButton']);
-  if (!$creatingItem)
-    echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
-  echo html_close('div');
+    echo html_open('div');
+    echo html_form_submit_button('Speichern', ['class' => 'saveButton']);
+    if (!$creatingItem)
+      echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+    echo html_close('div');
 
-  writeFormToken();
-  if ($creatingItem)
-    echo html_node('script', 'focusFirstChildInputNode(document.body);');
-  else
-    echo html_input('hidden', 'itemId', $item['id']);
-  echo html_close('form');
+    writeFormToken();
+    if ($creatingItem)
+      echo html_node('script', 'focusFirstChildInputNode(document.body);');
+    else
+      echo html_input('hidden', 'itemId', $item['id']);
+    echo html_close('form');
+  }
+  else if ($creatingItem)
+    renderPageErrorBox('Ungültige Aktion.');
 
   echo html_close('div');
 }

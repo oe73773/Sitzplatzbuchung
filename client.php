@@ -100,6 +100,29 @@ function decodeClient(&$client)
 }
 
 
+function tryGetClientById($itemId)
+{
+  if ($itemId == null)
+    return;
+  $item = db()->try_query_row_by_id('client', $itemId);
+  decodeClient($item);
+  return $item;
+}
+
+
+function getClients()
+{
+  $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
+
+  foreach ($items as &$item)
+  {
+    decodeClient($item);
+  }
+
+  return $items;
+}
+
+
 function getFormToken()
 {
   return substr(getClientValue('token'), -6);
@@ -128,24 +151,56 @@ function handleMakeClientPersistentAction()
 }
 
 
-function renderClientList()
+function renderClients()
 {
   if (!isClientAdmin())
   {
     renderForbiddenError();
     return;
   }
+
+  $itemId = get_param_value('itemId');
+  if ($itemId == null)
+    renderClientList();
+  else
+    renderClientDetails($itemId);
+}
+
+
+function renderClientList()
+{
   writeMainHtmlBeforeContent('Geräte verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
-  $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
+  renderItemTable(getClients(), getClientFields());
 
-  foreach ($items as &$client)
+  echo html_close('div');
+}
+
+
+function renderClientDetails($itemId)
+{
+  $item = tryGetClientById($itemId);
+  if ($item == null)
   {
-    decodeClient($client);
+    renderNotFoundError();
+    return;
   }
+  $title = 'Gerät ' . $item['id'];
 
+  writeMainHtmlBeforeContent($title);
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemDetails(false, $item, getClientFields());
+
+  echo html_close('div');
+}
+
+
+function getClientFields()
+{
   $fields = [];
 
   $field = newIdField();
@@ -166,13 +221,24 @@ function renderClientList()
   $field = newTextField('userAgent_os', 'Betriebssystem');
   $fields[] = $field;
 
+  $field = newTextField('userAgent', 'User Agent');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
   $field = newTimestampField('lastSeenTimestamp', 'Zuletzt online');
   $fields[] = $field;
 
   $field = newTextField('lastListOfPersons', 'Zuletzt gebucht');
   $fields[] = $field;
 
-  renderItemTable($items, $fields);
+  $field = newTimestampField('editTimestamp', 'Bearbeitet am');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
 
-  echo html_close('div');
+  $field = newIntegerField('editClientId', 'Bearbeitet durch');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  return $fields;
 }
+

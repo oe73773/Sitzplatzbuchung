@@ -56,13 +56,13 @@ else
   else if ($page == 'admin')
     renderAdminPage();
   else if ($page == 'clients')
-    renderClientList();
+    renderClients();
   else if ($page == 'events')
     renderEvents();
   else if ($page == 'bookings')
-    renderBookingList();
+    renderBookings();
   else if ($page == 'adminlog')
-    renderAdminlogList();
+    renderAdminlogs();
   else if ($page == 'debugFreeSeatsCalculation')
     renderDebugFreeSeatsCalculation();
   else if ($page == 'bookingSimulator')

@@ -20,13 +20,13 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
 }
 
 
-function tryGetEventById($eventId, $withVisitorCount = false, $withFreeSeatCount = false)
+function tryGetEventById($itemId, $withVisitorCount = false, $withFreeSeatCount = false)
 {
-  if ($eventId == null)
+  if ($itemId == null)
     return;
-  $event = db()->try_query_row_by_id('event', $eventId);
-  decodeEvent($event, $withVisitorCount, $withFreeSeatCount);
-  return $event;
+  $item = db()->try_query_row_by_id('event', $itemId);
+  decodeEvent($item, $withVisitorCount, $withFreeSeatCount);
+  return $item;
 }
 
 
@@ -34,24 +34,24 @@ function getMainPageEvents($withVisitorCount = false, $withFreeSeatCount = false
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 30); # 30 minutes overrun after start of event
-  $events = db()->query_rows('SELECT * FROM event WHERE releaseTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 50', [$now, $nowWithOffset]);
-  foreach ($events as &$event)
+  $items = db()->query_rows('SELECT * FROM event WHERE releaseTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 50', [$now, $nowWithOffset]);
+  foreach ($items as &$item)
   {
-    decodeEvent($event, $withVisitorCount, $withFreeSeatCount);
+    decodeEvent($item, $withVisitorCount, $withFreeSeatCount);
   }
-  return $events;
+  return $items;
 }
 
 
 function getAdminEvents()
 {
   $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
-  $events = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
-  foreach ($events as &$event)
+  $items = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
+  foreach ($items as &$item)
   {
-    decodeEvent($event, true, true);
+    decodeEvent($item, true, true);
   }
-  return $events;
+  return $items;
 }
 
 
@@ -59,12 +59,12 @@ function getVisitorListEvents()
 {
   $now = format_timestamp(time());
   $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 30);
-  $events = db()->query_rows('SELECT * FROM event WHERE bookingOpeningTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
-  foreach ($events as &$event)
+  $items = db()->query_rows('SELECT * FROM event WHERE bookingOpeningTimestamp < ? AND startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$now, $nowWithOffset]);
+  foreach ($items as &$item)
   {
-    decodeEvent($event, true, true);
+    decodeEvent($item, true, true);
   }
-  return $events;
+  return $items;
 }
 
 
@@ -324,7 +324,7 @@ function renderEventList()
 
 function renderEventDetails($itemId)
 {
-  $event = null;
+  $item = null;
   $title = null;
   $creatingItem = $itemId == 'new';
   if ($creatingItem)
@@ -333,31 +333,31 @@ function renderEventDetails($itemId)
     $originalEventId = get_param_value('originalEventId');
     if ($originalEventId != null)
     {
-      $event = tryGetEventById($originalEventId);
-      if ($event == null)
+      $item = tryGetEventById($originalEventId);
+      if ($item == null)
       {
         renderNotFoundError();
         return;
       }
-      modifyEventOnClone($event);
+      modifyEventOnClone($item);
     }
   }
   else
   {
-    $event = tryGetEventById($itemId, true, true);
-    if ($event == null)
+    $item = tryGetEventById($itemId, true, true);
+    if ($item == null)
     {
       renderNotFoundError();
       return;
     }
-    $title = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
+    $title = $item['title'] . ' am '. formatTimestampLocalLong($item['startTimestamp'], 'minute');
   }
 
   writeMainHtmlBeforeContent($title);
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemDetails($creatingItem, $event, getEventFields(), getEventActions(), 'saveEvent');
+  renderItemDetails($creatingItem, $item, getEventFields(), getEventActions(), 'saveEvent');
 
   echo html_close('div');
 }
@@ -497,6 +497,10 @@ function getEventFields()
 
   $field = newTimestampField('editTimestamp', 'Bearbeitet am');
   $field['editable'] = false;
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newIntegerField('editClientId', 'Bearbeitet durch');
   $field['visibleInList'] = false;
   $fields[] = $field;
 

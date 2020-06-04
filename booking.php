@@ -10,6 +10,17 @@ function decodeBooking(&$booking)
   }
 }
 
+
+function tryGetBookingById($itemId)
+{
+  if ($itemId == null)
+    return;
+  $item = db()->try_query_row_by_id('booking', $itemId);
+  decodeBooking($item);
+  return $item;
+}
+
+
 function getCurrentBookingByEventForClient()
 {
   $bookings = db()->query_rows('SELECT * FROM booking WHERE insertClientId = ? AND insertedAsAdmin IS NULL ORDER BY id DESC LIMIT 100', [getClientValue('id')]);
@@ -26,6 +37,19 @@ function getCurrentBookingByEventForClient()
 function getActiveBookingForEventForClient($eventId)
 {
   return db()->try_query_row('SELECT * FROM booking WHERE insertClientId = ? AND insertedAsAdmin IS NULL AND eventId = ? AND cancelTimestamp IS NULL', [getClientValue('id'), $eventId]);
+}
+
+
+function getAdminBookings()
+{
+  $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
+
+  foreach ($items as &$item)
+  {
+    decodeBooking($item);
+  }
+
+  return $items;
 }
 
 
@@ -242,7 +266,7 @@ function renderVisitorsSheetList()
   $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
   $fields[] = $field;
 
-  renderItemTable($events, $fields, $actions);
+  renderItemTable($events, $fields);
 
   echo html_close('div');
 }
@@ -367,24 +391,66 @@ function renderVisitorsSheetDetails_addNumberingAndEmptyRows(&$rows)
 }
 
 
-function renderBookingList()
+function renderBookings()
 {
   if (!isClientAdmin())
   {
     renderForbiddenError();
     return;
   }
+
+  $itemId = get_param_value('itemId');
+  if ($itemId == null)
+    renderBookingList();
+  else
+    renderBookingDetails($itemId);
+}
+
+
+function renderBookingList()
+{
   writeMainHtmlBeforeContent('Buchungen verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
-  $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
+  renderItemTable(getAdminBookings(), getBookingFields());
 
-  foreach ($items as &$booking)
+  echo html_close('div');
+}
+
+
+function renderBookingDetails($itemId)
+{
+  $item = null;
+  $title = null;
+  $creatingItem = $itemId == 'new';
+  if ($creatingItem)
   {
-    decodeBooking($booking);
+    $title = 'Neue Buchung';
+  }
+  else
+  {
+    $item = tryGetBookingById($itemId);
+    if ($item == null)
+    {
+      renderNotFoundError();
+      return;
+    }
+    $title = 'Buchung ' . $item['id'];
   }
 
+  writeMainHtmlBeforeContent($title);
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemDetails($creatingItem, $item, getBookingFields());
+
+  echo html_close('div');
+}
+
+
+function getBookingFields()
+{
   $fields = [];
 
   $field = newIdField();
@@ -393,19 +459,25 @@ function renderBookingList()
   $field = newTextField('eventId', 'Veranstaltung');
   $fields[] = $field;
 
-  $field = newTextField('insertClientId', 'Erstellt durch');
+  $field = newTextField('listOfPersons', 'Personen');
   $fields[] = $field;
 
-  $field = newTextField('listOfPersons', 'Personen');
+  $field = newTextField('phoneNumber', 'Telefon');
+  $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newTimestampField('insertTimestamp', 'Gebucht am');
   $fields[] = $field;
 
+  $field = newTextField('insertClientId', 'Gebucht durch');
+  $fields[] = $field;
+
   $field = newTimestampField('cancelTimestamp', 'Storniert am');
   $fields[] = $field;
 
-  renderItemTable($items, $fields);
+  $field = newIntegerField('cancelClientId', 'Storniert durch');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
 
-  echo html_close('div');
+  return $fields;
 }

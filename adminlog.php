@@ -26,17 +26,18 @@ function decodeAdminlog(&$item)
 }
 
 
-function renderAdminlogList()
+function tryGetAdminlogById($itemId)
 {
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
+  if ($itemId == null)
     return;
-  }
-  writeMainHtmlBeforeContent('Admin-Protokoll');
+  $item = db()->try_query_row_by_id('adminlog', $itemId);
+  decodeAdminlog($item);
+  return $item;
+}
 
-  echo html_open('div', ['class' => 'content']);
 
+function getAdminlogs()
+{
   $items = db()->query_rows('SELECT * FROM adminlog ORDER BY id DESC LIMIT 100');
 
   foreach ($items as &$item)
@@ -44,6 +45,60 @@ function renderAdminlogList()
     decodeAdminlog($item);
   }
 
+  return $items;
+}
+
+
+function renderAdminlogs()
+{
+  if (!isClientAdmin())
+  {
+    renderForbiddenError();
+    return;
+  }
+
+  $itemId = get_param_value('itemId');
+  if ($itemId == null)
+    renderAdminlogList();
+  else
+    renderAdminlogDetails($itemId);
+}
+
+
+function renderAdminlogList()
+{
+  writeMainHtmlBeforeContent('Admin-Protokoll');
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemTable(getAdminlogs(), getAdminlogFields());
+
+  echo html_close('div');
+}
+
+
+function renderAdminlogDetails($itemId)
+{
+  $item = tryGetAdminlogById($itemId);
+  if ($item == null)
+  {
+    renderNotFoundError();
+    return;
+  }
+  $title = 'Admin-Protokoll-Eintrag ' . $item['id'];
+
+  writeMainHtmlBeforeContent($title);
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemDetails(false, $item, getAdminlogFields());
+
+  echo html_close('div');
+}
+
+
+function getAdminlogFields()
+{
   $fields = [];
 
   $field = newIdField();
@@ -52,7 +107,7 @@ function renderAdminlogList()
   $field = newTimestampField('insertTimestamp', 'Datum');
   $fields[] = $field;
 
-  $field = newIntegerField('clientId', 'Benutzer');
+  $field = newIntegerField('clientId', 'Gerät');
   $fields[] = $field;
 
   $field = newTextField('itemType', 'Datensatz-Typ');
@@ -64,7 +119,5 @@ function renderAdminlogList()
   $field = newTextField('action', 'Aktion');
   $fields[] = $field;
 
-  renderItemTable($items, $fields);
-
-  echo html_close('div');
+  return $fields;
 }
