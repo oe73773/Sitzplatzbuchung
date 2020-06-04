@@ -237,7 +237,7 @@ function renderVisitorsSheetList()
     renderForbiddenError();
     return;
   }
-  writeMainHtmlBeforeContent('Anwesenheitsliste');
+  writeMainHtmlBeforeContent('Anwesenheitslisten');
 
   echo html_open('div', ['class' => 'content visitorList']);
 

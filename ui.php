@@ -482,7 +482,7 @@ function renderAdminPage()
   echo html_open('div', ['class' => 'content adminPage']);
 
   echo html_open('ul');
-  echo html_node('li', html_a('?p=visitorList', 'Anwesenheitsliste'));
+  echo html_node('li', html_a('?p=visitorList', 'Anwesenheitslisten'));
   echo html_node('li', html_a('?p=events', 'Veranstaltungen verwalten'));
   echo html_node('li', html_a('?p=bookings', 'Buchungen verwalten'));
   echo html_node('li', html_a('?p=clients', 'Geräte verwalten'));
