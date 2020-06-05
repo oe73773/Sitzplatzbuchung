@@ -56,8 +56,10 @@ function getAdminBookings($eventId)
 function handleSaveBookingAction()
 # Parameters:
 # - eventId
+# - asAdmin (optional)
 # - surname1..surname6
 # - lastname1..lastname6
+# - phoneNumber
 {
   $eventId = get_param_value('eventId');
   $event = tryGetEventById($eventId);
@@ -67,15 +69,17 @@ function handleSaveBookingAction()
     echo 'location.reload();';
     return;
   }
-  if (!isBookingOpen($event))
+
+  $asAdmin = isClientAdmin() && get_param_value('asAdmin') == 1;
+
+  if (!$asAdmin && !isBookingOpen($event))
   {
     echo 'showErrorMsg("Der Buchungszeitraum ist abgelaufen.");';
     echo 'location.reload();';
     return;
   }
 
-  $booking = getActiveBookingForEventForClient($eventId);
-  if ($booking != null)
+  if (!$asAdmin && getActiveBookingForEventForClient($eventId) != null)
   {
     echo 'showErrorMsg("Die Veranstaltung wurde bereits von diesem Gerät gebucht.");';
     echo 'location.reload();';
@@ -149,11 +153,14 @@ function handleSaveBookingAction()
   $listOfPersons = implode(';', $persons);
 
   # update client row
-  $clientValues = [];
-  $clientValues['lastListOfPersons'] = $listOfPersons;
-  $clientValues['lastPhoneNumber'] = $phoneNumber;
-  $clientValues['persistent'] = 1;
-  db()->try_update_by_id('client', getClientValue('id'), $clientValues);
+  if (!$asAdmin)
+  {
+    $clientValues = [];
+    $clientValues['lastListOfPersons'] = $listOfPersons;
+    $clientValues['lastPhoneNumber'] = $phoneNumber;
+    $clientValues['persistent'] = 1;
+    db()->try_update_by_id('client', getClientValue('id'), $clientValues);
+  }
 
   # check free seat count
   $freeSeatCount = calculateFreeSeatCount($event, count($persons));
@@ -170,15 +177,20 @@ function handleSaveBookingAction()
 
   # insert booking row
   $booking = [];
-  $booking['eventId'] = $event['id'];
+  $booking['eventId'] = $eventId;
   $booking['listOfPersons'] = $listOfPersons;
   $booking['personCount'] = count($persons);
   $booking['phoneNumber'] = $phoneNumber;
   $booking['insertTimestamp'] = format_timestamp(time());
   $booking['insertClientId'] = getClientValue('id');
+  if ($asAdmin)
+    $booking['insertedAsAdmin'] = 1;
   $bookingId = db()->insert('booking', $booking);
 
-  echo 'location.reload();';
+  if ($asAdmin)
+    echo js_redirect('?p=bookings&eventId=' . $eventId);
+  else
+    echo 'location.reload();';
 }
 
 
@@ -424,7 +436,7 @@ function renderBookingList($eventId)
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemTable(getAdminBookings($eventId), getBookingFields());
+  renderItemTable(getAdminBookings($eventId), getBookingFields(), getBookingActions());
 
   echo html_close('div');
 }
@@ -437,7 +449,14 @@ function renderBookingDetails($itemId)
   $creatingItem = $itemId == 'new';
   if ($creatingItem)
   {
-    $title = 'Neue Buchung';
+    $eventId = get_param_value('eventId');
+    $event = tryGetEventById($eventId);
+    if ($event == null)
+    {
+      renderNotFoundError();
+      return;
+    }
+    $title = 'Buchung für ' . $event['titleAndDate'];
   }
   else
   {
@@ -454,7 +473,10 @@ function renderBookingDetails($itemId)
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemDetails($creatingItem, $item, getBookingFields());
+  if ($creatingItem)
+    renderMainPageSaveBookingForm($event, true);
+  else
+    renderItemDetails($creatingItem, $item, getBookingFields());
 
   echo html_close('div');
 }
@@ -494,3 +516,15 @@ function getBookingFields()
   return $fields;
 }
 
+
+function getBookingActions()
+{
+  $actions = [];
+
+  $action = newLinkAction('?p=bookings&itemId=new&eventId=' . get_param_value('eventId'), 'Buchung eintragen');
+  $action['cssClass'] = 'saveButton';
+  $action['visibleInDetails'] = false;
+  $actions[] = $action;
+
+  return $actions;
+}

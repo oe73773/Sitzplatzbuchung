@@ -231,7 +231,7 @@ function renderMainPageEvent($event, $booking)
       if ($hasActiveBooking)
         renderMainPageCancelBookingForm($event);
       else if ($freeSeatCount > 0)
-        renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingCanceled);
+        renderMainPageSaveBookingForm($event, false, $persons, $phoneNumber, $bookingCanceled);
     }
   }
 
@@ -383,23 +383,29 @@ function renderMainPageCancelBookingForm($event)
 }
 
 
-function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingCanceled)
+function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phoneNumber = null, $bookingCanceled = false)
 {
   $showFormScript = "event.target.parentNode.parentNode.classList.add('saveBookingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode);disableAutoReload();";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('saveBookingFormOpened');enableAutoReload();";
 
-  if ($bookingCanceled)
-    $buttonText = 'Erneut buchen';
-  else
-    $buttonText = 'Teilnehmen';
-  $button = html_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
-  echo html_node('div', $button, ['class' => 'saveBookingFormPlaceholder']);
+  if (!$asAdmin)
+  {
+    if ($bookingCanceled)
+      $buttonText = 'Erneut buchen';
+    else
+      $buttonText = 'Teilnehmen';
+    $button = html_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
+    echo html_node('div', $button, ['class' => 'saveBookingFormPlaceholder']);
+  }
 
   echo html_open('div', ['class' => 'saveBookingForm']);
-  echo html_node('div', 'Teilnehmer aus meinem Haushalt:', ['class' => 'formTitle']);
+  if ($asAdmin)
+    echo html_node('div', 'Teilnehmer aus einem Haushalt:', ['class' => 'formTitle']);
+  else
+    echo html_node('div', 'Teilnehmer aus meinem Haushalt:', ['class' => 'formTitle']);
   echo html_open('form', ['action' => '?a=saveBooking', 'onsubmit' => 'postForm(event)']);
 
-  if ($persons == null)
+  if (!$asAdmin && $persons == null)
   {
     $persons = explode(';', getClientValue('lastListOfPersons'));
     $phoneNumber = getClientValue('lastPhoneNumber');
@@ -427,9 +433,15 @@ function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingC
     echo html_node('div', 'Hinweis: Es wird ein Browser-Cookie gespeichert. <br>Eine Stornierung ist vom selben Gerät möglich.', ['class' => 'cookieInfo']);
 
   echo html_form_submit_button('Buchung speichern', ['class' => 'saveButton']);
-  echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+  if (!$asAdmin)
+    echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
 
   echo html_input('hidden', 'eventId', $event['id']);
+  if ($asAdmin)
+  {
+    echo html_input('hidden', 'asAdmin', 1);
+    echo html_node('script', 'focusFirstChildInputNode(document.body);');
+  }
   writeFormToken();
   echo html_close('form');
   echo html_close('div');
