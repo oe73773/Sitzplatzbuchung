@@ -11,6 +11,7 @@ function newField($type, $name)
   $field['mandatory'] = false;
   $field['allowHtml'] = false;
   $field['isTitle'] = false;
+  $field['idParamName'] = 'itemId';
   return $field;
 }
 
@@ -87,7 +88,7 @@ function newLinkAction($url, $title)
 }
 
 
-function newLinkPerItemAction($url, $title, $idParamName)
+function newLinkPerItemAction($url, $title, $idParamName = 'itemId')
 {
   $action = newAction('link');
   $action['perItem'] = true;
@@ -135,8 +136,7 @@ function renderItemTable($items, $fields, $actions = [])
   {
     if ($field['isTitle'])
     {
-      $idParamName = array_value($field, 'idParamName', 'itemId');
-      $action = newLinkPerItemAction('?p=' . get_param_value('p'), 'Anzeigen', $idParamName);
+      $action = newLinkPerItemAction('?p=' . get_param_value('p'), 'Anzeigen', $field['idParamName']);
       $action['visibleInDetails'] = false;
       $itemActions[] = $action;
       break;
@@ -299,10 +299,7 @@ function renderField($field, $item, $itemDetails, $editForm = false)
 
   $showAsTitle = $field['isTitle'] && !$itemDetails;
   if ($showAsTitle)
-  {
-    $idParamName = array_value($field, 'idParamName', 'itemId');
-    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&' . $idParamName . '=' . $item['id']]);
-  }
+    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&' . $field['idParamName'] . '=' . $item['id']]);
 
   if ($itemDetails)
     echo html_open('div', ['class' => 'textBlock']);
