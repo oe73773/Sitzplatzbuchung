@@ -106,6 +106,7 @@ function newAjaxPerItemAction($url, $title, $idParamName = 'itemId')
   $action['url'] = $url;
   $action['title'] = $title;
   $action['idParamName'] = $idParamName;
+  $action['confirmText'] = null;
   return $action;
 }
 
