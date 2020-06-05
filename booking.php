@@ -1,6 +1,6 @@
 <?php
 
-function decodeBooking(&$booking)
+function decodeBooking(&$booking, $withEventTitleAndDate = false)
 # Convert all timestamp fields from strings to timestamps
 {
   if ($booking != null)
@@ -29,6 +29,16 @@ function decodeBooking(&$booking)
     if (count($persons) > 1)
       $personsHtml .= html_close('ol');
     $booking['listOfPersonsHtml'] = $personsHtml;
+
+    if ($withEventTitleAndDate)
+    {
+      $eventId = $booking['eventId'];
+      if ($eventId != null)
+      {
+        $event = tryGetEventById($eventId);
+        $booking['eventId_displayText'] = $event['titleAndDate'];
+      }
+    }
   }
 }
 
@@ -43,14 +53,14 @@ function getBookingBaseQuery()
 }
 
 
-function tryGetBookingById($itemId)
+function tryGetBookingById($itemId, $withEventTitleAndDate = false)
 {
   if ($itemId == null)
     return;
   $sql = getBookingBaseQuery();
   $sql .= ' WHERE id = ?';
   $item = db()->try_query_row($sql, [$itemId]);
-  decodeBooking($item);
+  decodeBooking($item, $withEventTitleAndDate);
   return $item;
 }
 
@@ -535,7 +545,7 @@ function renderBookingDetails($itemId)
   }
   else
   {
-    $item = tryGetBookingById($itemId);
+    $item = tryGetBookingById($itemId, true);
     if ($item == null)
     {
       renderNotFoundError();
@@ -569,7 +579,7 @@ function getBookingFields()
   $field = newIdField();
   $fields[] = $field;
 
-  $field = newTextField('eventId', 'Veranstaltung');
+  $field = newForeignIdField('eventId', 'Veranstaltung', 'events');
   $field['visibleInList'] = false;
   $fields[] = $field;
 
