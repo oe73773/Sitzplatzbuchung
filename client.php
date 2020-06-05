@@ -111,7 +111,7 @@ function decodeClient(&$client)
 function getClientBaseQuery()
 {
   $sql = 'SELECT *';
-  $sql .= ', (SELECT userName FROM client as c WHERE editClientId = c.id) AS editClientId_displayText';
+  $sql .= ', (SELECT userName FROM client as c WHERE client.editClientId = c.id) AS editClientId_displayText';
   $sql .= ' FROM client';
   return $sql;
 }
