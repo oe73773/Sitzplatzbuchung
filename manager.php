@@ -99,6 +99,17 @@ function newLinkPerItemAction($url, $title, $idParamName = 'itemId')
 }
 
 
+function newAjaxPerItemAction($url, $title, $idParamName = 'itemId')
+{
+  $action = newAction('ajax');
+  $action['perItem'] = true;
+  $action['url'] = $url;
+  $action['title'] = $title;
+  $action['idParamName'] = $idParamName;
+  return $action;
+}
+
+
 function renderItemTable($items, $fields, $actions = [])
 {
   echo html_open('div', ['class' => 'itemList']);
@@ -180,18 +191,26 @@ function renderItemTable($items, $fields, $actions = [])
 
 function renderAction($action, $inItemList = false, $item = null)
 {
+  $titleEncoded = html_encode($action['title']);
+  $attributes = [];
+  $attributes['class'] = $action['cssClass'];
+  $url = array_value($action, 'url');
+  if ($action['perItem'] && $action['idParamName'] != null && $item != null)
+    $url .= '&' . $action['idParamName'] . '=' . $item['id'];
+
   if ($action['type'] == 'link')
   {
-    $url = array_value($action, 'url');
-    if ($action['perItem'] && $action['idParamName'] != null && $item != null)
-      $url .= '&' . $action['idParamName'] . '=' . $item['id'];
-    $attributes = [];
-    $attributes['class'] = $action['cssClass'];
-    $content = html_encode($action['title']);
     if ($inItemList)
-      echo html_a($url, $content, $attributes);
+      echo html_a($url, $titleEncoded, $attributes);
     else
-      echo html_redirect_button($url, $content, $attributes);
+      echo html_redirect_button($url, $titleEncoded, $attributes);
+  }
+  else if ($action['type'] == 'ajax')
+  {
+    echo html_open('form', ['action' => $url, 'onsubmit' => 'postForm(event)']);
+    echo html_form_submit_button($titleEncoded, $attributes);
+    writeFormToken();
+    echo html_close('form');
   }
 }
 

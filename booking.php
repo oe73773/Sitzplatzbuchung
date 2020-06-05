@@ -200,28 +200,51 @@ function handleSaveBookingAction()
 
 function handleCancelBookingAction()
 # Parameters:
-# - eventId
+# - eventId or
+# - itemId (as admin)
 {
-  $eventId = get_param_value('eventId');
-  $event = tryGetEventById($eventId);
-  if ($event == null)
+  $itemId = get_param_value('itemId');
+  $booking = null;
+  if ($itemId != null && isClientAdmin())
   {
-    echo 'showErrorMsg("Datensatz existiert nicht.");';
-    echo 'location.reload();';
-    return;
+    $booking = tryGetBookingById($itemId);
+    if ($booking == null)
+    {
+      echo 'showErrorMsg("Datensatz existiert nicht.");';
+      echo 'location.reload();';
+      return;
+    }
+  }
+  else
+  {
+    $eventId = get_param_value('eventId');
+    $event = tryGetEventById($eventId);
+    if ($event == null)
+    {
+      echo 'showErrorMsg("Veranstaltung existiert nicht.");';
+      echo 'location.reload();';
+      return;
+    }
+
+    $booking = getActiveBookingForEventForClient($eventId);
+    if ($booking == null)
+    {
+      echo 'showErrorMsg("Keine Buchung gefunden.");';
+      echo 'location.reload();';
+      return;
+    }
+
+    if (!isBookingOpen($event))
+    {
+      echo 'showErrorMsg("Der Buchungszeitraum ist abgelaufen.");';
+      echo 'location.reload();';
+      return;
+    }
   }
 
-  $booking = getActiveBookingForEventForClient($eventId);
-  if ($booking == null)
+  if ($booking['cancelTimestamp'] != null)
   {
-    echo 'showErrorMsg("Keine Buchung gefunden.");';
-    echo 'location.reload();';
-    return;
-  }
-
-  if (!isBookingOpen($event))
-  {
-    echo 'showErrorMsg("Der Buchungszeitraum ist abgelaufen.");';
+    echo 'showErrorMsg("Die Buchung ist bereits storniert.");';
     echo 'location.reload();';
     return;
   }
@@ -444,7 +467,7 @@ function renderBookingList($eventId)
   renderEventSeatInfo($event);
   echo html_close('div');
 
-  renderItemTable(getAdminBookings($eventId), getBookingFields(), getBookingActions());
+  renderItemTable(getAdminBookings($eventId), getBookingFields(), getBookingListActions());
 
   echo html_close('div');
 }
@@ -489,7 +512,7 @@ function renderBookingDetails($itemId)
     renderMainPageSaveBookingForm($event, true);
   }
   else
-    renderItemDetails($creatingItem, $item, getBookingFields());
+    renderItemDetails($creatingItem, $item, getBookingFields(), getBookingDetailsActions($item));
 
   echo html_close('div');
 }
@@ -534,7 +557,7 @@ function getBookingFields()
 }
 
 
-function getBookingActions()
+function getBookingListActions()
 {
   $actions = [];
 
@@ -542,6 +565,22 @@ function getBookingActions()
   $action['cssClass'] = 'saveButton';
   $action['visibleInDetails'] = false;
   $actions[] = $action;
+
+  return $actions;
+}
+
+
+function getBookingDetailsActions($booking)
+{
+  $actions = [];
+
+  if ($booking['cancelTimestamp'] == null)
+  {
+    $action = newAjaxPerItemAction('?a=cancelBooking', 'Buchung stornieren');
+    $action['cssClass'] = 'deleteButton';
+    $action['visibleInList'] = false;
+    $actions[] = $action;
+  }
 
   return $actions;
 }
