@@ -610,7 +610,6 @@ function getBookingFields()
   $fields[] = $field;
 
   $field = newClientIdField('cancelClientId', 'Storniert durch');
-  $field['visibleInList'] = false;
   $fields[] = $field;
 
   return $fields;
