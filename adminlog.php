@@ -22,6 +22,12 @@ function decodeAdminlog(&$item)
   if ($item != null)
   {
     $item['insertTimestamp'] = date_time_to_timestamp($item['insertTimestamp']);
+
+    $newData = json_decode($item['newData']);
+    if ($newData == null)
+      $item['newDataPretty'] = null;
+    else
+      $item['newDataPretty'] = json_encode($newData, JSON_PRETTY_PRINT);
   }
 }
 
@@ -132,6 +138,10 @@ function getAdminlogFields()
   $fields[] = $field;
 
   $field = newTextField('action', 'Aktion');
+  $fields[] = $field;
+
+  $field = newTextField('newDataPretty', 'Daten');
+  $field['visibleInList'] = false;
   $fields[] = $field;
 
   return $fields;
