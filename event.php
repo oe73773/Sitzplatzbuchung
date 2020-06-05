@@ -418,9 +418,7 @@ function handleSaveEventAction()
     db()->update_by_id('event', $itemId, $values);
     addAdminlogEntry('event', $itemId, 'edit', $values);
   }
-  echo 'location.href = "?p=events&itemId=';
-  echo $itemId;
-  echo '";';
+  echo js_redirect('?p=events&itemId=' . $itemId);
 }
 
 
