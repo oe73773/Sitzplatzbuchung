@@ -327,10 +327,14 @@ function setCookie(name, value, days = 365)
 
 function focusFirstChildInputNode(parent)
 {
-  const child = getSubElementByNodeNameRecursive(parent, 'input', 0);
-  if (child) {
-    child.focus();
-    child.setSelectionRange(0, 9999);
+  const elements = getSubElementsRecursive(parent, 'input');
+  for (var i in elements) {
+    const element = elements[i];
+    if (element.type == 'checkbox')
+      continue;
+    element.focus();
+    element.setSelectionRange(0, 9999);
+    break;
   }
 }
 
