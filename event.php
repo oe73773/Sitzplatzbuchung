@@ -12,6 +12,12 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
     $event['insertTimestamp'] = date_time_to_timestamp($event['insertTimestamp']);
     $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
 
+    $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
+    if (time() > $event['bookingClosingTimestamp'])
+      $event['bookingState'] = 'abgeschlossen';
+    else
+      $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+
     if ($withVisitorCount)
       $event['visitorCount'] = getEventVisitorCount($event['id']);
     if ($withFreeSeatCount)
@@ -502,6 +508,28 @@ function getEventFields()
 
   $field = newIntegerField('editClientId', 'Bearbeitet durch');
   $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  return $fields;
+}
+
+
+function getEventFieldsForVisitorList()
+{
+  $fields = [];
+
+  $field = newTextField('titleAndDate', 'Veranstaltung');
+  $field['isTitle'] = true;
+  $field['idParamName'] = 'eventId';
+  $fields[] = $field;
+
+  $field = newTextField('bookingState', 'Buchung');
+  $fields[] = $field;
+
+  $field = newIntegerField('visitorCount', 'Teilnehmer', false);
+  $fields[] = $field;
+
+  $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
   $fields[] = $field;
 
   return $fields;

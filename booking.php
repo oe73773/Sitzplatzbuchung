@@ -222,11 +222,11 @@ function handleCancelBookingAction()
 
 function renderVisitorsSheet()
 {
-  $itemId = get_param_value('itemId');
-  if ($itemId == null)
+  $eventId = get_param_value('eventId');
+  if ($eventId == null)
     renderVisitorsSheetList();
   else
-    renderVisitorsSheetDetails($itemId);
+    renderVisitorsSheetDetails($eventId);
 }
 
 
@@ -241,32 +241,9 @@ function renderVisitorsSheetList()
 
   echo html_open('div', ['class' => 'content visitorList']);
 
-  $events = getVisitorListEvents();
-  foreach ($events as &$event)
-  {
-    $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
-    if (time() > $event['bookingClosingTimestamp'])
-      $event['bookingState'] = 'abgeschlossen';
-    else
-      $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
-  }
-
   $fields = [];
 
-  $field = newTextField('titleAndDate', 'Veranstaltung');
-  $field['isTitle'] = true;
-  $fields[] = $field;
-
-  $field = newTextField('bookingState', 'Buchung');
-  $fields[] = $field;
-
-  $field = newIntegerField('visitorCount', 'Teilnehmer', false);
-  $fields[] = $field;
-
-  $field = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
-  $fields[] = $field;
-
-  renderItemTable($events, $fields);
+  renderItemTable(getVisitorListEvents(), getEventFieldsForVisitorList());
 
   echo html_close('div');
 }
@@ -287,7 +264,7 @@ function renderVisitorsSheetDetails($eventId)
     return;
   }
 
-  $titleAndDate = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
+  $titleAndDate = $event['titleAndDate'];
 
   writeMainHtmlBeforeContent('Anwesenheitsliste ' . $titleAndDate);
 

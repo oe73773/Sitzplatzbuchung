@@ -135,7 +135,8 @@ function renderItemTable($items, $fields, $actions = [])
   {
     if ($field['isTitle'])
     {
-      $action = newLinkPerItemAction('?p=' . get_param_value('p'), 'Anzeigen', 'itemId');
+      $idParamName = array_value($field, 'idParamName', 'itemId');
+      $action = newLinkPerItemAction('?p=' . get_param_value('p'), 'Anzeigen', $idParamName);
       $action['visibleInDetails'] = false;
       $itemActions[] = $action;
       break;
@@ -298,7 +299,10 @@ function renderField($field, $item, $itemDetails, $editForm = false)
 
   $showAsTitle = $field['isTitle'] && !$itemDetails;
   if ($showAsTitle)
-    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&itemId=' . $item['id']]);
+  {
+    $idParamName = array_value($field, 'idParamName', 'itemId');
+    echo html_open('a', ['href' => '?p=' . get_param_value('p') . '&' . $idParamName . '=' . $item['id']]);
+  }
 
   if ($itemDetails)
     echo html_open('div', ['class' => 'textBlock']);
