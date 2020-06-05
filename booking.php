@@ -506,6 +506,10 @@ function getBookingFields()
   $field = newTextField('insertClientId', 'Gebucht durch');
   $fields[] = $field;
 
+  $field = newBooleanField('insertedAsAdmin', 'Als Admin gebucht');
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
   $field = newTimestampField('cancelTimestamp', 'Storniert am');
   $fields[] = $field;
 
