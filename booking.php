@@ -205,7 +205,8 @@ function handleCancelBookingAction()
 {
   $itemId = get_param_value('itemId');
   $booking = null;
-  if ($itemId != null && isClientAdmin())
+  $asAdmin = $itemId != null && isClientAdmin();
+  if ($asAdmin)
   {
     $booking = tryGetBookingById($itemId);
     if ($booking == null)
@@ -254,6 +255,10 @@ function handleCancelBookingAction()
   $values['cancelTimestamp'] = format_timestamp(time());
   $values['cancelClientId'] = getClientValue('id');
   db()->update_by_id('booking', $booking['id'], $values);
+
+  # insert adminlog entry
+  if ($asAdmin)
+    addAdminlogEntry('booking', $booking['id'], 'cancel');
 
   echo 'location.reload();';
 }
