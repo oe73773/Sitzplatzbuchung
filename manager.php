@@ -8,6 +8,7 @@ function newField($type, $name)
   $field['title'] = $name;
   $field['editable'] = true;
   $field['visibleInList'] = true;
+  $field['visibleInDetails'] = true;
   $field['mandatory'] = false;
   $field['allowHtml'] = false;
   $field['isTitle'] = false;
@@ -282,6 +283,8 @@ function renderFieldsTable($fields, $item, $itemDetails, $editForm = false, $cre
   echo html_open('table');
   foreach ($fields as $field)
   {
+    if (!$field['visibleInDetails'])
+      continue;
     if ($creatingItem && !$field['editable'])
       continue;
     $classes = [];

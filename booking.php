@@ -7,6 +7,28 @@ function decodeBooking(&$booking)
   {
     $booking['insertTimestamp'] = date_time_to_timestamp($booking['insertTimestamp']);
     $booking['cancelTimestamp'] = date_time_to_timestamp($booking['cancelTimestamp']);
+
+    $personsHtml = '';
+    $persons = explode(';', $booking['listOfPersons']);
+    if (count($persons) > 1)
+      $personsHtml .= html_open('ol');
+    foreach ($persons as $personStr)
+    {
+      if (count($persons) > 1)
+        $personsHtml .= html_open('li');
+      $person = explode(',', $personStr);
+      $surname = array_value($person, 0);
+      $lastname = array_value($person, 1);
+
+      $personsHtml .= html_encode($surname);
+      $personsHtml .= ' ';
+      $personsHtml .= html_encode($lastname);
+      if (count($persons) > 1)
+        $personsHtml .= html_close('li');
+    }
+    if (count($persons) > 1)
+      $personsHtml .= html_close('ol');
+    $booking['listOfPersonsHtml'] = $personsHtml;
   }
 }
 
@@ -535,6 +557,12 @@ function getBookingFields()
   $fields[] = $field;
 
   $field = newTextField('listOfPersons', 'Personen');
+  $field['visibleInDetails'] = false;
+  $fields[] = $field;
+
+  $field = newTextField('listOfPersonsHtml', 'Personen');
+  $field['visibleInList'] = false;
+  $field['allowHtml'] = true;
   $fields[] = $field;
 
   $field = newTextField('phoneNumber', 'Telefon');
