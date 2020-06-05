@@ -507,6 +507,7 @@ function getEventFields()
   $fields[] = $field;
 
   $field = newIntegerField('editClientId', 'Bearbeitet durch');
+  $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
 
