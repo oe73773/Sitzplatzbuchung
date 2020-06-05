@@ -216,12 +216,12 @@ function renderMainPageEvent($event, $booking)
   $hasActiveBooking = $persons != null && !$bookingCanceled;
   $freeSeatCount = $event['freeSeatCount'];
 
-  renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount);
+  renderMainPageEventBasicInfo($event, $hasActiveBooking);
 
   if ($event['canceled'] != 1)
   {
     if (time() >= $event['bookingOpeningTimestamp'])
-      renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount);
+      renderEventSeatInfo($event, $hasActiveBooking);
 
     if ($persons != null)
       renderMainPageBookingStatus($persons, $bookingCanceled);
@@ -240,7 +240,7 @@ function renderMainPageEvent($event, $booking)
 }
 
 
-function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
+function renderMainPageEventBasicInfo($event, $hasActiveBooking)
 {
   echo html_open('div', ['class' => 'textBlock']);
 
@@ -281,11 +281,12 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
 }
 
 
-function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
+function renderEventSeatInfo($event, $hasActiveBooking = false)
 {
   echo html_open('div', ['class' => 'seatsInfo']);
 
   $visitorCount = $event['visitorCount'];
+  $freeSeatCount = $event['freeSeatCount'];
   $maxVisitorCount = $visitorCount + max($freeSeatCount, 0);
 
   if ($visitorCount > 0)
@@ -308,7 +309,7 @@ function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
   {
     $class = '';
     if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
-      $class = 'noFreeSeats';
+      $class = 'noFreeSeatsRed';
     echo html_node('span', 'ausgebucht', ['class' => $class]);
   }
 

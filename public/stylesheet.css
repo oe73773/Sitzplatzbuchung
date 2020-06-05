@@ -201,7 +201,7 @@ table.border td.null {
 }
 
 
-.redText, .seatsInfo .noFreeSeats {
+.redText, .content.mainPage .seatsInfo .noFreeSeatsRed {
   color: firebrick;
   font-weight: bold;
 }
@@ -434,21 +434,24 @@ table.border td.null {
   line-height: 155%;
 }
 
-.content.mainPage .seatsInfo {
+.seatsInfo {
   position: relative;
+}
+
+.content.mainPage .seatsInfo {
   text-align: left;
 }
 
-.content.mainPage .seatsInfo .capacityBar {
+.seatsInfo .capacityBar {
   position: absolute;
   right: -5px;
   top: 5px;
 }
-.content.mainPage .seatsInfo .capacityBar > div {
+.seatsInfo .capacityBar > div {
   outline: 1px solid black;
   margin-right: 10px;
 }
-.content.mainPage .seatsInfo .capacityBar > div > div {
+.seatsInfo .capacityBar > div > div {
   background: darkgrey;
   height: 10px;
 }
