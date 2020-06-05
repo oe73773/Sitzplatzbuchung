@@ -187,6 +187,10 @@ function handleSaveBookingAction()
     $booking['insertedAsAdmin'] = 1;
   $bookingId = db()->insert('booking', $booking);
 
+  # insert adminlog entry
+  if ($asAdmin)
+    addAdminlogEntry('booking', $bookingId, 'create', $booking);
+
   if ($asAdmin)
     echo js_redirect('?p=bookings&eventId=' . $eventId);
   else
