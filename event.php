@@ -13,10 +13,12 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
     $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
 
     $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
-    if (time() > $event['bookingClosingTimestamp'])
-      $event['bookingState'] = 'abgeschlossen';
-    else
+    if (time() < $event['bookingOpeningTimestamp'])
+      $event['bookingState'] = 'offen ab ' . formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
+    else if (time() < $event['bookingClosingTimestamp'])
       $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    else
+      $event['bookingState'] = 'abgeschlossen';
 
     if ($withVisitorCount)
       $event['visitorCount'] = getEventVisitorCount($event['id']);

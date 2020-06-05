@@ -40,9 +40,9 @@ function getActiveBookingForEventForClient($eventId)
 }
 
 
-function getAdminBookings()
+function getAdminBookings($eventId)
 {
-  $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
+  $items = db()->query_rows('SELECT * FROM booking WHERE eventId = ? ORDER BY id DESC LIMIT 100', [$eventId]);
 
   foreach ($items as &$item)
   {
@@ -264,9 +264,7 @@ function renderVisitorsSheetDetails($eventId)
     return;
   }
 
-  $titleAndDate = $event['titleAndDate'];
-
-  writeMainHtmlBeforeContent('Anwesenheitsliste ' . $titleAndDate);
+  writeMainHtmlBeforeContent('Anwesenheitsliste ' . $event['titleAndDate']);
 
   echo html_open('div', ['class' => 'content visitorList']);
 
@@ -389,19 +387,44 @@ function renderBookings()
 
   $itemId = get_param_value('itemId');
   if ($itemId == null)
-    renderBookingList();
+  {
+    $eventId = get_param_value('eventId');
+    if ($eventId == null)
+      renderBookingListEvents();
+    else
+      renderBookingList($eventId);
+  }
   else
     renderBookingDetails($itemId);
 }
 
 
-function renderBookingList()
+function renderBookingListEvents()
 {
   writeMainHtmlBeforeContent('Buchungen verwalten');
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemTable(getAdminBookings(), getBookingFields());
+  renderItemTable(getAdminEvents(), getEventFieldsForVisitorList());
+
+  echo html_close('div');
+}
+
+
+function renderBookingList($eventId)
+{
+  $event = tryGetEventById($eventId);
+  if ($event == null)
+  {
+    renderNotFoundError();
+    return;
+  }
+
+  writeMainHtmlBeforeContent('Buchungen für ' . $event['titleAndDate']);
+
+  echo html_open('div', ['class' => 'content']);
+
+  renderItemTable(getAdminBookings($eventId), getBookingFields());
 
   echo html_close('div');
 }
@@ -445,6 +468,7 @@ function getBookingFields()
   $fields[] = $field;
 
   $field = newTextField('eventId', 'Veranstaltung');
+  $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newTextField('listOfPersons', 'Personen');
@@ -469,3 +493,4 @@ function getBookingFields()
 
   return $fields;
 }
+
