@@ -156,7 +156,7 @@ function postForm(event)
   event.preventDefault();
 
   var formData = new FormData();
-  var a = getSubElementsRecursive(event.target, 'input');
+  var a = getSubElementsRecursive(event.target, 'INPUT');
   a.forEach(function(entry) {
     if (entry.name) {
       if (entry.type == 'checkbox')
@@ -165,12 +165,12 @@ function postForm(event)
         formData.append(entry.name, entry.value);
     }
   });
-  var a = getSubElementsRecursive(event.target, 'textarea');
+  var a = getSubElementsRecursive(event.target, 'TEXTAREA');
   a.forEach(function(entry) {
     if (entry.name)
       formData.append(entry.name, entry.value);
   });
-  var a = getSubElementsRecursive(event.target, 'select');
+  var a = getSubElementsRecursive(event.target, 'SELECT');
   a.forEach(function(entry) {
     if (entry.name)
       formData.append(entry.name, entry.value);
@@ -327,7 +327,7 @@ function setCookie(name, value, days = 365)
 
 function focusFirstChildInputNode(parent)
 {
-  const elements = getSubElementsRecursive(parent, 'input');
+  const elements = getSubElementsRecursive(parent, 'INPUT');
   for (var i in elements) {
     const element = elements[i];
     if (element.type == 'checkbox')
