@@ -466,7 +466,7 @@ function html_form_submit_button($content, $attributes = [])
 
 function html_redirect_button($url, $content, $attributes = [])
 {
-  $attributes['onclick'] = 'location.href = "' . $url . '";';
+  $attributes['onclick'] = js_redirect($url);
   $attributes['onmousedown'] = 'openUrlInNewTabOnMiddleClick(event, "' . $url . '");';
   return html_button($content, $attributes);
 }
