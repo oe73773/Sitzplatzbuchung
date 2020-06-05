@@ -583,7 +583,7 @@ function getBookingDetailsActions($booking)
   {
     $action = newAjaxPerItemAction('?a=cancelBooking', 'Buchung stornieren');
     $action['cssClass'] = 'deleteButton';
-    $action['visibleInList'] = false;
+    $action['confirmText'] = 'Buchung stornieren?';
     $actions[] = $action;
   }
 

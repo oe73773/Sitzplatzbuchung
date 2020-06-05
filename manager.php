@@ -207,7 +207,11 @@ function renderAction($action, $inItemList = false, $item = null)
   }
   else if ($action['type'] == 'ajax')
   {
-    echo html_open('form', ['action' => $url, 'onsubmit' => 'postForm(event)']);
+    $onSubmit = 'postForm(event);';
+    $confirmText = $action['confirmText'];
+    if ($confirmText != null)
+      $onSubmit = 'if (!confirm("' . $confirmText . '")) return false;' . $onSubmit;
+    echo html_open('form', ['action' => $url, 'onsubmit' => $onSubmit]);
     echo html_form_submit_button($titleEncoded, $attributes);
     writeFormToken();
     echo html_close('form');
