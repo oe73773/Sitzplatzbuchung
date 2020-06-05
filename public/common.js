@@ -154,13 +154,11 @@ function postForm(event)
     return;
 
   event.preventDefault();
-  setFormEnabled(event.target, false);
 
   var formData = new FormData();
-
   var a = getSubElementsRecursive(event.target, 'input');
   a.forEach(function(entry) {
-    if (entry.name && !entry.disabled) {
+    if (entry.name) {
       if (entry.type == 'checkbox')
         formData.append(entry.name, entry.checked);
       else
@@ -169,14 +167,16 @@ function postForm(event)
   });
   var a = getSubElementsRecursive(event.target, 'textarea');
   a.forEach(function(entry) {
-    if (entry.name && !entry.disabled)
+    if (entry.name)
       formData.append(entry.name, entry.value);
   });
   var a = getSubElementsRecursive(event.target, 'select');
   a.forEach(function(entry) {
-    if (entry.name && !entry.disabled)
+    if (entry.name)
       formData.append(entry.name, entry.value);
   });
+
+  setFormEnabled(event.target, false);
 
   var req = new XMLHttpRequest();
   req.open('POST', event.target.action, true);
