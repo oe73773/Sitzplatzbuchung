@@ -290,7 +290,7 @@ function renderFieldsTable($fields, $item, $itemDetails, $editForm = false, $cre
     echo html_open('tr', ['class' => implode(' ', $classes)]);
     echo html_open('td');
     echo html_encode($field['title']);
-    if ($field['mandatory'] && $creatingItem)
+    if ($editForm && $field['mandatory'] && ($creatingItem || array_value($item, $field['name']) == null))
       echo html_node('span', '*', ['class' => 'mandatory', 'title' => 'erforderlich']);
     echo html_close('td');
     renderField($field, $item, $itemDetails, $editForm);
