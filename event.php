@@ -456,6 +456,7 @@ function getEventFields()
   $fields = [];
 
   $field = newIdField();
+  $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newTextField('title', 'Titel');
