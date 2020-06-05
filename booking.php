@@ -425,7 +425,7 @@ function renderBookingListEvents()
 
 function renderBookingList($eventId)
 {
-  $event = tryGetEventById($eventId);
+  $event = tryGetEventById($eventId, true, true);
   if ($event == null)
   {
     renderNotFoundError();
@@ -434,7 +434,11 @@ function renderBookingList($eventId)
 
   writeMainHtmlBeforeContent('Buchungen für ' . $event['titleAndDate']);
 
-  echo html_open('div', ['class' => 'content']);
+  echo html_open('div', ['class' => 'content bookingList']);
+
+  echo html_open('div');
+  renderEventSeatInfo($event);
+  echo html_close('div');
 
   renderItemTable(getAdminBookings($eventId), getBookingFields(), getBookingActions());
 
@@ -450,7 +454,7 @@ function renderBookingDetails($itemId)
   if ($creatingItem)
   {
     $eventId = get_param_value('eventId');
-    $event = tryGetEventById($eventId);
+    $event = tryGetEventById($eventId, true, true);
     if ($event == null)
     {
       renderNotFoundError();
@@ -471,10 +475,15 @@ function renderBookingDetails($itemId)
 
   writeMainHtmlBeforeContent($title);
 
-  echo html_open('div', ['class' => 'content']);
+  echo html_open('div', ['class' => 'content bookingDetails']);
 
   if ($creatingItem)
+  {
+    echo html_open('div');
+    renderEventSeatInfo($event);
+    echo html_close('div');
     renderMainPageSaveBookingForm($event, true);
+  }
   else
     renderItemDetails($creatingItem, $item, getBookingFields());
 

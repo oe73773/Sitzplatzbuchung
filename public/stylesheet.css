@@ -436,9 +436,6 @@ table.border td.null {
 
 .seatsInfo {
   position: relative;
-}
-
-.content.mainPage .seatsInfo {
   text-align: left;
 }
 
@@ -622,6 +619,13 @@ table.border td.null {
 
 .content.bookingSimulator > form > div > input {
   width: 6em;
+}
+
+
+.content.bookingList .seatsInfo, .content.bookingDetails .seatsInfo {
+  display: inline-block;
+  width: 24em;
+  padding-bottom: 6px;
 }
 
 
