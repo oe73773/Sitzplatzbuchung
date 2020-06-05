@@ -193,9 +193,47 @@ function renderClientDetails($itemId)
 
   echo html_open('div', ['class' => 'content']);
 
-  renderItemDetails(false, $item, getClientFields());
+  renderItemDetails(false, $item, getClientFields(), [], 'saveClient');
 
   echo html_close('div');
+}
+
+
+function handleSaveClientAction()
+{
+  if (!isClientAdmin())
+  {
+    echo 'showErrorMsg("Dieses Gerät hat keine Berechtigung für die angeforderte Aktion.");';
+    echo 'location.reload();';
+    return;
+  }
+
+  $itemId = get_param_value('itemId');
+  $item = tryGetClientById($itemId);
+  if ($item == null)
+  {
+    echo 'showErrorMsg("Datensatz existiert nicht.");';
+    echo 'location.reload();';
+    return;
+  }
+  $values = getClientSaveValues();
+  if ($values == null)
+    return;
+  db()->update_by_id('client', $itemId, $values);
+  addAdminlogEntry('client', $itemId, 'edit', $values);
+  echo js_redirect('?p=clients&itemId=' . $itemId);
+}
+
+
+function getClientSaveValues()
+{
+  $values = getSaveValues(getClientFields());
+  if ($values == null)
+    return;
+  $values['editTimestamp'] = format_timestamp(time());
+  $values['editClientId'] = getClientValue('id');
+  $values['persistent'] = 1;
+  return $values;
 }
 
 
@@ -207,35 +245,52 @@ function getClientFields()
   $fields[] = $field;
 
   $field = newTextField('hash', 'Kennung');
+  $field['editable'] = false;
   $fields[] = $field;
 
   $field = newBooleanField('persistent', 'Dauerhaft');
+  $field['editable'] = false;
   $fields[] = $field;
 
   $field = newTextField('userName', 'Benutzername');
+  $field['mandatory'] = true;
+  $fields[] = $field;
+
+  $field = newTextField('deviceName', 'Gerätebezeichnung');
   $fields[] = $field;
 
   $field = newBooleanField('userGroup', 'Administratorrechte');
   $fields[] = $field;
 
   $field = newTextField('userAgent_os', 'Betriebssystem');
+  $field['editable'] = false;
   $fields[] = $field;
 
   $field = newTextField('userAgent', 'User Agent');
+  $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newTimestampField('lastSeenTimestamp', 'Zuletzt online');
+  $field['editable'] = false;
   $fields[] = $field;
 
   $field = newTextField('lastListOfPersons', 'Zuletzt gebucht');
+  $field['editable'] = false;
+  $fields[] = $field;
+
+  $field = newTextField('lastPhoneNumber', 'Telefon');
+  $field['editable'] = false;
+  $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newTimestampField('editTimestamp', 'Bearbeitet am');
+  $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
 
   $field = newIntegerField('editClientId', 'Bearbeitet durch');
+  $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
 

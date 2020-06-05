@@ -40,6 +40,8 @@ if ($action != null)
     handleAutoReloadCheckAction();
   else if ($action == 'saveEvent')
     handleSaveEventAction();
+  else if ($action == 'saveClient')
+    handleSaveClientAction();
   else
   {
     echo 'alert("Diese Aktion ist nicht (mehr) gültig.");';
