@@ -270,10 +270,6 @@ function getClientFields()
   $field['editable'] = false;
   $fields[] = $field;
 
-  $field = newBooleanField('persistent', 'Dauerhaft');
-  $field['editable'] = false;
-  $fields[] = $field;
-
   $field = newTextField('userName', 'Benutzername');
   $field['mandatory'] = true;
   $fields[] = $field;
@@ -302,6 +298,11 @@ function getClientFields()
   $fields[] = $field;
 
   $field = newTextField('lastPhoneNumber', 'Telefon');
+  $field['editable'] = false;
+  $field['visibleInList'] = false;
+  $fields[] = $field;
+
+  $field = newBooleanField('persistent', 'Cookie dauerhaft');
   $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
