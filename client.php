@@ -1,5 +1,13 @@
 <?php
 
+function newClientIdField($name, $title)
+{
+  $field = newForeignIdField($name, $title, 'clients');
+  $field['foreignItemName'] = 'Gerät';
+  return $field;
+}
+
+
 function setClient($newClient)
 {
   global $client;
@@ -100,11 +108,22 @@ function decodeClient(&$client)
 }
 
 
+function getClientBaseQuery()
+{
+  $sql = 'SELECT *';
+  $sql .= ', (SELECT userName FROM client as c WHERE editClientId = c.id) AS editClientId_displayText';
+  $sql .= ' FROM client';
+  return $sql;
+}
+
+
 function tryGetClientById($itemId)
 {
   if ($itemId == null)
     return;
-  $item = db()->try_query_row_by_id('client', $itemId);
+  $sql = getClientBaseQuery();
+  $sql .= ' WHERE id = ?';
+  $item = db()->try_query_row($sql, [$itemId]);
   decodeClient($item);
   return $item;
 }
@@ -112,7 +131,10 @@ function tryGetClientById($itemId)
 
 function getClients()
 {
-  $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
+  $sql = getClientBaseQuery();
+  $sql .= ' ORDER BY lastSeenTimestamp DESC';
+  $sql .= ' LIMIT 100';
+  $items = db()->query_rows($sql);
 
   foreach ($items as &$item)
   {
@@ -289,7 +311,7 @@ function getClientFields()
   $field['visibleInList'] = false;
   $fields[] = $field;
 
-  $field = newIntegerField('editClientId', 'Bearbeitet durch');
+  $field = newClientIdField('editClientId', 'Bearbeitet durch');
   $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;

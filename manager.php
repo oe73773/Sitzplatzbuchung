@@ -68,6 +68,16 @@ function newTimestampField($name, $title)
 }
 
 
+function newForeignIdField($name, $title, $foreignPageName)
+{
+  $field = newField('foreignId', $name);
+  $field['title'] = $title;
+  $field['foreignPageName'] = $foreignPageName;
+  $field['foreignItemName'] = null;
+  return $field;
+}
+
+
 function newAction($type)
 {
   $action = [];
@@ -379,6 +389,18 @@ function renderField($field, $item, $itemDetails, $editForm = false)
       echo html_input('text', $fieldName, $valueFormated);
     else
       echo $valueFormated;
+  }
+  else if ($type == 'foreignId')
+  {
+    $text = array_value($item, $fieldName . '_displayText');
+    if ($text == null)
+    {
+      $text = $value;
+      $foreignItemName = $field['foreignItemName'];
+      if ($foreignItemName != null)
+        $text = $foreignItemName . ' ' . $text;
+    }
+    echo html_a('?p=' . $field['foreignPageName'] . '&itemId=' . $value, html_encode($text));
   }
 
   if ($itemDetails)

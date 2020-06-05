@@ -33,11 +33,23 @@ function decodeBooking(&$booking)
 }
 
 
+function getBookingBaseQuery()
+{
+  $sql = 'SELECT *';
+  $sql .= ', (SELECT userName FROM client WHERE booking.insertClientId = client.id) AS insertClientId_displayText';
+  $sql .= ', (SELECT userName FROM client WHERE booking.cancelClientId = client.id) AS cancelClientId_displayText';
+  $sql .= ' FROM booking';
+  return $sql;
+}
+
+
 function tryGetBookingById($itemId)
 {
   if ($itemId == null)
     return;
-  $item = db()->try_query_row_by_id('booking', $itemId);
+  $sql = getBookingBaseQuery();
+  $sql .= ' WHERE id = ?';
+  $item = db()->try_query_row($sql, [$itemId]);
   decodeBooking($item);
   return $item;
 }
@@ -64,7 +76,12 @@ function getActiveBookingForEventForClient($eventId)
 
 function getAdminBookings($eventId)
 {
-  $items = db()->query_rows('SELECT * FROM booking WHERE eventId = ? ORDER BY id DESC LIMIT 100', [$eventId]);
+  $sql = getBookingBaseQuery();
+  $sql .= ' WHERE eventId = ?';
+  $sql .= ' ORDER BY id DESC';
+  $sql .= ' LIMIT 100';
+
+  $items = db()->query_rows($sql, [$eventId]);
 
   foreach ($items as &$item)
   {
@@ -572,7 +589,7 @@ function getBookingFields()
   $field = newTimestampField('insertTimestamp', 'Gebucht am');
   $fields[] = $field;
 
-  $field = newTextField('insertClientId', 'Gebucht durch');
+  $field = newClientIdField('insertClientId', 'Gebucht durch');
   $fields[] = $field;
 
   $field = newBooleanField('insertedAsAdmin', 'Als Admin gebucht');
@@ -582,7 +599,7 @@ function getBookingFields()
   $field = newTimestampField('cancelTimestamp', 'Storniert am');
   $fields[] = $field;
 
-  $field = newIntegerField('cancelClientId', 'Storniert durch');
+  $field = newClientIdField('cancelClientId', 'Storniert durch');
   $field['visibleInList'] = false;
   $fields[] = $field;
 

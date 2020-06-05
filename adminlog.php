@@ -1,6 +1,6 @@
 <?php
 
-function addAdminlogEntry($itemType, $itemId, $action, $newData= null)
+function addAdminlogEntry($itemType, $itemId, $action, $newData = null)
 {
   $values = [];
   $values['clientId'] = getClientValue('id');
@@ -26,11 +26,22 @@ function decodeAdminlog(&$item)
 }
 
 
+function getAdminlogBaseQuery()
+{
+  $sql = 'SELECT *';
+  $sql .= ', (SELECT userName FROM client WHERE adminlog.clientId = client.id) AS clientId_displayText';
+  $sql .= ' FROM adminlog';
+  return $sql;
+}
+
+
 function tryGetAdminlogById($itemId)
 {
   if ($itemId == null)
     return;
-  $item = db()->try_query_row_by_id('adminlog', $itemId);
+  $sql = getAdminlogBaseQuery();
+  $sql .= ' WHERE id = ?';
+  $item = db()->try_query_row($sql, [$itemId]);
   decodeAdminlog($item);
   return $item;
 }
@@ -38,7 +49,11 @@ function tryGetAdminlogById($itemId)
 
 function getAdminlogs()
 {
-  $items = db()->query_rows('SELECT * FROM adminlog ORDER BY id DESC LIMIT 100');
+  $sql = getAdminlogBaseQuery();
+  $sql .= ' ORDER BY id DESC';
+  $sql .= ' LIMIT 100';
+
+  $items = db()->query_rows($sql);
 
   foreach ($items as &$item)
   {
@@ -107,7 +122,7 @@ function getAdminlogFields()
   $field = newTimestampField('insertTimestamp', 'Datum');
   $fields[] = $field;
 
-  $field = newIntegerField('clientId', 'Gerät');
+  $field = newClientIdField('clientId', 'Benutzer');
   $fields[] = $field;
 
   $field = newTextField('itemType', 'Datensatz-Typ');

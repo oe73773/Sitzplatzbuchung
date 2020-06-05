@@ -28,11 +28,22 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
 }
 
 
+function getEventBaseQuery()
+{
+  $sql = 'SELECT *';
+  $sql .= ', (SELECT userName FROM client WHERE event.editClientId = client.id) AS editClientId_displayText';
+  $sql .= ' FROM event';
+  return $sql;
+}
+
+
 function tryGetEventById($itemId, $withVisitorCount = false, $withFreeSeatCount = false)
 {
   if ($itemId == null)
     return;
-  $item = db()->try_query_row_by_id('event', $itemId);
+  $sql = getEventBaseQuery();
+  $sql .= ' WHERE id = ?';
+  $item = db()->try_query_row($sql, [$itemId]);
   decodeEvent($item, $withVisitorCount, $withFreeSeatCount);
   return $item;
 }
@@ -53,8 +64,13 @@ function getMainPageEvents($withVisitorCount = false, $withFreeSeatCount = false
 
 function getAdminEvents()
 {
+  $sql = getEventBaseQuery();
+  $sql .= ' WHERE startTimestamp > ?';
+  $sql .= ' ORDER BY startTimestamp';
+  $sql .= ' LIMIT 100';
+
   $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
-  $items = db()->query_rows('SELECT * FROM event WHERE startTimestamp > ? ORDER BY startTimestamp LIMIT 100', [$nowWithOffset]);
+  $items = db()->query_rows($sql, [$nowWithOffset]);
   foreach ($items as &$item)
   {
     decodeEvent($item, true, true);
@@ -506,7 +522,7 @@ function getEventFields()
   $field['visibleInList'] = false;
   $fields[] = $field;
 
-  $field = newIntegerField('editClientId', 'Bearbeitet durch');
+  $field = newClientIdField('editClientId', 'Bearbeitet durch');
   $field['editable'] = false;
   $field['visibleInList'] = false;
   $fields[] = $field;
