@@ -32,6 +32,9 @@ $config['footerText'] = <<<EOD
 ...Fußzeile...
 EOD;
 
+# Options:
+# $config['showFreeSeatsAfterBookingClosing'] = true;
+
 # Locale:
 
 # date_default_timezone_set('Europe/Berlin');

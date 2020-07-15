@@ -287,6 +287,7 @@ function renderEventSeatInfo($event, $hasActiveBooking = false)
   $visitorCount = $event['visitorCount'];
   $freeSeatCount = $event['freeSeatCount'];
   $maxVisitorCount = $visitorCount + max($freeSeatCount, 0);
+  $isBookingOpen = time() < $event['bookingClosingTimestamp'];
 
   if ($visitorCount > 0)
   {
@@ -294,7 +295,7 @@ function renderEventSeatInfo($event, $hasActiveBooking = false)
     echo ' Teilnehmer';
   }
 
-  if ($event['hasVisitorLimit'])
+  if ($event['hasVisitorLimit'] && ($isBookingOpen || getConfigValue('showFreeSeatsAfterBookingClosing', true)))
   {
     if ($visitorCount > 0)
     {
@@ -313,7 +314,7 @@ function renderEventSeatInfo($event, $hasActiveBooking = false)
     else
     {
       $class = '';
-      if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
+      if (!$hasActiveBooking && $isBookingOpen)
         $class = 'noFreeSeatsRed';
       echo html_node('span', 'ausgebucht', ['class' => $class]);
     }
