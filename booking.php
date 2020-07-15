@@ -391,7 +391,7 @@ function renderVisitorsSheetDetails($eventId)
   echo ' Teilnehmer gebucht';
   echo ', Buchung ';
   if (time() > $event['bookingClosingTimestamp'])
-    echo 'abgeschlossen';
+    echo 'beendet';
   else
   {
     echo 'noch offen bis ';

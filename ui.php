@@ -196,7 +196,7 @@ function renderMainPageEvent($event, $booking)
   }
   else
   {
-    $boxTitle = 'Buchung abgeschlossen';
+    $boxTitle = 'Buchung beendet';
     $divClass = 'bookingClosed';
   }
 

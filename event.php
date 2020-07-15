@@ -18,7 +18,7 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
     else if (time() < $event['bookingClosingTimestamp'])
       $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
     else
-      $event['bookingState'] = 'abgeschlossen';
+      $event['bookingState'] = 'beendet';
 
     if ($withVisitorCount)
       $event['visitorCount'] = getEventVisitorCount($event['id']);
