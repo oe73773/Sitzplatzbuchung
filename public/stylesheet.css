@@ -359,6 +359,7 @@ table.border td.null {
   padding-left: 3px;
   padding-right: 3px;
   font-size: 90%;
+  opacity: 1 ! important;
 }
 
 
@@ -408,7 +409,7 @@ table.border td.null {
   width: 100%;
 }
 
-.content.mainPage .event.canceled > * {
+.content.mainPage .event.canceled, .content.mainPage .event.canceled > .framedBoxTitle > * {
   opacity: 0.5;
 }
 
@@ -416,7 +417,7 @@ table.border td.null {
   text-decoration: line-through;
 }
 
-.content.mainPage .event.bookingClosed > * {
+.content.mainPage .event.bookingClosed > *, .content.mainPage .event.bookingClosed > .framedBoxTitle > * {
   opacity: 0.5;
 }
 

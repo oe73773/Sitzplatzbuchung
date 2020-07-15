@@ -202,7 +202,7 @@ function renderMainPageEvent($event, $booking)
 
   echo html_open('div');
   echo html_open('div', ['class' => 'framedBox event ' . $divClass]);
-  echo html_node('span', $boxTitle, ['class' => 'framedBoxTitle']);
+  echo html_node('span', html_node('span', $boxTitle), ['class' => 'framedBoxTitle']);
 
   $persons = null;
   $phoneNumber = null;
