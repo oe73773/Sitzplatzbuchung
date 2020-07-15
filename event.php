@@ -20,6 +20,8 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
     else
       $event['bookingState'] = 'beendet';
 
+    $event['hasVisitorLimit'] = intval($event['capacity5Seats']) + intval($event['capacity6Seats']) + intval($event['visitorLimit']) > 0;
+
     if ($withVisitorCount)
       $event['visitorCount'] = getEventVisitorCount($event['id']);
     if ($withFreeSeatCount)
@@ -125,8 +127,18 @@ function calculateFreeSeatCount($event, $additionalPersonCount = null, $debug = 
 function calculateFreeSeatsInner($event, $rows, $debug = false)
 # Returns the number of free seats or -1 if the capacity/limit is exceeded
 {
+  if (!$event['hasVisitorLimit'])
+  {
+    return null;
+  }
+
   $fiveSeatsFree = intval($event['capacity5Seats']);
   $sixSeatsFree = intval($event['capacity6Seats']);
+  if ($fiveSeatsFree + $sixSeatsFree == 0)
+  {
+    $fiveSeatsFree = 100;
+  }
+
   $visitorLimit = intval($event['visitorLimit']);
   $fiveSeatsWith1Person = 0;
   $sixSeatsWith1Person = 0;
@@ -485,12 +497,10 @@ function getEventFields()
 
   $field = newIntegerField('capacity5Seats', 'Anzahl 5er-Stuhlreihen');
   $field['visibleInList'] = false;
-  $field['mandatory'] = true;
   $fields[] = $field;
 
   $field = newIntegerField('capacity6Seats', 'Anzahl 6er-Stuhlreihen');
   $field['visibleInList'] = false;
-  $field['mandatory'] = true;
   $fields[] = $field;
 
   $field = newBooleanField('canceled', 'Abgesagt');

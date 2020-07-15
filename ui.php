@@ -214,7 +214,6 @@ function renderMainPageEvent($event, $booking)
     $bookingCanceled = $booking['cancelTimestamp'] != null;
   }
   $hasActiveBooking = $persons != null && !$bookingCanceled;
-  $freeSeatCount = $event['freeSeatCount'];
 
   renderMainPageEventBasicInfo($event, $hasActiveBooking);
 
@@ -230,7 +229,7 @@ function renderMainPageEvent($event, $booking)
     {
       if ($hasActiveBooking)
         renderMainPageCancelBookingForm($event);
-      else if ($freeSeatCount > 0)
+      else if (!$event['hasVisitorLimit'] || $event['freeSeatCount'] > 0)
         renderMainPageSaveBookingForm($event, false, $persons, $phoneNumber, $bookingCanceled);
     }
   }
@@ -292,36 +291,43 @@ function renderEventSeatInfo($event, $hasActiveBooking = false)
   if ($visitorCount > 0)
   {
     echo $visitorCount;
-    echo ' Teilnehmer, ';
+    echo ' Teilnehmer';
   }
 
-  if ($freeSeatCount > 0)
+  if ($event['hasVisitorLimit'])
   {
-    echo html_open('span', ['class' => 'freeSeats']);
-    echo $freeSeatCount;
-    if ($freeSeatCount == 1)
-      echo ' freier Platz';
+    if ($visitorCount > 0)
+    {
+      echo ', ';
+    }
+    if ($freeSeatCount > 0)
+    {
+      echo html_open('span', ['class' => 'freeSeats']);
+      echo $freeSeatCount;
+      if ($freeSeatCount == 1)
+        echo ' freier Platz';
+      else
+        echo ' freie Plätze';
+      echo html_close('span');
+    }
     else
-      echo ' freie Plätze';
-    echo html_close('span');
-  }
-  else
-  {
-    $class = '';
-    if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
-      $class = 'noFreeSeatsRed';
-    echo html_node('span', 'ausgebucht', ['class' => $class]);
-  }
+    {
+      $class = '';
+      if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
+        $class = 'noFreeSeatsRed';
+      echo html_node('span', 'ausgebucht', ['class' => $class]);
+    }
 
-  # bar
-  $barWidth = 100;
-  $usedWidth = round($visitorCount / $maxVisitorCount * $barWidth);
-  $tooltip = round($visitorCount / $maxVisitorCount * 100) . ' % belegt';
-  echo html_open('div',  ['class' => 'capacityBar', 'title' => $tooltip]);
-  echo html_open('div',  ['style' => 'width: ' . $barWidth . 'px']);
-  echo html_node('div', '', ['style' => 'width: ' . $usedWidth . 'px']);
-  echo html_close('div');
-  echo html_close('div');
+    # bar
+    $barWidth = 100;
+    $usedWidth = round($visitorCount / $maxVisitorCount * $barWidth);
+    $tooltip = round($visitorCount / $maxVisitorCount * 100) . ' % belegt';
+    echo html_open('div',  ['class' => 'capacityBar', 'title' => $tooltip]);
+    echo html_open('div',  ['style' => 'width: ' . $barWidth . 'px']);
+    echo html_node('div', '', ['style' => 'width: ' . $usedWidth . 'px']);
+    echo html_close('div');
+    echo html_close('div');
+  }
 
   echo html_close('div');
 }
