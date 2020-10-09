@@ -34,6 +34,7 @@ EOD;
 
 # Options:
 # $config['showFreeSeatsAfterBookingClosing'] = true;
+# $config['showVisitorsWhenFullyBooked'] = true;
 
 # Locale:
 
