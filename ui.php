@@ -289,7 +289,7 @@ function renderEventSeatInfo($event, $hasActiveBooking = false)
   $maxVisitorCount = $visitorCount + max($freeSeatCount, 0);
   $isBookingOpen = time() < $event['bookingClosingTimestamp'];
 
-  $showVisitors = $visitorCount > 0 && ($freeSeatCount > 0 || getConfigValue('showVisitorsWhenFullyBooked', true));
+  $showVisitors = $visitorCount > 0 && (!$event['hasVisitorLimit'] || $freeSeatCount > 0 || getConfigValue('showVisitorsWhenFullyBooked', true));
   if ($showVisitors)
   {
     echo $visitorCount;
