@@ -425,8 +425,8 @@ function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phone
     echo html_open('div');
 
     $person = explode(',', array_value($persons, $i));
-    $surname = array_value($person, 0);
-    $lastname = array_value($person, 1);
+    $surname = clean_whitespaces(array_value($person, 0));
+    $lastname = clean_whitespaces(array_value($person, 1));
 
     echo html_input('text', 'surname' . ($i + 1), $surname, ['placeholder' => 'Vorname', 'autocomplete' => 'chrome-off']);
     echo html_input('text', 'lastname' . ($i + 1), $lastname, ['placeholder' => 'Nachname', 'autocomplete' => 'chrome-off']);

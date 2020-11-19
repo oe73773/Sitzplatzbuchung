@@ -138,8 +138,8 @@ function handleSaveBookingAction()
   $persons = [];
   for ($i = 1; $i <= 6; $i++)
   {
-    $surname = trim(get_param_value('surname' . $i));
-    $lastname = trim(get_param_value('lastname' . $i));
+    $surname = clean_whitespaces(get_param_value('surname' . $i));
+    $lastname = clean_whitespaces(get_param_value('lastname' . $i));
     if ($surname == '' && $lastname == '')
       continue;
     if (strlen($surname) == '')
@@ -187,7 +187,7 @@ function handleSaveBookingAction()
     return;
   }
 
-  $phoneNumber = trim(get_param_value('phoneNumber'));
+  $phoneNumber = clean_whitespaces(get_param_value('phoneNumber'));
   if ($phoneNumber == '')
   {
     echo 'showErrorMsg("Bitte eine Telefonnummer eingeben.");';

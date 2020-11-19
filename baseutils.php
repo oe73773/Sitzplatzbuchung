@@ -128,11 +128,18 @@ function limit_str_length($str, $maxLength, $ellipsisStr = '...')
     return $str;
 }
 
+
 function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
 {
   return limit_str_length($str, $maxLength, '&hellip;');
 }
 
+
+function clean_whitespaces($str)
+# Removes whitespaces at begin and end and removes consecutive whitespaces
+{
+  return preg_replace('/\s+/', ' ', trim($str));
+}
 
 
 #-------------------------------------------------------------------------------
