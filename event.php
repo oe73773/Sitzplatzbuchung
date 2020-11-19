@@ -13,6 +13,8 @@ function decodeEvent(&$event, $withVisitorCount = false, $withFreeSeatCount = fa
     $event['editTimestamp'] = date_time_to_timestamp($event['editTimestamp']);
 
     $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
+    $event['titleAndDateForTable'] = formatTimestampLocalLong($event['startTimestamp']) . ', ' . $event['title'];
+
     if (time() < $event['bookingOpeningTimestamp'])
       $event['bookingState'] = 'offen ab ' . formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
     else if (time() < $event['bookingClosingTimestamp'])
@@ -546,7 +548,7 @@ function getEventFieldsForVisitorList()
 {
   $fields = [];
 
-  $field = newTextField('titleAndDate', 'Veranstaltung');
+  $field = newTextField('titleAndDateForTable', 'Veranstaltung');
   $field['isTitle'] = true;
   $field['idParamName'] = 'eventId';
   $fields[] = $field;
