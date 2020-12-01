@@ -73,7 +73,7 @@ function getAdminEvents()
   $sql .= ' ORDER BY startTimestamp';
   $sql .= ' LIMIT 100';
 
-  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 15);
+  $nowWithOffset = format_timestamp(time() - 60 * 60 * 24 * 30);
   $items = db()->query_rows($sql, [$nowWithOffset]);
   foreach ($items as &$item)
   {
