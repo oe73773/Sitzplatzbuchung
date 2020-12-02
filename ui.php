@@ -433,10 +433,13 @@ function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phone
 
     echo html_close('div');
   }
-  echo html_open('div');
-  echo html_node('div', 'Telefon (erforderlich) ', ['class' => 'phoneNumberLabel']);
-  echo html_input('tel', 'phoneNumber', $phoneNumber, ['placeholder' => 'Telefonnummer']);
-  echo html_close('div');
+  if (getConfigValue('requestPhoneNumber'))
+  {
+    echo html_open('div');
+    echo html_node('div', 'Telefon (erforderlich) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('tel', 'phoneNumber', $phoneNumber, ['placeholder' => 'Telefonnummer']);
+    echo html_close('div');
+  }
 
   if (getClientValue('persistent') != 1)
     echo html_node('div', 'Hinweis: Es wird ein Browser-Cookie gespeichert. <br>Eine Stornierung ist vom selben Gerät möglich.', ['class' => 'cookieInfo']);

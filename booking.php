@@ -188,15 +188,18 @@ function handleSaveBookingAction()
   }
 
   $phoneNumber = clean_whitespaces(get_param_value('phoneNumber'));
-  if ($phoneNumber == '')
+  if (getConfigValue('requestPhoneNumber'))
   {
-    echo 'showErrorMsg("Bitte eine Telefonnummer eingeben.");';
-    return;
-  }
-  if (strlen($phoneNumber) < 7)
-  {
-    echo 'showErrorMsg("Telefonnummer ist zu kurz.");';
-    return;
+    if ($phoneNumber == '')
+    {
+      echo 'showErrorMsg("Bitte eine Telefonnummer eingeben.");';
+      return;
+    }
+    if (strlen($phoneNumber) < 7)
+    {
+      echo 'showErrorMsg("Telefonnummer ist zu kurz.");';
+      return;
+    }
   }
 
   $listOfPersons = implode(';', $persons);
@@ -375,8 +378,11 @@ function renderVisitorsSheetDetails($eventId)
   $field = newTextField('name', 'Name');
   $fields[] = $field;
 
-  $field = newTextField('phoneNumber', 'Telefon');
-  $fields[] = $field;
+  if (getConfigValue('requestPhoneNumber'))
+  {
+    $field = newTextField('phoneNumber', 'Telefon');
+    $fields[] = $field;
+  }
 
   $field = newTextField('bookingInfo', 'Buchung');
   $fields[] = $field;
@@ -592,9 +598,12 @@ function getBookingFields()
   $field['allowHtml'] = true;
   $fields[] = $field;
 
-  $field = newTextField('phoneNumber', 'Telefon');
-  $field['visibleInList'] = false;
-  $fields[] = $field;
+  if (getConfigValue('requestPhoneNumber'))
+  {
+    $field = newTextField('phoneNumber', 'Telefon');
+    $field['visibleInList'] = false;
+    $fields[] = $field;
+  }
 
   $field = newTimestampField('insertTimestamp', 'Gebucht am');
   $fields[] = $field;
