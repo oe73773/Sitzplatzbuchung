@@ -109,6 +109,8 @@ function handleSaveBookingAction()
 # - surname1..surname6
 # - lastname1..lastname6
 # - phoneNumber
+# - addressLine1
+# - addressLine2
 {
   $eventId = get_param_value('eventId');
   $event = tryGetEventById($eventId);
@@ -202,6 +204,32 @@ function handleSaveBookingAction()
     }
   }
 
+  $addressLine1 = clean_whitespaces(get_param_value('addressLine1'));
+  $addressLine2 = clean_whitespaces(get_param_value('addressLine2'));
+  if (getConfigValue('requestAddress'))
+  {
+    if ($addressLine1 == '')
+    {
+      echo 'showErrorMsg("Bitte Straße und Hausnummer eingeben.");';
+      return;
+    }
+    if (strlen($addressLine1) < 5)
+    {
+      echo 'showErrorMsg("Straße und Hausnummer ist zu kurz.");';
+      return;
+    }
+    if ($addressLine2 == '')
+    {
+      echo 'showErrorMsg("Bitte PLZ und Ort eingeben.");';
+      return;
+    }
+    if (strlen($addressLine2) < 9)
+    {
+      echo 'showErrorMsg("PLZ und Ort ist zu kurz.");';
+      return;
+    }
+  }
+
   $listOfPersons = implode(';', $persons);
 
   # update client row
@@ -210,6 +238,8 @@ function handleSaveBookingAction()
     $clientValues = [];
     $clientValues['lastListOfPersons'] = $listOfPersons;
     $clientValues['lastPhoneNumber'] = $phoneNumber;
+    $clientValues['lastAddressLine1'] = $addressLine1;
+    $clientValues['lastAddressLine2'] = $addressLine2;
     $clientValues['persistent'] = 1;
     db()->try_update_by_id('client', getClientValue('id'), $clientValues);
   }
@@ -233,6 +263,8 @@ function handleSaveBookingAction()
   $booking['listOfPersons'] = $listOfPersons;
   $booking['personCount'] = count($persons);
   $booking['phoneNumber'] = $phoneNumber;
+  $booking['addressLine1'] = $addressLine1;
+  $booking['addressLine2'] = $addressLine2;
   $booking['insertTimestamp'] = format_timestamp(time());
   $booking['insertClientId'] = getClientValue('id');
   if ($asAdmin)
@@ -384,6 +416,12 @@ function renderVisitorsSheetDetails($eventId)
     $fields[] = $field;
   }
 
+  if (getConfigValue('requestAddress'))
+  {
+    $field = newTextField('address', 'Adresse');
+    $fields[] = $field;
+  }
+
   $field = newTextField('bookingInfo', 'Buchung');
   $fields[] = $field;
 
@@ -437,6 +475,7 @@ function renderVisitorsSheetDetails_getRealRows($eventId)
       $row = [];
       $row['bookingInfo'] =  $bookingInfo;
       $row['phoneNumber'] = $booking['phoneNumber'];
+      $row['address'] = $booking['addressLine1'] . ', ' . $booking['addressLine2'];
       $row['name'] = $lastname . ', ' . $surname;
       $row['empty'] = '';
       $key = implode(' ', [$lastname, $surname, $booking['id']]);
@@ -467,6 +506,7 @@ function renderVisitorsSheetDetails_addNumberingAndEmptyRows(&$rows)
     $row['id'] = $i;
     $row['bookingInfo'] = null;
     $row['phoneNumber'] = '';
+    $row['address'] = '';
     $row['name'] = '';
     $row['empty'] = '';
     $row['class'] = 'empty';
@@ -601,6 +641,17 @@ function getBookingFields()
   if (getConfigValue('requestPhoneNumber'))
   {
     $field = newTextField('phoneNumber', 'Telefon');
+    $field['visibleInList'] = false;
+    $fields[] = $field;
+  }
+
+  if (getConfigValue('requestAddress'))
+  {
+    $field = newTextField('addressLine1', 'Straße und Hausnr.');
+    $field['visibleInList'] = false;
+    $fields[] = $field;
+
+    $field = newTextField('addressLine2', 'PLZ und Ort');
     $field['visibleInList'] = false;
     $fields[] = $field;
   }

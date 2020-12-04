@@ -205,12 +205,10 @@ function renderMainPageEvent($event, $booking)
   echo html_node('span', html_node('span', $boxTitle), ['class' => 'framedBoxTitle']);
 
   $persons = null;
-  $phoneNumber = null;
   $bookingCanceled = false;
   if ($booking != null)
   {
     $persons = explode(';', $booking['listOfPersons']);
-    $phoneNumber = $booking['phoneNumber'];
     $bookingCanceled = $booking['cancelTimestamp'] != null;
   }
   $hasActiveBooking = $persons != null && !$bookingCanceled;
@@ -230,7 +228,7 @@ function renderMainPageEvent($event, $booking)
       if ($hasActiveBooking)
         renderMainPageCancelBookingForm($event);
       else if (!$event['hasVisitorLimit'] || $event['freeSeatCount'] > 0)
-        renderMainPageSaveBookingForm($event, false, $persons, $phoneNumber, $bookingCanceled);
+        renderMainPageSaveBookingForm($event, false, $persons, $bookingCanceled);
     }
   }
 
@@ -392,7 +390,7 @@ function renderMainPageCancelBookingForm($event)
 }
 
 
-function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phoneNumber = null, $bookingCanceled = false)
+function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $bookingCanceled = false)
 {
   $showFormScript = "event.target.parentNode.parentNode.classList.add('saveBookingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode);disableAutoReload();";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('saveBookingFormOpened');enableAutoReload();";
@@ -417,8 +415,10 @@ function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phone
   if (!$asAdmin && $persons == null)
   {
     $persons = explode(';', getClientValue('lastListOfPersons'));
-    $phoneNumber = getClientValue('lastPhoneNumber');
   }
+  $phoneNumber = getClientValue('lastPhoneNumber');
+  $addressLine1 = getClientValue('lastAddressLine1');
+  $addressLine2 = getClientValue('lastAddressLine2');
 
   for ($i = 0; $i < 6; $i++)
   {
@@ -433,11 +433,25 @@ function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $phone
 
     echo html_close('div');
   }
+
   if (getConfigValue('requestPhoneNumber'))
   {
     echo html_open('div');
-    echo html_node('div', 'Telefon (erforderlich) ', ['class' => 'phoneNumberLabel']);
+    echo html_node('div', 'Telefon (erf.) ', ['class' => 'phoneNumberLabel']);
     echo html_input('tel', 'phoneNumber', $phoneNumber, ['placeholder' => 'Telefonnummer']);
+    echo html_close('div');
+  }
+
+  if (getConfigValue('requestAddress'))
+  {
+    echo html_open('div');
+    echo html_node('div', 'Straße und Hausnr. (erf.) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('text', 'addressLine1', $addressLine1, ['placeholder' => 'Straße und Hausnr.']);
+    echo html_close('div');
+
+    echo html_open('div');
+    echo html_node('div', 'PLZ und Ort (erf.) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('text', 'addressLine2', $addressLine2, ['placeholder' => 'PLZ und Ort']);
     echo html_close('div');
   }
 

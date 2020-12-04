@@ -39,6 +39,7 @@ EOD;
 #########
 
 $config['requestPhoneNumber'] = false;
+$config['requestAddress'] = false;
 $config['showFreeSeatsAfterBookingClosing'] = true;
 $config['showVisitorsWhenFullyBooked'] = true;
 

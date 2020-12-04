@@ -305,6 +305,19 @@ function getClientFields()
     $fields[] = $field;
   }
 
+  if (getConfigValue('requestAddress'))
+  {
+    $field = newTextField('lastAddressLine1', 'Straße und Hausnr.');
+    $field['editable'] = false;
+    $field['visibleInList'] = false;
+    $fields[] = $field;
+
+    $field = newTextField('lastAddressLine2', 'PLZ und Ort');
+    $field['editable'] = false;
+    $field['visibleInList'] = false;
+    $fields[] = $field;
+  }
+
   $field = newBooleanField('persistent', 'Cookie dauerhaft');
   $field['editable'] = false;
   $field['visibleInList'] = false;
