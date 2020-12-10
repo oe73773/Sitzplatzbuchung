@@ -475,7 +475,10 @@ function renderVisitorsSheetDetails_getRealRows($eventId)
       $row = [];
       $row['bookingInfo'] =  $bookingInfo;
       $row['phoneNumber'] = $booking['phoneNumber'];
-      $row['address'] = $booking['addressLine1'] . ', ' . $booking['addressLine2'];
+      if ($booking['addressLine1'] == '')
+        $row['address'] = '';
+      else
+        $row['address'] = $booking['addressLine1'] . ', ' . $booking['addressLine2'];
       $row['name'] = $lastname . ', ' . $surname;
       $row['empty'] = '';
       $key = implode(' ', [$lastname, $surname, $booking['id']]);
