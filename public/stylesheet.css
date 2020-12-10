@@ -333,21 +333,28 @@ table.border td.null {
 
 
 .framedBox {
-  border: 1px solid lightgrey;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  position: relative;
+  padding-top: 10px;
   background: white;
-  margin-top: 6px;
+}
+.framedBox, .event {
+  border: 1px solid lightgrey;
+  position: relative;
+  padding-bottom: 3px;
+}
+.framedBox, .event > div {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 @media (min-width: 1000px) {
   .framedBox {
+    padding-top: 13px;
+  }
+  .framedBox, .event {
+    padding-bottom: 6px;
+  }
+  .framedBox, .event > div {
     padding-left: 18px;
     padding-right: 18px;
-    padding-top: 13px;
-    padding-bottom: 13px;
   }
 }
 
@@ -386,8 +393,14 @@ table.border td.null {
 }
 
 .content.mainPage > div {
-  padding-top: 7px;
-  padding-bottom: 7px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+@media (min-width: 1000px) {
+  .content.mainPage > div {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
 }
 .content.mainPage > div:first-child {
   padding-top: 2px;
@@ -403,6 +416,10 @@ table.border td.null {
 
 .content.mainPage > div > div {
   width: 100%;
+}
+
+.content.mainPage .event {
+  background: #F2F8FF;
 }
 
 .content.mainPage .event > div {
@@ -422,12 +439,18 @@ table.border td.null {
 }
 
 .content.mainPage .event .titleAndDate {
-  font-size: 135%;
+  font-size: 130%;
+  border-bottom: 1px solid lightgrey;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
 }
 @media (min-width: 1000px) {
   .content.mainPage .event .titleAndDate {
-    font-size: 150%;
-    padding-bottom: 3px;
+    font-size: 145%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
   }
 }
 
@@ -703,6 +726,3 @@ span.noItems {
   display: inline-block;
   padding: 30px;
 }
-
-
-

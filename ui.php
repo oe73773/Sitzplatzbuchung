@@ -180,29 +180,16 @@ function renderMainPageEvent($event, $booking)
   $boxTitle = '';
   $divClass = '';
   if ($event['canceled'] == 1)
-  {
-    $boxTitle = 'Abgesagte Veranstaltung';
     $divClass = 'canceled';
-  }
   else if (time() < $event['bookingOpeningTimestamp'])
-  {
-    $boxTitle = 'Vorschau';
     $divClass = 'preview';
-  }
   else if (time() < $event['bookingClosingTimestamp'])
-  {
-    $boxTitle = 'Demnächst stattfindend';
     $divClass = 'bookingOpen';
-  }
   else
-  {
-    $boxTitle = 'Buchung beendet';
     $divClass = 'bookingClosed';
-  }
 
   echo html_open('div');
-  echo html_open('div', ['class' => 'framedBox event ' . $divClass]);
-  echo html_node('span', html_node('span', $boxTitle), ['class' => 'framedBoxTitle']);
+  echo html_open('div', ['class' => 'event ' . $divClass]);
 
   $persons = null;
   $bookingCanceled = false;
@@ -239,14 +226,17 @@ function renderMainPageEvent($event, $booking)
 
 function renderMainPageEventBasicInfo($event, $hasActiveBooking)
 {
-  echo html_open('div', ['class' => 'textBlock']);
-
   # title and date
-  echo html_open('div', ['class' => 'titleAndDate']);
+  echo html_open('div', ['class' => 'textBlock titleAndDate']);
   echo $event['title'];
   echo ' am ';
   echo formatTimestampLocalLong($event['startTimestamp'], 'minute', false);
   echo html_close('div');
+
+  echo html_open('div', ['class' => 'textBlock']);
+
+  if ($event['canceled'] == 1)
+    echo html_node('div', 'Veranstaltung ist abgesagt');
 
   # notice
   if ($event['notice'] != null)
