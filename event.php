@@ -138,7 +138,7 @@ function calculateFreeSeatsInner($event, $rows, $debug = false)
   $sixSeatsFree = intval($event['capacity6Seats']);
   if ($fiveSeatsFree + $sixSeatsFree == 0)
   {
-    $fiveSeatsFree = 100;
+    $sixSeatsFree = 9999;
   }
 
   $visitorLimit = intval($event['visitorLimit']);
