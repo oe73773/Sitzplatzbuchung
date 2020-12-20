@@ -621,11 +621,8 @@ table.border td.null {
   .content.visitorList td.name {
     min-width: 25em;
   }
-  .content.visitorList td.phoneNumber {
-    min-width: 15em;
-  }
-  .content.visitorList td.bookingInfo {
-    min-width: 10em;
+  .content.visitorList td.phoneNumberAndAddress {
+    min-width: 8em;
   }
 }
 
@@ -659,7 +656,7 @@ div.itemList button {
 }
 
 div.itemList td {
-  max-width: 25em;
+  max-width: 35em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

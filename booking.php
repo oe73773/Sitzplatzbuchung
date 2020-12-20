@@ -410,15 +410,22 @@ function renderVisitorsSheetDetails($eventId)
   $field = newTextField('name', 'Name');
   $fields[] = $field;
 
-  if (getConfigValue('requestPhoneNumber'))
+  if (getConfigValue('requestPhoneNumber') || getConfigValue('requestAddress'))
   {
-    $field = newTextField('phoneNumber', 'Telefon');
-    $fields[] = $field;
-  }
-
-  if (getConfigValue('requestAddress'))
-  {
-    $field = newTextField('address', 'Adresse');
+    $text = '';
+    if (getConfigValue('requestAddress'))
+    {
+      $text .= 'Telefon';
+    }
+    if (getConfigValue('requestAddress'))
+    {
+      if ($text != '')
+      {
+        $text .= ' und ';
+      }
+      $text .= 'Adresse';
+    }
+    $field = newTextField('phoneNumberAndAddress', $text);
     $fields[] = $field;
   }
 
@@ -474,11 +481,18 @@ function renderVisitorsSheetDetails_getRealRows($eventId)
 
       $row = [];
       $row['bookingInfo'] =  $bookingInfo;
-      $row['phoneNumber'] = $booking['phoneNumber'];
-      if ($booking['addressLine1'] == '')
-        $row['address'] = '';
-      else
-        $row['address'] = $booking['addressLine1'] . ', ' . $booking['addressLine2'];
+
+      $phoneNumberAndAddress = $booking['phoneNumber'];
+      if ($booking['addressLine1'] != '')
+      {
+        if ($phoneNumberAndAddress != '')
+        {
+          $phoneNumberAndAddress .= ', ';
+        }
+        $phoneNumberAndAddress .= $booking['addressLine1'] . ', ' . $booking['addressLine2'];
+      }
+      $row['phoneNumberAndAddress'] = $phoneNumberAndAddress;
+
       $row['name'] = $lastname . ', ' . $surname;
       $row['empty'] = '';
       $key = implode(' ', [$lastname, $surname, $booking['id']]);
@@ -508,8 +522,7 @@ function renderVisitorsSheetDetails_addNumberingAndEmptyRows(&$rows)
     $row = [];
     $row['id'] = $i;
     $row['bookingInfo'] = null;
-    $row['phoneNumber'] = '';
-    $row['address'] = '';
+    $row['phoneNumberAndAddress'] = '';
     $row['name'] = '';
     $row['empty'] = '';
     $row['class'] = 'empty';
