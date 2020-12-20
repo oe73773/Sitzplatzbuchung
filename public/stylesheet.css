@@ -465,7 +465,7 @@ table.border td.null {
 
 .seatsInfo .capacityBar {
   position: absolute;
-  right: -5px;
+  right: 8px;
   top: 5px;
 }
 .seatsInfo .capacityBar > div {
