@@ -261,6 +261,10 @@ function renderMainPageEventBasicInfo($event, $hasActiveBooking)
         echo 'Buchung bis ';
       echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
     }
+    else
+    {
+      echo 'Buchung beendet';
+    }
     echo html_close('div');
   }
 
