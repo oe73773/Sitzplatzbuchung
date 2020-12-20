@@ -410,6 +410,9 @@ function renderVisitorsSheetDetails($eventId)
   $field = newTextField('name', 'Name');
   $fields[] = $field;
 
+  $field = newTextField('empty', 'Anwes.');
+  $fields[] = $field;
+
   if (getConfigValue('requestPhoneNumber') || getConfigValue('requestAddress'))
   {
     $text = '';
@@ -430,9 +433,6 @@ function renderVisitorsSheetDetails($eventId)
   }
 
   $field = newTextField('bookingInfo', 'Buchung');
-  $fields[] = $field;
-
-  $field = newTextField('empty', 'Anwesend');
   $fields[] = $field;
 
   echo html_button('Drucken', ['onclick' => 'window.print();']);
