@@ -472,7 +472,7 @@ function renderVisitorsSheetDetails_getRealRows($eventId)
     if (count($persons) == 1)
       $bookingInfo = count($persons) . ' Person';
     else
-      $bookingInfo = count($persons) . ' Personen, #' . $booking['id'];
+      $bookingInfo = count($persons) . ' Pers., #' . $booking['id'];
     foreach($persons as $personStr)
     {
       $person = explode(',', $personStr);
