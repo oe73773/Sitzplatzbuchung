@@ -619,7 +619,7 @@ table.border td.null {
     padding-bottom: 0.6em;
   }
   .content.visitorList td.name {
-    min-width: 25em;
+    min-width: 14em;
   }
   .content.visitorList td.phoneNumberAndAddress {
     min-width: 8em;
