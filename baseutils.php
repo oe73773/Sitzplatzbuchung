@@ -1,5 +1,9 @@
 <?php
 
+#-------------------------------------------------------------------------------
+#                                   Basic
+#-------------------------------------------------------------------------------
+
 error_reporting(E_ALL);
 setlocale(LC_ALL, 'en_US');
 date_default_timezone_set('UTC');
@@ -22,41 +26,6 @@ function raise_error($msg, $level = 0)
 }
 
 
-function to_string($value)
-# Formats a boolean/string/number/array as readable string.
-{
-	if ($value === null)
-		return 'null';
-	if ($value === true)
-		return 'true';
-	if ($value === false)
-		return 'false';
-	if (is_numeric($value))
-		return $value;
-	if (is_array($value))
-	{
-		$result = '';
-		foreach ($value as $Key => $Val)
-		{
-			if ($result != '')
-				$result = $result.', ';
-			$result = $result . to_string($Key) . ': ' . to_string($Val);
-		}
-		return '{' . $result . '}';
-	}
-	if (is_object($value))
-	{
-		if (method_exists($value, '__toString'))
-			return $value->__toString();
-		return 'object of ' . get_class($value);
-	}
-	# string:
-	$value = str_replace("\n", '\n', $value);
-	$value = str_replace("\r", '\r', $value);
-  return '\'' . $value . '\'';
-}
-
-
 function array_value($array, $index, $defaultValue = null)
 # Return the value of an array.
 # Returns value of $defaultValue if the index does not exist.
@@ -70,16 +39,125 @@ function array_value($array, $index, $defaultValue = null)
 function array_value_by_index($array, $index)
 # Return the value of an associative array by index.
 {
-	$values = array_values($array);
-	return array_value($values, $index);
+  $values = array_values($array);
+  return array_value($values, $index);
 }
 
 
 function array_key_by_index($array, $index)
 # Return the key of an associative array by index.
 {
-	$values = array_keys($array);
-	return array_value($values, $index);
+  $values = array_keys($array);
+  return array_value($values, $index);
+}
+
+
+
+#-------------------------------------------------------------------------------
+#                                 String processing
+#-------------------------------------------------------------------------------
+
+function to_string($value)
+# Formats a boolean/string/number/array as readable string.
+{
+  if ($value === null)
+    return 'null';
+  if ($value === true)
+    return 'true';
+  if ($value === false)
+    return 'false';
+  if (is_numeric($value))
+    return $value;
+  if (is_array($value))
+  {
+    $result = '';
+    foreach ($value as $Key => $Val)
+    {
+      if ($result != '')
+        $result = $result.', ';
+      $result = $result . to_string($Key) . ': ' . to_string($Val);
+    }
+    return '{' . $result . '}';
+  }
+  if (is_object($value))
+  {
+    if (method_exists($value, '__toString'))
+      return $value->__toString();
+    return 'object of ' . get_class($value);
+  }
+  # string:
+  $value = str_replace("\n", '\n', $value);
+  $value = str_replace("\r", '\r', $value);
+  return '\'' . $value . '\'';
+}
+
+
+function contains($haystack, $needle)
+{
+  return strpos($haystack, $needle) !== false;
+}
+
+
+function starts_with($haystack, $needle)
+{
+  $length = strlen($needle);
+  return substr($haystack, 0, $length) === $needle;
+}
+
+
+function ends_with($haystack, $needle)
+{
+  $length = strlen($needle);
+  if ($length == 0)
+    return true;
+  return substr($haystack, -$length) === $needle;
+}
+
+
+function generate_token()
+{
+  return sha1(microtime()) . dechex(mt_rand());
+}
+
+
+function limit_str_length($str, $maxLength, $ellipsisStr = '...')
+{
+  if (mb_strlen($str) > $maxLength)
+    return mb_substr($str, 0, $maxLength).$ellipsisStr;
+  else
+    return $str;
+}
+
+
+function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
+{
+  return limit_str_length($str, $maxLength, '&hellip;');
+}
+
+
+function clean_whitespaces($str)
+# Removes whitespaces at begin and end and removes consecutive whitespaces
+{
+  return preg_replace('/\s+/', ' ', trim($str));
+}
+
+
+#-------------------------------------------------------------------------------
+#                               Request related
+#-------------------------------------------------------------------------------
+
+function get_client_ip_address()
+{
+  $x = getenv('HTTP_X_FORWARDED_FOR');
+  if ($x != '')
+    return $x; # In case of a load balancer
+  return getenv('REMOTE_ADDR');
+}
+
+
+function is_https()
+{
+  return array_value($_SERVER, 'HTTPS') != null;
 }
 
 
@@ -122,49 +200,6 @@ function get_current_url_params($paramName = '', $paramValue = '')
 }
 
 
-function contains($haystack, $needle)
-{
-  return strpos($haystack, $needle) !== false;
-}
-
-
-function starts_with($haystack, $needle)
-{
-  $length = strlen($needle);
-  return substr($haystack, 0, $length) === $needle;
-}
-
-
-function ends_with($haystack, $needle)
-{
-  $length = strlen($needle);
-  if ($length == 0)
-    return true;
-  return substr($haystack, -$length) === $needle;
-}
-
-
-function get_client_ip_address()
-{
-  $x = getenv('HTTP_X_FORWARDED_FOR');
-  if ($x != '')
-    return $x; # In case of a load balancer
-  return getenv('REMOTE_ADDR');
-}
-
-
-function generate_token()
-{
-	return sha1(microtime()) . dechex(mt_rand());
-}
-
-
-function is_https()
-{
-  return array_value($_SERVER, 'HTTPS') != null;
-}
-
-
 function get_cookie($key)
 {
   $result = array_value($_COOKIE, $key);
@@ -184,29 +219,43 @@ function set_cookie($key, $value, $expire)
 }
 
 
-function array_to_html($data)
+function get_os_from_user_agent($userAgent)
+# Parses the operating system from a user agent string
 {
-  return nl2br(json_encode($data, JSON_PRETTY_PRINT));
+  if (!starts_with($userAgent, 'Mozilla/5.0 ('))
+    return;
+  $str = substr($userAgent, 13);
+  if (starts_with($str, 'Windows NT'))
+    return 'Windows';
+  if (starts_with($str, 'Windows Phone'))
+    return 'Windows Phone';
+  if (starts_with($str, 'Macintosh'))
+    return 'macOS';
+  if (starts_with($str, 'X11'))
+    return 'Linux';
+  if (starts_with($str, 'iPhone') || starts_with($str, 'iPad'))
+    return 'iOS';
+  if (contains($str, 'Android'))
+    return 'Android';
 }
 
 
-function limit_str_length($str, $maxLength, $ellipsisStr = '...')
+function user_agent_is_not_supported()
+# Parses the operating system from a user agent string
 {
-  if (mb_strlen($str) > $maxLength)
-    return mb_substr($str, 0, $maxLength).$ellipsisStr;
-  else
-    return $str;
-}
-
-function limit_str_length_html($str, $maxLength, $ellipsisStr = '...')
-{
-  return limit_str_length($str, $maxLength, '&hellip;');
+  $userAgent = array_value($_SERVER, 'HTTP_USER_AGENT');
+  return contains($userAgent, 'Trident/');
 }
 
 
-# Date & Time
+
+#-------------------------------------------------------------------------------
+#                                   Date & Time
+#-------------------------------------------------------------------------------
 
 function date_time_to_timestamp($str)
+# Converts a date time string to a unix timestamp.
+# In case of a failure it returns false.
 {
   if ($str == null)
     return null;
@@ -218,6 +267,8 @@ function format_timestamp($timestamp, $format = '%Y-%m-%d %H:%M:%S')
 # Converts a unix timestamp to a formated string.
 # Use a 'X' in front of a number to remove a leading zero.
 {
+  if ($timestamp === null)
+    return null;
   $str = strftime($format, $timestamp);
   $str = str_replace('X0', '', $str);
   $str = str_replace('X', '', $str);
@@ -283,29 +334,23 @@ function timestamp_floor($timestamp, $precision)
 }
 
 
-# HTML output
 
+#-------------------------------------------------------------------------------
+#                                   HTML output
+#-------------------------------------------------------------------------------
 
 function html_encode($text)
 # Encodes a plain text as HTML code
 {
-	if ($text === null)
-		return 'null';
-	if ($text === true)
-		return 'true';
-	if ($text === false)
-		return 'false';
-
-	# if(!mb_check_encoding($text, 'UTF-8'))
-		# $Text = utf8_encode($text);
-
-	$text = htmlentities($text, ENT_COMPAT, 'UTF-8');
-
-	# $text = str_replace(unichr(8201), '&thinsp;', $Text);
-	# $text = str_replace(unichr(8230), '&hellip;', $Text);
-
-	return $text;
+  if ($text === null)
+    return 'null';
+  if ($text === true)
+    return 'true';
+  if ($text === false)
+    return 'false';
+  return htmlentities($text, ENT_COMPAT, 'UTF-8');
 }
+
 
 function html_node($tagName, $content = '', $attributes = [])
 # Returns an HTML node (opening tag, content and closing tag)
@@ -318,9 +363,12 @@ function html_node($tagName, $content = '', $attributes = [])
     {
       $s .= ' ';
       $s .= $key;
-      $s .= '="';
-      $s .= $value;
-      $s .= '"';
+      if ($value !== true)
+      {
+        $s .= '="';
+        $s .= html_encode($value);
+        $s .= '"';
+      }
     }
   }
   if ($content !== null)
@@ -348,9 +396,12 @@ function html_open($tagName, $attributes = [])
     {
       $s .= ' ';
       $s .= $key;
-      $s .= '="';
-      $s .= $value;
-      $s .= '"';
+      if ($value !== true)
+      {
+        $s .= '="';
+        $s .= html_encode($value);
+        $s .= '"';
+      }
     }
   }
   $s .= '>';
@@ -387,40 +438,89 @@ function html_input($type, $name = null, $value = null, $attributes = [])
   return html_node('input', null, $attributes);
 }
 
-function html_form_button($content, $attributes = [])
+
+function html_checkbox($name = null, $checked = false, $attributes = [])
 {
-  $attributes['type'] = 'button';
-  return html_node('button', $content, $attributes);
+  $attributes['type'] = 'checkbox';
+  if ($name != null)
+    $attributes['name'] = $name;
+  if ($checked)
+    $attributes['checked'] = true;
+  return html_node('input', null, $attributes);
 }
 
+
+function html_textarea($name = null, $value = '', $attributes = [])
+{
+  if ($name != null)
+    $attributes['name'] = $name;
+  if ($value === null)
+    $value = '';
+  return html_node('textarea', $value, $attributes);
+}
+
+
+function html_button($content, $attributes = [])
+{
+  $attributes['type'] = 'button'; # avoid to act as submit button
+  return html_node('button', $content, $attributes);
+}
 
 function html_form_submit_button($content, $attributes = [])
 {
   return html_node('button', $content, $attributes);
 }
 
+function html_redirect_button($url, $content, $attributes = [])
+{
+  $attributes['onclick'] = js_redirect($url);
+  $attributes['onmousedown'] = 'openUrlInNewTabOnMiddleClick(event, "' . $url . '");';
+  return html_button($content, $attributes);
+}
+
 
 function write_css_include_tag($path)
 {
-	echo '<link rel="stylesheet" type="text/css" href="';
-	echo $path;
+  echo '<link rel="stylesheet" type="text/css" href="';
+  echo $path;
   echo '?';
   echo filemtime(dirname(__FILE__) . '/' . $path);
-	echo '" />';
+  echo '" />';
 }
 
 
 function write_script_include_tag($path)
 {
-	echo '<script src="';
-	echo $path;
+  echo '<script src="';
+  echo $path;
   echo '?';
   echo filemtime(dirname(__FILE__) . '/' . $path);
-	echo '"></script>';
+  echo '"></script>';
 }
 
 
-# Database access
+function array_to_html($data)
+{
+  return nl2br(json_encode($data, JSON_PRETTY_PRINT));
+}
+
+
+
+#-------------------------------------------------------------------------------
+#                                 JavaScript output
+#-------------------------------------------------------------------------------
+
+function js_redirect($url)
+# Returns a JavaScript statement to redirect to a new URL
+{
+  return 'location.href = "' . $url . '";';
+}
+
+
+
+#-------------------------------------------------------------------------------
+#                                  Database access
+#-------------------------------------------------------------------------------
 
 class db_writer
 {
@@ -568,9 +668,9 @@ class db_writer
 function sql_and($A, $B)
 # Return a SQL term of two terms by AND operation, one terms may be empty
 {
-	if ($A == null)
-		return $B;
-	if ($B == null)
-		return $A;
-	return '(' . $A . ') AND (' . $B . ')';
+  if ($A == null)
+    return $B;
+  if ($B == null)
+    return $A;
+  return '(' . $A . ') AND (' . $B . ')';
 }

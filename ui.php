@@ -31,6 +31,8 @@ function writeMainHtmlBeforeContent($pageTitle = null)
   echo html_close('div');
   echo html_close('div');
 
+  renderUnsupportedBrowserWarning();
+
   # navBar
   echo html_open('div', ['class' => 'navBar']);
   if (isClientAdmin() || $pageTitle != null)
@@ -44,6 +46,19 @@ function writeMainHtmlBeforeContent($pageTitle = null)
   {
     echo html_open('div', ['class' => 'pageTitleOuter']);
     echo html_node('div', $pageTitle, ['class' => 'pageTitle']);
+    echo html_close('div');
+  }
+}
+
+
+function renderUnsupportedBrowserWarning()
+{
+  if (user_agent_is_not_supported())
+  {
+    echo html_open('div', ['class' => 'content']);
+    echo html_open('div');
+    echo html_node('div', 'Achtung: Der verwendete Webbrowser ist veraltet und wird nicht mehr unterstützt.<br>Zu weiteren Informationen siehe <a href="https://www.browser-update.org/de/update.html" target="_blank">www.browser-update.org</a>.', ['class' => 'textBlock errorBox']);
+    echo html_close('div');
     echo html_close('div');
   }
 }
@@ -122,6 +137,7 @@ function renderMainPage()
 function calculateAutoReloadHash($events)
 {
   $items = [];
+  $items[] = getAppVersion();
   foreach ($events as $event)
   {
     $items[] = $event['id'];
@@ -164,48 +180,32 @@ function renderMainPageEvent($event, $booking)
   $boxTitle = '';
   $divClass = '';
   if ($event['canceled'] == 1)
-  {
-    $boxTitle = 'Abgesagte Veranstaltung';
     $divClass = 'canceled';
-  }
   else if (time() < $event['bookingOpeningTimestamp'])
-  {
-    $boxTitle = 'Vorschau';
     $divClass = 'preview';
-  }
   else if (time() < $event['bookingClosingTimestamp'])
-  {
-    $boxTitle = 'Demnächst stattfindend';
     $divClass = 'bookingOpen';
-  }
   else
-  {
-    $boxTitle = 'Buchung abgeschlossen';
     $divClass = 'bookingClosed';
-  }
 
   echo html_open('div');
-  echo html_open('div', ['class' => 'framedBox event ' . $divClass]);
-  echo html_node('span', $boxTitle, ['class' => 'framedBoxTitle']);
+  echo html_open('div', ['class' => 'event ' . $divClass]);
 
   $persons = null;
-  $phoneNumber = null;
   $bookingCanceled = false;
   if ($booking != null)
   {
     $persons = explode(';', $booking['listOfPersons']);
-    $phoneNumber = $booking['phoneNumber'];
     $bookingCanceled = $booking['cancelTimestamp'] != null;
   }
   $hasActiveBooking = $persons != null && !$bookingCanceled;
-  $freeSeatCount = $event['freeSeatCount'];
 
-  renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount);
+  renderMainPageEventBasicInfo($event, $hasActiveBooking);
 
   if ($event['canceled'] != 1)
   {
     if (time() >= $event['bookingOpeningTimestamp'])
-      renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount);
+      renderEventSeatInfo($event, $hasActiveBooking);
 
     if ($persons != null)
       renderMainPageBookingStatus($persons, $bookingCanceled);
@@ -214,8 +214,8 @@ function renderMainPageEvent($event, $booking)
     {
       if ($hasActiveBooking)
         renderMainPageCancelBookingForm($event);
-      else if ($freeSeatCount > 0)
-        renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingCanceled);
+      else if (!$event['hasVisitorLimit'] || $event['freeSeatCount'] > 0)
+        renderMainPageSaveBookingForm($event, false, $persons, $bookingCanceled);
     }
   }
 
@@ -224,84 +224,104 @@ function renderMainPageEvent($event, $booking)
 }
 
 
-function renderMainPageEventBasicInfo($event, $hasActiveBooking, $freeSeatCount)
+function renderMainPageEventBasicInfo($event, $hasActiveBooking)
 {
-  echo html_open('div', ['class' => 'textBlock']);
-
   # title and date
-  echo html_open('div', ['class' => 'titleAndDate']);
+  echo html_open('div', ['class' => 'textBlock titleAndDate']);
   echo $event['title'];
   echo ' am ';
   echo formatTimestampLocalLong($event['startTimestamp'], 'minute', false);
   echo html_close('div');
+
+  echo html_open('div', ['class' => 'textBlock']);
+
+  if ($event['canceled'] == 1)
+    echo html_node('div', 'Veranstaltung ist abgesagt');
 
   # notice
   if ($event['notice'] != null)
     echo html_node('div', $event['notice'], ['class' => 'notice preWrapped']);
 
   # booking period
-  echo html_open('div', ['class' => 'bookingPeriod']);
-  if (time() < $event['bookingOpeningTimestamp'])
+  if ($event['canceled'] != 1)
   {
-    echo 'Buchung: ';
-    echo formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
-    echo ' – ';
-    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
-  }
-  else if (time() < $event['bookingClosingTimestamp'])
-  {
-    if ($hasActiveBooking)
-      echo 'Stornierung bis ';
+    echo html_open('div', ['class' => 'bookingPeriod']);
+    if (time() < $event['bookingOpeningTimestamp'])
+    {
+      echo 'Buchung: ';
+      echo formatTimestampLocalLong($event['bookingOpeningTimestamp'], 'minute', false);
+      echo ' – ';
+      echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    }
+    else if (time() < $event['bookingClosingTimestamp'])
+    {
+      if ($hasActiveBooking)
+        echo 'Stornierung bis ';
+      else
+        echo 'Buchung bis ';
+      echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    }
     else
-      echo 'Buchung bis ';
-    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
+    {
+      echo 'Buchung beendet';
+    }
+    echo html_close('div');
   }
-  echo html_close('div');
 
   echo html_close('div');
 }
 
 
-function renderMainPageEventSeatInfo($event, $hasActiveBooking, $freeSeatCount)
+function renderEventSeatInfo($event, $hasActiveBooking = false)
 {
   echo html_open('div', ['class' => 'seatsInfo']);
 
   $visitorCount = $event['visitorCount'];
+  $freeSeatCount = $event['freeSeatCount'];
   $maxVisitorCount = $visitorCount + max($freeSeatCount, 0);
+  $isBookingOpen = time() < $event['bookingClosingTimestamp'];
 
-  if ($visitorCount > 0)
+  $showVisitors = $visitorCount > 0 && (!$event['hasVisitorLimit'] || $freeSeatCount > 0 || getConfigValue('showVisitorsWhenFullyBooked', true));
+  if ($showVisitors)
   {
     echo $visitorCount;
-    echo ' Teilnehmer, ';
+    echo ' Teilnehmer';
   }
 
-  if ($freeSeatCount > 0)
+  if ($event['hasVisitorLimit'] && ($isBookingOpen || getConfigValue('showFreeSeatsAfterBookingClosing', true)))
   {
-    echo html_open('span', ['class' => 'freeSeats']);
-    echo $freeSeatCount;
-    if ($freeSeatCount == 1)
-      echo ' freier Platz';
+    if ($showVisitors)
+    {
+      echo ', ';
+    }
+    if ($freeSeatCount > 0)
+    {
+      echo html_open('span', ['class' => 'freeSeats']);
+      echo $freeSeatCount;
+      if ($freeSeatCount == 1)
+        echo ' freier Platz';
+      else
+        echo ' freie Plätze';
+      echo html_close('span');
+    }
     else
-      echo ' freie Plätze';
-    echo html_close('span');
-  }
-  else
-  {
-    $class = '';
-    if (!$hasActiveBooking && time() < $event['bookingClosingTimestamp'])
-      $class = 'noFreeSeats';
-    echo html_node('span', 'ausgebucht', ['class' => $class]);
-  }
+    {
+      $class = '';
+      if (!$hasActiveBooking && $isBookingOpen)
+        $class = 'noFreeSeatsRed';
+      echo html_node('span', 'ausgebucht', ['class' => $class]);
+    }
 
-  # bar
-  $barWidth = 100;
-  $usedWidth = round($visitorCount / $maxVisitorCount * $barWidth);
-  $tooltip = round($visitorCount / $maxVisitorCount * 100) . ' % belegt';
-  echo html_open('div',  ['class' => 'capacityBar', 'title' => $tooltip]);
-  echo html_open('div',  ['style' => 'width: ' . $barWidth . 'px']);
-  echo html_node('div', '', ['style' => 'width: ' . $usedWidth . 'px']);
-  echo html_close('div');
-  echo html_close('div');
+    # bar
+    $barWidth = 100;
+    $usedWidth = round($visitorCount / $maxVisitorCount * $barWidth);
+    $tooltip = round($visitorCount / $maxVisitorCount * 100) . ' % belegt';
+    echo html_open('div',  ['class' => 'capacityBar', 'title' => $tooltip]);
+    echo html_open('div',  ['style' => 'width: ' . $barWidth . 'px']);
+    echo html_node('div', '', ['style' => 'width: ' . $usedWidth . 'px']);
+    echo html_close('div');
+    echo html_close('div');
+  }
 
   echo html_close('div');
 }
@@ -339,7 +359,7 @@ function renderMainPageBookingStatus($persons, $bookingCanceled)
     echo html_close('div');
 
     $showFormScript = "event.target.parentNode.parentNode.parentNode.parentNode.classList.add('cancelBookingFormOpened');disableAutoReload();";
-    $button = html_form_button('Stornieren', ['class' => 'linkButton', 'onclick' => $showFormScript]);
+    $button = html_button('Stornieren', ['class' => 'linkButton', 'onclick' => $showFormScript]);
     echo html_node('div', $button, ['class' => 'cancelBookingFormPlaceholder']);
   }
 
@@ -356,7 +376,7 @@ function renderMainPageCancelBookingForm($event)
   echo html_open('form', ['action' => '?a=cancelBooking', 'onsubmit' => 'postForm(event)']);
   echo html_input('hidden', 'eventId', $event['id']);
   echo html_form_submit_button('Stornierung bestätigen', ['class' => 'deleteButton']);
-  echo html_form_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+  echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
   writeFormToken();
   echo html_close('form');
 
@@ -364,53 +384,84 @@ function renderMainPageCancelBookingForm($event)
 }
 
 
-function renderMainPageSaveBookingForm($event, $persons, $phoneNumber, $bookingCanceled)
+function renderMainPageSaveBookingForm($event, $asAdmin, $persons = null, $bookingCanceled = false)
 {
   $showFormScript = "event.target.parentNode.parentNode.classList.add('saveBookingFormOpened'); focusFirstChildInputNode(event.target.parentNode.parentNode);disableAutoReload();";
   $hideFormScript = "event.target.parentNode.parentNode.parentNode.classList.remove('saveBookingFormOpened');enableAutoReload();";
 
-  if ($bookingCanceled)
-    $buttonText = 'Erneut buchen';
-  else
-    $buttonText = 'Teilnehmen';
-  $button = html_form_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
-  echo html_node('div', $button, ['class' => 'saveBookingFormPlaceholder']);
+  if (!$asAdmin)
+  {
+    if ($bookingCanceled)
+      $buttonText = 'Erneut buchen';
+    else
+      $buttonText = 'Teilnehmen';
+    $button = html_button($buttonText, ['class' => 'saveButton', 'onclick' => $showFormScript]);
+    echo html_node('div', $button, ['class' => 'saveBookingFormPlaceholder']);
+  }
 
   echo html_open('div', ['class' => 'saveBookingForm']);
-  echo html_node('div', 'Teilnehmer aus meinem Haushalt:', ['class' => 'formTitle']);
+  if ($asAdmin)
+    echo html_node('div', 'Teilnehmer aus einem Haushalt:', ['class' => 'formTitle']);
+  else
+    echo html_node('div', 'Teilnehmer aus meinem Haushalt:', ['class' => 'formTitle']);
   echo html_open('form', ['action' => '?a=saveBooking', 'onsubmit' => 'postForm(event)']);
 
-  if ($persons == null)
+  if (!$asAdmin && $persons == null)
   {
     $persons = explode(';', getClientValue('lastListOfPersons'));
-    $phoneNumber = getClientValue('lastPhoneNumber');
   }
+  $phoneNumber = getClientValue('lastPhoneNumber');
+  $addressLine1 = getClientValue('lastAddressLine1');
+  $addressLine2 = getClientValue('lastAddressLine2');
 
   for ($i = 0; $i < 6; $i++)
   {
     echo html_open('div');
 
     $person = explode(',', array_value($persons, $i));
-    $surname = array_value($person, 0);
-    $lastname = array_value($person, 1);
+    $surname = clean_whitespaces(array_value($person, 0));
+    $lastname = clean_whitespaces(array_value($person, 1));
 
     echo html_input('text', 'surname' . ($i + 1), $surname, ['placeholder' => 'Vorname', 'autocomplete' => 'chrome-off']);
     echo html_input('text', 'lastname' . ($i + 1), $lastname, ['placeholder' => 'Nachname', 'autocomplete' => 'chrome-off']);
 
     echo html_close('div');
   }
-  echo html_open('div');
-  echo html_node('div', 'Telefon (erforderlich) ', ['class' => 'phoneNumberLabel']);
-  echo html_input('tel', 'phoneNumber', $phoneNumber, ['placeholder' => 'Telefonnummer']);
-  echo html_close('div');
+
+  if (getConfigValue('requestPhoneNumber'))
+  {
+    echo html_open('div');
+    echo html_node('div', 'Telefon (erf.) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('tel', 'phoneNumber', $phoneNumber, ['placeholder' => 'Telefonnummer']);
+    echo html_close('div');
+  }
+
+  if (getConfigValue('requestAddress'))
+  {
+    echo html_open('div');
+    echo html_node('div', 'Straße und Hausnr. (erf.) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('text', 'addressLine1', $addressLine1, ['placeholder' => 'Straße und Hausnr.']);
+    echo html_close('div');
+
+    echo html_open('div');
+    echo html_node('div', 'PLZ und Ort (erf.) ', ['class' => 'phoneNumberLabel']);
+    echo html_input('text', 'addressLine2', $addressLine2, ['placeholder' => 'PLZ und Ort']);
+    echo html_close('div');
+  }
 
   if (getClientValue('persistent') != 1)
     echo html_node('div', 'Hinweis: Es wird ein Browser-Cookie gespeichert. <br>Eine Stornierung ist vom selben Gerät möglich.', ['class' => 'cookieInfo']);
 
   echo html_form_submit_button('Buchung speichern', ['class' => 'saveButton']);
-  echo html_form_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
+  if (!$asAdmin)
+    echo html_button('Abbrechen', ['class' => 'linkButton', 'onclick' => $hideFormScript]);
 
   echo html_input('hidden', 'eventId', $event['id']);
+  if ($asAdmin)
+  {
+    echo html_input('hidden', 'asAdmin', 1);
+    echo html_node('script', 'focusFirstChildInputNode(document.body);');
+  }
   writeFormToken();
   echo html_close('form');
   echo html_close('div');
@@ -431,11 +482,11 @@ function renderHelpPage()
   echo getClientValue('id');
   echo ' (';
   if (getClientValue('persistent') == 1)
-    echo 'beständig';
+    echo 'dauerhaft';
   else
   {
     echo html_open('form', ['action' => '?a=makeClientPersistent', 'onsubmit' => 'postForm(event)']);
-    echo html_form_submit_button('Auf diesem Gerät merken', ['class' => 'inlineLinkButton']);
+    echo html_form_submit_button('Cookie dauerhaft speichern', ['class' => 'inlineLinkButton']);
     writeFormToken();
     echo html_close('form');
   }
@@ -463,10 +514,11 @@ function renderAdminPage()
   echo html_open('div', ['class' => 'content adminPage']);
 
   echo html_open('ul');
-  echo html_node('li', html_a('?p=visitorList', 'Anwesenheitsliste'));
+  echo html_node('li', html_a('?p=visitorList', 'Anwesenheitslisten'));
   echo html_node('li', html_a('?p=events', 'Veranstaltungen verwalten'));
   echo html_node('li', html_a('?p=bookings', 'Buchungen verwalten'));
   echo html_node('li', html_a('?p=clients', 'Geräte verwalten'));
+  echo html_node('li', html_a('?p=adminlog', 'Admin-Protokoll'));
   echo html_node('li', html_a('?p=bookingSimulator', 'Buchungs-Simulator'));
   echo html_close('ul');
 
@@ -477,9 +529,9 @@ function renderAdminPage()
 function renderBookingSimulator()
 {
   writeMainHtmlBeforeContent('Buchungs-Simulator');
-  echo html_open('div', ['class' => 'content']);
+  echo html_open('div', ['class' => 'content bookingSimulator']);
 
-  echo html_open('form', ['action' => '?a=bookingSimulator', 'onsubmit' => 'postForm(event)', 'class' => 'itemDetails']);
+  echo html_open('form', ['action' => '?a=bookingSimulator', 'onsubmit' => 'postForm(event)']);
 
   echo html_open('div');
   echo html_node('span', 'Anzahl 5er-Stuhlreihen');
@@ -571,262 +623,6 @@ function handleBookingSimulatorAction()
 }
 
 
-function renderClientList()
-{
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
-  writeMainHtmlBeforeContent('Geräte verwalten');
-
-  echo html_open('div', ['class' => 'content']);
-
-  $items = db()->query_rows('SELECT * FROM client ORDER BY lastSeenTimestamp DESC LIMIT 100');
-
-  foreach ($items as &$client)
-  {
-    decodeClient($client);
-  }
-
-  $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('hash', 'Kennung');
-  $fields[] = newTextField('persistent', 'Persistent');
-  $fields[] = newTextField('userName', 'Benutzername');
-  $fields[] = newTextField('userGroup', 'Benutzergruppe');
-  $fields[] = newTimestampField('lastSeenTimestamp', 'Zuletzt online', false);
-
-  renderItemTable($items, $fields);
-
-  echo html_close('div');
-}
-
-
-function renderEventList()
-{
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
-  writeMainHtmlBeforeContent('Veranstaltungen verwalten');
-
-  echo html_open('div', ['class' => 'content']);
-
-  $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('title', 'Titel');
-  $fields[] = newTimestampField('startTimestamp', 'Beginn');
-  $fields[] = newTimestampField('releaseTimestamp', 'Veröffentlichung');
-  $fields[] = newTimestampField('bookingOpeningTimestamp', 'Buchungs ab');
-  $fields[] = newTimestampField('bookingClosingTimestamp', 'Buchungs bis');
-  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
-  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
-
-  renderItemTable(getAdminEvents(), $fields);
-
-  echo html_close('div');
-}
-
-
-function renderVisitorList()
-{
-  $eventId = get_param_value('eventId');
-  if ($eventId == null)
-    renderVisitorList_eventList();
-  else
-    renderVisitorList_forEvent($eventId);
-}
-
-
-function renderVisitorList_eventList()
-{
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
-  writeMainHtmlBeforeContent('Anwesenheitsliste');
-
-  echo html_open('div', ['class' => 'content visitorList']);
-
-  $events = getVisitorListEvents();
-  foreach ($events as &$event)
-  {
-    $event['titleAndDate'] = $event['title'] . ' am ' . formatTimestampLocalLong($event['startTimestamp']);
-    if (time() > $event['bookingClosingTimestamp'])
-      $event['bookingState'] = 'abgeschlossen';
-    else
-      $event['bookingState'] = 'noch offen bis ' . formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
-  }
-
-  $fields = [];
-  $fields[] = newTextField('titleAndDate', 'Veranstaltung');
-  $fields[] = newTextField('bookingState', 'Buchung');
-  $fields[] = newIntegerField('visitorCount', 'Teilnehmer', false);
-  $fields[] = newIntegerField('freeSeatCount', 'Freie Sitzplätze', false);
-
-  $actions = [];
-  $actions[] = newLinkAction('visitorList', 'Anzeigen', 'eventId');
-
-  renderItemTable($events, $fields, $actions);
-
-  echo html_close('div');
-}
-
-
-function renderVisitorList_forEvent($eventId)
-{
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
-
-  $event = tryGetEventById($eventId);
-  if ($event == null)
-  {
-    renderNotFoundError();
-    return;
-  }
-
-  $titleAndDate = $event['title'] . ' am '. formatTimestampLocalLong($event['startTimestamp'], 'minute');
-
-  writeMainHtmlBeforeContent('Anwesenheitsliste ' . $titleAndDate);
-
-  echo html_open('div', ['class' => 'content visitorList']);
-
-  $rows = renderVisitorList_forEvent_getRealRows($eventId);
-  $visitorCount = count($rows);
-  if ($visitorCount > 0)
-    renderVisitorList_forEvent_addNumberingAndEmptyRows($rows);
-
-  $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('name', 'Name');
-  $fields[] = newTextField('phoneNumber', 'Telefon');
-  $fields[] = newTextField('bookingInfo', 'Buchung');
-  $fields[] = newTextField('empty', 'Anwesend');
-
-  echo html_form_button('Drucken', ['onclick' => 'window.print();']);
-
-  echo html_open('div', ['class' => 'subTitle']);
-  echo $visitorCount;
-  echo ' Teilnehmer gebucht';
-  echo ', Buchung ';
-  if (time() > $event['bookingClosingTimestamp'])
-    echo 'abgeschlossen';
-  else
-  {
-    echo 'noch offen bis ';
-    echo formatTimestampLocalLong($event['bookingClosingTimestamp'], 'minute', false);
-  }
-  echo html_close('div');
-
-  echo html_open('div', ['class' => 'subTitle currentDate']);
-  echo 'Stand: ';
-  echo formatTimestampLocalLong(time(), 'minute');
-  echo html_close('div');
-
-  renderItemTable($rows, $fields);
-
-  echo html_close('div');
-}
-
-
-function renderVisitorList_forEvent_getRealRows($eventId)
-{
-  $bookings = db()->query_rows('SELECT * FROM booking WHERE eventId = ? AND cancelTimestamp IS NULL', [$eventId]);
-
-  $rows = [];
-  foreach($bookings as $booking)
-  {
-    $persons = explode(';', $booking['listOfPersons']);
-    if (count($persons) == 1)
-      $bookingInfo = count($persons) . ' Person';
-    else
-      $bookingInfo = count($persons) . ' Personen, #' . $booking['id'];
-    foreach($persons as $personStr)
-    {
-      $person = explode(',', $personStr);
-      $surname = array_value($person, 0);
-      $lastname = array_value($person, 1);
-
-      $row = [];
-      $row['bookingInfo'] =  $bookingInfo;
-      $row['phoneNumber'] = $booking['phoneNumber'];
-      $row['name'] = $lastname . ', ' . $surname;
-      $row['empty'] = '';
-      $key = implode(' ', [$lastname, $surname, $booking['id']]);
-      $rows[$key] = $row;
-    }
-  }
-
-  ksort($rows);
-
-  return $rows;
-}
-
-
-function renderVisitorList_forEvent_addNumberingAndEmptyRows(&$rows)
-{
-  $i = 1;
-  foreach($rows as &$row)
-  {
-    $row['id'] = $i;
-    $i++;
-  }
-  unset($row);
-
-  $emptyRowCount = 15;
-  for($j = 0; $j < $emptyRowCount; $j++)
-  {
-    $row = [];
-    $row['id'] = $i;
-    $row['bookingInfo'] = null;
-    $row['phoneNumber'] = '';
-    $row['name'] = '';
-    $row['empty'] = '';
-    $row['class'] = 'empty';
-    $rows[] = $row;
-    $i++;
-  }
-}
-
-
-function renderBookingList()
-{
-  if (!isClientAdmin())
-  {
-    renderForbiddenError();
-    return;
-  }
-  writeMainHtmlBeforeContent('Buchungen verwalten');
-
-  echo html_open('div', ['class' => 'content']);
-
-  $items = db()->query_rows('SELECT * FROM booking ORDER BY id DESC LIMIT 100');
-
-  foreach ($items as &$booking)
-  {
-    decodeBooking($booking);
-  }
-
-  $fields = [];
-  $fields[] = newIdField();
-  $fields[] = newTextField('eventId', 'Veranstaltung');
-  $fields[] = newTextField('insertClientId', 'Erstellt durch');
-  $fields[] = newTextField('listOfPersons', 'Personen');
-  $fields[] = newTimestampField('insertTimestamp', 'Gebucht am');
-  $fields[] = newTimestampField('cancelTimestamp', 'Storniert am');
-
-  renderItemTable($items, $fields);
-
-  echo html_close('div');
-}
-
-
 function renderDebugFreeSeatsCalculation()
 {
   if (!isClientAdmin())
@@ -835,7 +631,7 @@ function renderDebugFreeSeatsCalculation()
     return;
   }
 
-  $eventId = get_param_value('eventId');
+  $eventId = get_param_value('itemId');
   $event = tryGetEventById($eventId);
   if ($event == null)
   {

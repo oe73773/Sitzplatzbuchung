@@ -47,17 +47,18 @@ footer {
 }
 
 
-input, select {
+input, textarea, select {
   font-size: inherit;
   font-family: inherit;
-}
-
-input[type="text"], input[type="number"], input[type="tel"], input[type="password"], textarea {
   font-size: 115%;
   padding: 0.2em;
 }
 
-input:read-only {
+input[type="checkbox"] {
+  width: auto ! important;
+}
+
+input:read-only, textarea:read-only, .readOnly {
   color: #515151;
 }
 
@@ -90,6 +91,9 @@ a:hover, button:hover.linkButton, button:hover.inlineLinkButton {
   text-decoration: underline;
 }
 
+button:hover:disabled.linkButton, button:hover:disabled.inlineLinkButton {
+  text-decoration: none;
+}
 
 form {
   display: inline;
@@ -99,7 +103,9 @@ button {
   padding: 10px;
   padding-left: 15px;
   padding-right: 15px;
-  margin-top: 10px;
+  margin-left: 6px;
+  margin-right: 6px;
+  margin-top: 3px;
   margin-bottom: 3px;
   min-width: 160px;
   border: 1px solid lightgrey;
@@ -139,8 +145,11 @@ button:disabled {
 }
 
 
-table.border {
+table {
   border-collapse: collapse;
+}
+
+table.border {
   margin: 2px;
   margin-left: auto;
   margin-right: auto;
@@ -192,7 +201,7 @@ table.border td.null {
 }
 
 
-.redText, .seatsInfo .noFreeSeats {
+.redText, .content.mainPage .seatsInfo .noFreeSeatsRed {
   color: firebrick;
   font-weight: bold;
 }
@@ -313,7 +322,7 @@ table.border td.null {
   }
 }
 
-.textBlock, .content.mainPage > div > div {
+.textBlock, .content.mainPage > div > div, div.saveBookingForm {
   max-width: 600px;
   display: inline-block;
 }
@@ -324,21 +333,28 @@ table.border td.null {
 
 
 .framedBox {
-  border: 1px solid lightgrey;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  position: relative;
+  padding-top: 10px;
   background: white;
-  margin-top: 6px;
+}
+.framedBox, .event {
+  border: 1px solid lightgrey;
+  position: relative;
+  padding-bottom: 3px;
+}
+.framedBox, .event > div {
+  padding-left: 10px;
+  padding-right: 10px;
 }
 @media (min-width: 1000px) {
   .framedBox {
+    padding-top: 13px;
+  }
+  .framedBox, .event {
+    padding-bottom: 6px;
+  }
+  .framedBox, .event > div {
     padding-left: 18px;
     padding-right: 18px;
-    padding-top: 13px;
-    padding-bottom: 13px;
   }
 }
 
@@ -350,13 +366,18 @@ table.border td.null {
   padding-left: 3px;
   padding-right: 3px;
   font-size: 90%;
+  opacity: 1 ! important;
 }
 
 
 .content {
   background: white;
   padding: 5px;
-  overflow: auto;
+}
+@media screen {
+  .content {
+    overflow: auto;
+  }
 }
 @media (min-width: 1000px) {
   .content {
@@ -372,8 +393,14 @@ table.border td.null {
 }
 
 .content.mainPage > div {
-  padding-top: 7px;
-  padding-bottom: 7px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+@media (min-width: 1000px) {
+  .content.mainPage > div {
+    padding-top: 9px;
+    padding-bottom: 9px;
+  }
 }
 .content.mainPage > div:first-child {
   padding-top: 2px;
@@ -391,11 +418,15 @@ table.border td.null {
   width: 100%;
 }
 
+.content.mainPage .event {
+  background: #F2F8FF;
+}
+
 .content.mainPage .event > div {
   width: 100%;
 }
 
-.content.mainPage .event.canceled > * {
+.content.mainPage .event.canceled, .content.mainPage .event.canceled > .framedBoxTitle > * {
   opacity: 0.5;
 }
 
@@ -403,17 +434,23 @@ table.border td.null {
   text-decoration: line-through;
 }
 
-.content.mainPage .event.bookingClosed > * {
+.content.mainPage .event.bookingClosed > *, .content.mainPage .event.bookingClosed > .framedBoxTitle > * {
   opacity: 0.5;
 }
 
 .content.mainPage .event .titleAndDate {
-  font-size: 135%;
+  font-size: 130%;
+  border-bottom: 1px solid lightgrey;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
 }
 @media (min-width: 1000px) {
   .content.mainPage .event .titleAndDate {
-    font-size: 150%;
-    padding-bottom: 3px;
+    font-size: 145%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 6px;
   }
 }
 
@@ -421,21 +458,21 @@ table.border td.null {
   line-height: 155%;
 }
 
-.content.mainPage .seatsInfo {
+.seatsInfo {
   position: relative;
   text-align: left;
 }
 
-.content.mainPage .seatsInfo .capacityBar {
+.seatsInfo .capacityBar {
   position: absolute;
-  right: -5px;
+  right: 8px;
   top: 5px;
 }
-.content.mainPage .seatsInfo .capacityBar > div {
+.seatsInfo .capacityBar > div {
   outline: 1px solid black;
   margin-right: 10px;
 }
-.content.mainPage .seatsInfo .capacityBar > div > div {
+.seatsInfo .capacityBar > div > div {
   background: darkgrey;
   height: 10px;
 }
@@ -487,24 +524,24 @@ table.border td.null {
   overflow-x: hidden;
 }
 
-.content.mainPage .saveBookingForm div input {
+.content .saveBookingForm div input {
   width: 47%;
   margin: 5px;
 }
 
-.content.mainPage .saveBookingForm .formTitle {
+.content .saveBookingForm .formTitle {
   font-weight: bold;
   text-align: left;
   padding: 5px;
   padding-left: 7px;
 }
 @media (min-width: 1000px) {
-  .content.mainPage .saveBookingForm .formTitle {
+  .content .saveBookingForm .formTitle {
     padding-left: 13px;
   }
 }
 
-.content.mainPage .saveBookingForm .phoneNumberLabel {
+.content .saveBookingForm .phoneNumberLabel {
   display: inline-block;
   width: 47%;
   margin-right: 12px;
@@ -519,6 +556,10 @@ table.border td.null {
   .content.mainPage .saveBookingForm .cookieInfo {
     padding-left: 13px;
   }
+}
+
+.content .saveBookingForm button, .content.mainPage .saveBookingFormPlaceholder button, .content.mainPage .cancelBookingForm button {
+  margin-top: 10px;
 }
 
 
@@ -568,34 +609,117 @@ table.border td.null {
   }
 }
 @media print {
-  table.border th, table.border td {
-    font-size: 108%;
-    padding-left: 8px;
-    padding-right: 8px;
-    padding-top: 9px;
-    padding-bottom: 9px;
+  .content.visitorList table {
+    font-size: 90%;
+  }
+  .content.visitorList table.border th, .content.visitorList table.border td {
+    padding-left: 0.7em;
+    padding-right: 0.7em;
+    padding-top: 0.6em;
+    padding-bottom: 0.6em;
   }
   .content.visitorList td.name {
-    min-width: 400px;
+    min-width: 14em;
   }
-  .content.visitorList td.phoneNumber {
-    min-width: 250px;
+  .content.visitorList td.phoneNumberAndAddress {
+    min-width: 8em;
   }
 }
 
+
+.content.bookingSimulator > form > div {
+  padding-top: 5px;
+  padding-bottomo: 5px;
+}
+
+.content.bookingSimulator > form > div > span {
+  display: inline-block;
+  min-width: 16em;
+  text-align: left;
+}
+
+.content.bookingSimulator > form > div > input {
+  width: 6em;
+}
+
+
+.content.bookingList .seatsInfo, .content.bookingDetails .seatsInfo {
+  display: inline-block;
+  width: 24em;
+  padding-bottom: 6px;
+}
+
+
+
+div.itemList button {
+  margin-bottom: 10px;
+}
+
+div.itemList td {
+  max-width: 35em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+div.itemDetails {
+  display: inline-block;
+}
+
+div.itemDetails td {
+  border-bottom: 1px solid #A8A8A8;
+}
+div.itemDetails tr:last-child td {
+  border-bottom: none;
+}
+
+div.itemDetails td {
+  text-align: left;
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+@media (min-width: 700px) {
+  div.itemDetails td {
+    min-width: 8em;
+  }
+}
+
+div.itemDetails td:first-child {
+  padding-right: 15px;
+}
+
+div.itemDetails td:first-child > span.mandatory {
+  padding-left: 0.2em;
+  color: red;
+}
+
+div.itemDetails input, div.itemDetails textarea, div.itemDetails select {
+  width: 15em;
+}
+@media (min-width: 700px) {
+  div.itemDetails input, div.itemDetails textarea, div.itemDetails select {
+    width: 30em;
+  }
+}
+div.itemDetails textarea {
+  height: 8em;
+}
+div.itemDetails td.timestamp.minute input, div.itemDetails td.integer input {
+  width: 9em;
+}
+
+div.itemDetails.editingFormOpened > div.view {
+  display: none;
+}
+div.itemDetails:not(.editingFormOpened) > form {
+  display: none;
+}
+
+div.itemDetails > form button {
+  margin-top: 10px;
+}
 
 span.noItems {
   display: inline-block;
   padding: 30px;
-}
-
-form.itemDetails > div {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-form.itemDetails > div > span {
-  display: inline-block;
-  min-width: 250px;
-  text-align: left;
 }
